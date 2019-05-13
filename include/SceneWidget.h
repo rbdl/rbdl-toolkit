@@ -11,6 +11,7 @@
 #include <Qt3DRender/QDirectionalLight>
 
 #include <Qt3DExtras/Qt3DWindow>
+
 /*
  * A small wrapper class to render with the Qt3D Engine to be used as a QWidget
  */
@@ -45,8 +46,6 @@ class SceneWidget : public QWidget {
 		void resizeEvent(QResizeEvent *event);
 };
 
-Qt3DCore::QEntity* createGridFloor(float lxy_border, float r_xyborder, int count, QColor line_color=QColor(QRgb(0xffffff)));
-Qt3DCore::QEntity* loadMeshFromFile(const char* filename);
 
 #endif 
 

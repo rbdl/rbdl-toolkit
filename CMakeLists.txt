@@ -28,6 +28,7 @@ SET ( Toolkit_SRCS
 	src/ToolkitApp.cc
 	src/SceneWidget.cc
 	src/main.cc
+	src/render_util.cc
 )
 
 ADD_EXECUTABLE ( rbdl-toolkit
