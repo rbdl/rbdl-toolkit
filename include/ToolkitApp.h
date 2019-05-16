@@ -11,6 +11,8 @@
 
 #include "SceneWidget.h"
 
+class SceneWidget;
+
 class ToolkitApp : public QMainWindow
 {
 	Q_OBJECT
@@ -23,7 +25,7 @@ class ToolkitApp : public QMainWindow
 		std::vector<QDockWidget*> view_widgets;
 	public:
 		ToolkitApp(QWidget *parent = 0);
-		void addView(QString name, QWidget *view_widget);
+		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea);
 
 	public slots:
 

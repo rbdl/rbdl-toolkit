@@ -10,8 +10,6 @@
 #include <Qt3DExtras/QForwardRenderer>
 #include <Qt3DExtras/QOrbitCameraController>
 
-#include "ToolkitApp.h"
-
 using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
@@ -40,8 +38,13 @@ SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f
 	display_container->setMargin(0);
 	display_container->addWidget(QWidget::createWindowContainer(qt3d_view));
 
-	ToolkitApp* app = qobject_cast<ToolkitApp*>(parent);
-	app->addView("Test", new QWidget);
+	render_selector = new QWidget(this);
+	render_selector->setMinimumSize(200, 400);
+	render_selector_layout = new QVBoxLayout;
+	render_selector->setLayout(render_selector_layout);
+
+	main_app = qobject_cast<ToolkitApp*>(parent);
+	main_app->addView("RenderSelect", render_selector);
 }
 
 void SceneWidget::resizeEvent(QResizeEvent *event) {
@@ -61,5 +64,24 @@ void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {
 	if (obj_grouping.isValid()) {
 		QString group_name = obj_grouping.toString();
 		scene_obj_grouping[group_name].push_back(scene_obj);
+
+		RenderGroupCheckBox* check_box = new RenderGroupCheckBox(group_name);
+		check_box->setCheckState(Qt::Checked);
+		connect(check_box, SIGNAL(renderGroupStateChanged(QString, bool)), this, SLOT(toggle_render_obj_group(QString, bool)));
+		render_select_check_boxes.push_back(check_box);
+		render_selector_layout->addWidget(check_box);
+		render_selector_layout->setAlignment(check_box, Qt::AlignTop);
+	}
+}
+
+void SceneWidget::toggle_render_obj_group(QString group_name, bool status) {
+	auto it = scene_obj_grouping.find(group_name);
+
+	//if the group exsits set visibility of the entities 
+	if ( it != scene_obj_grouping.end()) {
+		std::vector<Qt3DCore::QEntity*> entities = it->second;
+		for ( QEntity* ntty : entities ) {
+			ntty->setEnabled(status);
+		}
 	}
 }
