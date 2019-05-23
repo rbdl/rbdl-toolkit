@@ -1,5 +1,6 @@
 #include "ToolkitApp.h"
 #include "render_util.h"
+#include "rbdl_wrapper.h"
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
@@ -11,6 +12,8 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	this->setCentralWidget(main_display);
 
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
+	RBDLModelWrapper model;
+	model.loadFromFile("/home/judge/Work/Spexor/meshup/models/samplemodel.lua");
 }
 
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {

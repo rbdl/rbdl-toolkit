@@ -17,7 +17,7 @@ using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
-QEntity* loadMeshFromFile(const char* filename) {
+QEntity* loadFromLuaTable(LuaTableNode &table) {
 	//Todo
 }
 
