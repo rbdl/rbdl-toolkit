@@ -17,10 +17,6 @@ using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
-QEntity* loadFromLuaTable(LuaTableNode &table) {
-	//Todo
-}
-
 QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_color) {
 	QGeometry* floor_geometry = new Qt3DRender::QGeometry();
 	float step = fabs (rborder - lborder) / (float) count;

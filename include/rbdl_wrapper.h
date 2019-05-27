@@ -2,6 +2,7 @@
 #define rbdl_wrapper_h_INCLUDED
 
 #include <rbdl/rbdl.h>
+#include <rbdl/rbdl_math.h>
 #include <rbdl/addons/luamodel/luamodel.h>
 #include <rbdl/addons/luamodel/luatables.h>
 
@@ -19,6 +20,7 @@ class RBDLModelWrapper {
 
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
+
 	public:
 		RBDLModelWrapper();
 

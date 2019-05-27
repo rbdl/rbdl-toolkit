@@ -7,7 +7,7 @@
 #include <rbdl/addons/luamodel/luatables.h>
 
 Qt3DCore::QEntity* createGridFloor(float lxy_border, float r_xyborder, int count, QColor line_color=QColor(QRgb(0xffffff)));
-Qt3DCore::QEntity* loadFromLuaTable(LuaTableNode &table);
+//Qt3DCore::QEntity* loadFromLuaTable(LuaTableNode &table);
 
 #endif 
 

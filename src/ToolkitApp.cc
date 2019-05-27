@@ -12,8 +12,9 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	this->setCentralWidget(main_display);
 
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
+
 	RBDLModelWrapper model;
-	model.loadFromFile("/home/judge/Work/Spexor/meshup/models/samplemodel.lua");
+	main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/data/testModel.lua"));
 }
 
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {
