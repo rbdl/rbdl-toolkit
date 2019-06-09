@@ -4,6 +4,7 @@
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
+	file_menu = main_menu_bar->addMenu("File");
 	view_menu = main_menu_bar->addMenu("Views");
 
 	this->setMenuBar(main_menu_bar);
@@ -14,7 +15,10 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
 
 	RBDLModelWrapper model;
-	main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/data/testModel.lua"));
+	//main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_2/ex02/exercise02/icub/models/iCubHeidelberg01.lua"));
+	main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_2/ex01/exercise01/humanoid_model.lua"));
+	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/meshup/models/samplemodel.lua"));
+	//main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_1/exercise10/LIN/build/kuka.lua"));
 }
 
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {

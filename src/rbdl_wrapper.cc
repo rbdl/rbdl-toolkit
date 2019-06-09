@@ -17,7 +17,6 @@ RBDLModelWrapper::RBDLModelWrapper(){
 }
 
 Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
-
 	QFileInfo check_file(model_file);
 	// Is it really a file and no directory?
 	if (!check_file.exists() || !check_file.isFile()) {
@@ -38,6 +37,21 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	model_luatable = LuaTable::fromFile(model_file.toStdString().c_str());
 	std::cout << model_luatable.serialize() << std::endl;
 
+	Vector3d axis_front = model_luatable["configuration"]["axis_front"].getDefault(Vector3d(1., 0., 0.)); 
+	Vector3d axis_up = model_luatable["configuration"]["axis_front"].getDefault(Vector3d(0., 1., 0.));
+	Vector3d axis_right = model_luatable["configuration"]["axis_front"].getDefault(Vector3d(0., 0., 1.));
+	Matrix3_t rotate_mat;
+
+	rotate_mat(0,0) = axis_front[0];
+	rotate_mat(1,0) = axis_front[1];
+	rotate_mat(2,0) = axis_front[2];
+	rotate_mat(0,1) = axis_up[0];
+	rotate_mat(1,1) = axis_up[1];
+	rotate_mat(2,1) = axis_up[2];
+	rotate_mat(0,2) = axis_right[0];
+	rotate_mat(1,2) = axis_right[1];
+	rotate_mat(2,2) = axis_right[2];
+
 	unsigned int segments_cnt = model_luatable["frames"].length();
 
 	//create renderable entities for every segment of the model
@@ -52,16 +66,28 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		for (int j=1; j<=visuals_cnt; j++) {
 
 			std::string visual_mesh_src = model_luatable["frames"][i]["visuals"][j]["src"].get<std::string>();
+			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
 
-			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault<Vector3d>(Vector3d(1., 1., 1.));
-			Vector3d visual_dimensions = model_luatable["frames"][i]["visuals"][j]["dimensions"].getDefault<Vector3d>(Vector3d(1., 1., 1.));
-			Vector3d visual_center = model_luatable["frames"][i]["visuals"][j]["mesh_center"].getDefault<Vector3d>(Vector3d(0., 0., 0.));
+			Vector3d visual_scale = model_luatable["frames"][i]["visuals"][j]["scale"].getDefault(Vector3d(1., 1., 1.));
+			Vector3d visual_dimensions = model_luatable["frames"][i]["visuals"][j]["dimensions"].getDefault(Vector3d(1., 1., 1.));
+			visual_dimensions = rotate_mat.transpose() * visual_dimensions;
+
+			Vector3d visual_translate = model_luatable["frames"][i]["visuals"][j]["translate"].getDefault(Vector3d(0., 0., 0.));
+			visual_translate = rotate_mat.transpose() * visual_translate;
+			Vector3d visual_center = model_luatable["frames"][i]["visuals"][j]["mesh_center"].getDefault(Vector3d(0., 0., 0.));
+			visual_center = rotate_mat.transpose() * visual_center;
 
 			Qt3DCore::QEntity* visual_entity = new Qt3DCore::QEntity(segment_render_node);
 
 			Qt3DCore::QTransform* visual_transform = new Qt3DCore::QTransform;
-			visual_transform->setTranslation(QVector3D(visual_center[0], visual_center[1], visual_center[2]));
-			visual_transform->setScale3D(QVector3D(visual_dimensions[0], visual_dimensions[1], visual_dimensions[2]));
+			visual_transform->setScale3D(QVector3D(visual_dimensions[0] * visual_scale[0], visual_dimensions[1] * visual_scale[1], visual_dimensions[2] * visual_scale[2]));
+			if(model_luatable["frames"][i]["visuals"][j]["rotate"].exists()) {
+				float angle = model_luatable["frames"][i]["visuals"][j]["rotate"]["angle"].getDefault(0.f);
+				Vector3d axis = model_luatable["frames"][i]["visuals"][j]["rotate"]["axis"].getDefault(Vector3d(1., 0., 0.));
+				axis = rotate_mat.transpose() * axis;
+				visual_transform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(axis[0], axis[1], axis[2]), angle));
+			}
+			visual_transform->setTranslation(QVector3D(-visual_center[0] + visual_translate[0], -visual_center[1] + visual_translate[1], -visual_center[2] + visual_translate[2]));
 
 			Qt3DExtras::QPhongMaterial* visual_material = new Qt3DExtras::QPhongMaterial;
 			visual_material->setAmbient(QColor::fromRgbF(visual_color[0], visual_color[1], visual_color[2], 1.));
@@ -69,9 +95,9 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			Qt3DRender::QMesh* visual_mesh = new Qt3DRender::QMesh;
 			visual_mesh->setSource(QUrl::fromLocalFile(QString::fromStdString(visual_mesh_src)));
 
-			visual_entity->addComponent(visual_transform);
-			visual_entity->addComponent(visual_material);
 			visual_entity->addComponent(visual_mesh);
+			visual_entity->addComponent(visual_material);
+			visual_entity->addComponent(visual_transform);
 		}
 
 

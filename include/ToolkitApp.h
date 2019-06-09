@@ -20,6 +20,7 @@ class ToolkitApp : public QMainWindow
 		SceneWidget* main_display;
 
 		QMenuBar* main_menu_bar;
+		QMenu* file_menu;
 		QMenu* view_menu;
 
 		std::vector<QDockWidget*> view_widgets;
