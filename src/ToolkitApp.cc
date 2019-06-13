@@ -18,7 +18,8 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	//main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_2/ex02/exercise02/icub/models/iCubHeidelberg01.lua"));
 	main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_2/ex01/exercise01/humanoid_model.lua"));
 	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/meshup/models/samplemodel.lua"));
-	//main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_1/exercise10/LIN/build/kuka.lua"));
+	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/meshup/models/two_body_human.lua"));
+	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/puppeteer/model.lua"));
 }
 
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {

@@ -25,7 +25,7 @@ SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f
 
     camera = qt3d_view->camera();
 	camera->lens()->setPerspectiveProjection(fov, 16.0f/9.0f, near, far);
-	camera->setPosition(QVector3D(5., 5., 5.0f));
+	camera->setPosition(QVector3D(6., 3., 6.0f));
 	camera->setUpVector(QVector3D(0, 1, 0));
 	camera->setViewCenter(QVector3D(0, 0, 0));
 
@@ -71,13 +71,15 @@ void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {
 		QString group_name = obj_grouping.toString();
 		scene_obj_grouping[group_name].push_back(scene_obj);
 
-		RenderGroupCheckBox* check_box = new RenderGroupCheckBox(group_name);
-		check_box->setCheckState(Qt::Checked);
+		if (scene_obj_grouping[group_name].size() == 1) {
+			RenderGroupCheckBox* check_box = new RenderGroupCheckBox(group_name);
+			check_box->setCheckState(Qt::Checked);
 
-		connect(check_box, SIGNAL(renderGroupStateChanged(QString, bool)), this, SLOT(toggle_render_obj_group(QString, bool)));
+			connect(check_box, SIGNAL(renderGroupStateChanged(QString, bool)), this, SLOT(toggle_render_obj_group(QString, bool)));
 
-		render_select_check_boxes.push_back(check_box);
-		render_selector_layout->addWidget(check_box, 0, Qt::AlignTop);
+			render_select_check_boxes.push_back(check_box);
+			render_selector_layout->addWidget(check_box, 0, Qt::AlignTop);
+		}
 	}
 }
 

@@ -16,6 +16,7 @@ class RBDLModelWrapper {
 		QString model_file;
 
 		LuaTable model_luatable;
+		Matrix3_t axis_transform;
 		RigidBodyDynamics::Model rbdl_model;
 
 		Qt3DCore::QEntity* model_render_obj;
