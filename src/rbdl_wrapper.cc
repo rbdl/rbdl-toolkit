@@ -14,7 +14,9 @@ using namespace RigidBodyDynamics::Math;
 
 RBDLModelWrapper::RBDLModelWrapper(){
 	model_render_obj = NULL;
+	rbdl_model = NULL;
 }
+
 
 Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	QFileInfo check_file(model_file);
@@ -24,18 +26,25 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	}
 
 	this->model_file = model_file;
+	if (rbdl_model != NULL) {
+		delete rbdl_model;
+	}
+	rbdl_model = new RigidBodyDynamics::Model();
 
 	//try loading model into rbdl to check its validity
-	if (!RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), &rbdl_model, false)) {
+	if (!RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false)) {
 		//Todo raise error
 	}
 
-	auto q = VectorNd::Zero(rbdl_model.q_size);
+	auto q = VectorNd::Zero(rbdl_model->q_size);
+	if (model_render_obj != NULL) {
+		delete model_render_obj;
+	}
 	model_render_obj = new Qt3DCore::QEntity();
 
 	// load model lua extra to read parameters for rendering
 	model_luatable = LuaTable::fromFile(model_file.toStdString().c_str());
-	std::cout << model_luatable.serialize() << std::endl;
+	//std::cout << model_luatable.serialize() << std::endl;
 
 	Vector3d axis_front = model_luatable["configuration"]["axis_front"].getDefault(Vector3d(1., 0., 0.)); 
 	Vector3d axis_up = model_luatable["configuration"]["axis_up"].getDefault(Vector3d(0., 1., 0.));
@@ -52,7 +61,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	axis_transform(0, 2) = axis_up[0];
 	axis_transform(1, 2) = axis_up[1];
 	axis_transform(2, 2) = axis_up[2];
-
 
 	unsigned int segments_cnt = model_luatable["frames"].length();
 
@@ -80,17 +88,25 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			Vector3d visual_center = model_luatable["frames"][i]["visuals"][j]["mesh_center"].getDefault(Vector3d(0., 0., 0.));
 			visual_center = axis_transform * visual_center;
 
-			Qt3DCore::QEntity* visual_entity = new Qt3DCore::QEntity(segment_render_node);
-
 			Qt3DCore::QTransform* visual_transform = new Qt3DCore::QTransform;
+			visual_transform->setScale3D(QVector3D(visual_dimensions[0] * visual_scale[0], visual_dimensions[1] * visual_scale[1], visual_dimensions[2] * visual_scale[2]));
+			visual_transform->setTranslation(QVector3D(visual_center[0] + visual_translate[0], visual_center[1] + visual_translate[1], visual_center[2] + visual_translate[2]));
+
+			Qt3DCore::QEntity* visual_entity = new Qt3DCore::QEntity(segment_render_node);
+			Qt3DCore::QEntity* mesh_entity = new Qt3DCore::QEntity(visual_entity);
+
+			Qt3DCore::QTransform* mesh_transform = new Qt3DCore::QTransform;
+			auto rot_axis1 = Vector3d(1., 0., 0.);
+			auto rotation = QQuaternion::fromAxisAndAngle(QVector3D(rot_axis1[0], rot_axis1[1], rot_axis1[2]), 90.f);
+			mesh_transform->setRotation(rotation);
+			float angle;
+			Vector3d axis;
 			if(model_luatable["frames"][i]["visuals"][j]["rotate"].exists()) {
-				float angle = model_luatable["frames"][i]["visuals"][j]["rotate"]["angle"].getDefault(0.f);
-				Vector3d axis = model_luatable["frames"][i]["visuals"][j]["rotate"]["axis"].getDefault(Vector3d(1., 0., 0.));
+				angle = model_luatable["frames"][i]["visuals"][j]["rotate"]["angle"].getDefault(0.f);
+				axis = model_luatable["frames"][i]["visuals"][j]["rotate"]["axis"].getDefault(Vector3d(1., 0., 0.));
 				axis = (axis_transform * axis).normalized();
 				visual_transform->setRotation(QQuaternion::fromAxisAndAngle(QVector3D(axis[0], axis[1], axis[2]), angle));
 			}
-			visual_transform->setScale3D(QVector3D(visual_dimensions[0] * visual_scale[0], visual_dimensions[1] * visual_scale[1], visual_dimensions[2] * visual_scale[2]));
-			visual_transform->setTranslation(QVector3D(visual_center[0] + visual_translate[0], visual_center[1] + visual_translate[1], visual_center[2] + visual_translate[2]));
 
 			Qt3DExtras::QPhongMaterial* visual_material = new Qt3DExtras::QPhongMaterial;
 			visual_material->setAmbient(QColor::fromRgbF(visual_color[0], visual_color[1], visual_color[2], 1.));
@@ -98,20 +114,21 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			Qt3DRender::QMesh* visual_mesh = new Qt3DRender::QMesh;
 			visual_mesh->setSource(QUrl::fromLocalFile(QString::fromStdString(visual_mesh_src)));
 
-			visual_entity->addComponent(visual_mesh);
-			visual_entity->addComponent(visual_material);
+			mesh_entity->addComponent(visual_mesh);
+			mesh_entity->addComponent(mesh_transform);
+			mesh_entity->addComponent(visual_material);
 			visual_entity->addComponent(visual_transform);
 		}
 
 
-		unsigned int body_id = rbdl_model.GetBodyId(segment_name.c_str());
-		auto segment_spacial_transform = CalcBodyToBaseCoordinates(rbdl_model, q, body_id, Vector3d(0., 0., 0.));
+		unsigned int body_id = rbdl_model->GetBodyId(segment_name.c_str());
+		auto segment_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, q, body_id, Vector3d(0., 0., 0.));
 		segment_spacial_transform = axis_transform * segment_spacial_transform;
-		auto segment_rotation = Quaternion::fromMatrix(CalcBodyWorldOrientation(rbdl_model, q, body_id));
+		auto segment_rotation = CalcBodyWorldOrientation(*rbdl_model, q, body_id);
 
 		Qt3DCore::QTransform* segment_transform = new Qt3DCore::QTransform;
 		segment_transform->setTranslation(QVector3D(segment_spacial_transform[0], segment_spacial_transform[1], segment_spacial_transform[2]));
-		segment_transform->setRotation(QQuaternion(segment_rotation[0], segment_rotation[1], segment_rotation[2], segment_rotation[3]));
+		//segment_transform->setRotation(QQuaternion(segment_rotation[0], segment_rotation[1], segment_rotation[2], segment_rotation[3]));
 
 		segment_render_node->addComponent(segment_transform);
 		segment_render_node->setParent(model_render_obj);
@@ -119,17 +136,20 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		body_mesh_map[segment_name] = segment_render_node;
 	}
 
-	auto model_spacial_transform = CalcBodyToBaseCoordinates(rbdl_model, q, 0, Vector3d(0., 0., 0.));
+	auto model_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, q, 0, Vector3d(0., 0., 0.));
 	//add a constant rotation to for rotating object to fit opengl coordinates
 	auto rotation = QQuaternion::fromAxisAndAngle(QVector3D(1., 0., 0.), -90.f);
 
 	Qt3DCore::QTransform* model_transform = new Qt3DCore::QTransform;
 	model_transform->setRotation(rotation);
 	model_transform->setTranslation(QVector3D(model_spacial_transform[0], model_spacial_transform[1], model_spacial_transform[2]));
-
 	model_render_obj->addComponent(model_transform);
 
 	model_render_obj->setProperty("Scene.ObjGroup", QVariant("Model"));
 
 	return model_render_obj;
+}
+
+void RBDLModelWrapper::reload() {
+	this->loadFromFile(this->model_file);
 }

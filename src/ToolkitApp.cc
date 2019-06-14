@@ -1,11 +1,17 @@
 #include "ToolkitApp.h"
 #include "render_util.h"
-#include "rbdl_wrapper.h"
+
+#include <QDir>
+#include <QFileDialog>
+#include <QKeySequence>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
 	file_menu = main_menu_bar->addMenu("File");
 	view_menu = main_menu_bar->addMenu("Views");
+
+	file_menu->addAction("Load Model", this, "aaction_load_model()");
+	file_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
 
 	this->setMenuBar(main_menu_bar);
 
@@ -14,12 +20,44 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
 
-	RBDLModelWrapper model;
-	//main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_2/ex02/exercise02/icub/models/iCubHeidelberg01.lua"));
-	main_display->addSceneObject(model.loadFromFile("/home/judge/Documents/Uni/Master/robotik/robotic_2/ex01/exercise01/humanoid_model.lua"));
-	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/meshup/models/samplemodel.lua"));
-	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/meshup/models/two_body_human.lua"));
-	//main_display->addSceneObject(model.loadFromFile("/home/judge/Work/Spexsor/puppeteer/model.lua"));
+	QDir::addSearchPath("", "meshes/");
+
+	//auto paths = QDir::searchPaths("");
+	//for (int i=0; i<paths.size(); i++) {
+	//	std::cout << paths.at(i).toLocal8Bit().constData() << std::endl;
+	//}
+}
+
+void ToolkitApp::action_reload_files() {
+	for (auto model : loaded_models) {
+		Qt3DCore::QEntity*  model_render_obj = model->getRenderObj();
+		main_display->removeSceneObject(model_render_obj);
+		model->reload();
+
+		model_render_obj = model->getRenderObj();
+		main_display->addSceneObject(model_render_obj);
+	}
+}
+
+void ToolkitApp::action_load_model() {
+	QFileDialog file_dialog (this, "Select Model File");
+
+	file_dialog.setNameFilter(tr("MeshupModels (*lua)"));
+	file_dialog.setFileMode(QFileDialog::ExistingFile);
+
+	if (file_dialog.exec()) {
+		loadModel (file_dialog.selectedFiles().at(0));
+	}	
+}
+
+
+void ToolkitApp::loadModel(const QString &model_file) {
+	RBDLModelWrapper *model = new RBDLModelWrapper();
+	//Todo error catching
+	auto model_scene_obj = model->loadFromFile(model_file);
+
+	loaded_models.push_back(model);
+	main_display->addSceneObject(model_scene_obj);
 }
 
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {

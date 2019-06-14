@@ -17,7 +17,7 @@ class RBDLModelWrapper {
 
 		LuaTable model_luatable;
 		Matrix3_t axis_transform;
-		RigidBodyDynamics::Model rbdl_model;
+		RigidBodyDynamics::Model* rbdl_model;
 
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
@@ -25,7 +25,11 @@ class RBDLModelWrapper {
 	public:
 		RBDLModelWrapper();
 
+		Qt3DCore::QEntity* getRenderObj() { return model_render_obj; }
+
 		Qt3DCore::QEntity* loadFromFile(QString model_file);
+
+		void reload();
 
 };
 

@@ -66,6 +66,7 @@ class SceneWidget : public QWidget {
 		// adding an object will expect that all controll of memory is handed to this class meaning
 		// that you don't have to care about freeing the memory again
 		void addSceneObject(Qt3DCore::QEntity *scene_obj);
+		void removeSceneObject(Qt3DCore::QEntity *scene_obj);
 
 	protected:
 		void resizeEvent(QResizeEvent *event);
