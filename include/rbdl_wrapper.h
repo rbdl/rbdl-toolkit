@@ -8,7 +8,6 @@
 
 #include <QString>
 #include <Qt3DCore/QEntity>
-#include <string>
 
 
 class RBDLModelWrapper {
@@ -17,11 +16,11 @@ class RBDLModelWrapper {
 
 		LuaTable model_luatable;
 		Matrix3_t axis_transform;
-		RigidBodyDynamics::Math::Vector3d scaling;
 		RigidBodyDynamics::Model* rbdl_model;
 
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
+
 
 	public:
 		RBDLModelWrapper();

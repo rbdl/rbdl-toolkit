@@ -30,6 +30,7 @@ SET ( Toolkit_SRCS
 	src/ToolkitApp.cc
 	src/SceneWidget.cc
 	src/main.cc
+	src/util.cc
 	src/render_util.cc
 	src/rbdl_wrapper.cc
 )
@@ -57,3 +58,8 @@ TARGET_LINK_LIBRARIES ( rbdl-toolkit
 	${RBDL_LUAMODEL_LIBRARY}
 	
 )
+
+INSTALL ( TARGETS rbdl-toolkit RUNTIME DESTINATION bin )
+
+FILE ( GLOB MESH_FILES meshes/*.obj )
+INSTALL ( FILES ${MESH_FILES} DESTINATION share/rbdl-toolkit/meshes )

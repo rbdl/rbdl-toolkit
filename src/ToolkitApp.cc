@@ -3,6 +3,7 @@
 
 #include <QDir>
 #include <QFileDialog>
+#include <QStandardPaths>
 #include <QKeySequence>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
@@ -22,10 +23,18 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 
 	QDir::addSearchPath("", "meshes/");
 
-	//auto paths = QDir::searchPaths("");
-	//for (int i=0; i<paths.size(); i++) {
-	//	std::cout << paths.at(i).toLocal8Bit().constData() << std::endl;
-	//}
+	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+	for (int i=0; i<paths.size(); i++) {
+		QFileInfo check_file(paths.at(i));
+		if (check_file.exists()) {
+			QDir dir(paths.at(i));
+			QDir::addSearchPath("", dir.path());
+			if (dir.cd("meshes")) {
+				QDir::addSearchPath("", dir.path());
+			}
+		}
+	}
+
 }
 
 void ToolkitApp::action_reload_files() {

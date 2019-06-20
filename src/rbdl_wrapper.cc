@@ -8,6 +8,7 @@
 #include <Qt3DExtras/QPhongMaterial>
 
 #include "render_util.h"
+#include "util.h"
 
 using namespace RigidBodyDynamics;
 using namespace RigidBodyDynamics::Math;
@@ -76,12 +77,11 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 
 		for (int j=1; j<=visuals_cnt; j++) {
 			//read visual parameters and transform to correct coordinates
-			std::string visual_mesh_src = model_luatable["frames"][i]["visuals"][j]["src"].get<std::string>();
+			QString visual_mesh_src = findFile(model_luatable["frames"][i]["visuals"][j]["src"].get<std::string>());
 			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
 
 			Vector3d visual_scale = model_luatable["frames"][i]["visuals"][j]["scale"].getDefault(Vector3d(1., 1., 1.));
 			visual_scale = axis_transform * visual_scale;
-			scaling = visual_scale;
 			Vector3d visual_dimensions = model_luatable["frames"][i]["visuals"][j]["dimensions"].getDefault(Vector3d(1., 1., 1.));
 			visual_dimensions = axis_transform * visual_dimensions;
 
@@ -118,13 +118,13 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			translation[2] = visual_translate[2];
 
 			mesh_transform->setRotation(rotation);
-			//mesh_transform->setTranslation(translation);
+			mesh_transform->setTranslation(translation);
 		
 			Qt3DExtras::QPhongMaterial* visual_material = new Qt3DExtras::QPhongMaterial;
 			visual_material->setAmbient(QColor::fromRgbF(visual_color[0], visual_color[1], visual_color[2], 1.));
 
 			Qt3DRender::QMesh* visual_mesh = new Qt3DRender::QMesh;
-			visual_mesh->setSource(QUrl::fromLocalFile(QString::fromStdString(visual_mesh_src)));
+			visual_mesh->setSource(QUrl::fromLocalFile(visual_mesh_src));
 
 			mesh_entity->addComponent(visual_mesh);
 			mesh_entity->addComponent(mesh_transform);
