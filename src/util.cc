@@ -18,7 +18,7 @@ QString findFile(QString file) {
 	for (int i=0; i<paths.size(); i++) {
 		QDir search_dir = QDir(paths.at(i));
 		QString file_path = search_dir.filePath(file);
-		if (search_dir.exists()) {
+		if (QFileInfo(file_path).exists()) {
 			return file_path;
 		}
 	}

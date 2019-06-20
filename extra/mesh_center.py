@@ -1,5 +1,5 @@
 #!/bin/python3
-# A small python program that will normalize meshes that are given as arguments
+# A small python program that will center meshes that are given as arguments
 
 import numpy as np
 import sys
@@ -47,6 +47,7 @@ def main():
 					vertexes.append(vertex)
 
 		vertexes = np.array(vertexes)
+		print(meshfile, vertexes.shape)
 		
 		bbox_x_min = min(vertexes[:,0])
 		bbox_y_min = min(vertexes[:,1])
@@ -61,8 +62,6 @@ def main():
 		diff_z  = bbox_z_max - bbox_z_min
 
 		center = np.array([(bbox_x_max+bbox_x_min)*0.5, (bbox_y_max+bbox_y_min)*0.5, (bbox_z_max+bbox_z_min)*0.5])
-
-		vertexes /= np.array([diff_x, diff_y, diff_z])
 		vertexes -= center
 
 		# write transformed mesh file

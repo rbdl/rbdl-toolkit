@@ -78,6 +78,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		for (int j=1; j<=visuals_cnt; j++) {
 			//read visual parameters and transform to correct coordinates
 			QString visual_mesh_src = findFile(model_luatable["frames"][i]["visuals"][j]["src"].get<std::string>());
+			std::cout << visual_mesh_src.toLocal8Bit().toStdString() << std::endl;
 			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
 
 			Vector3d visual_scale = model_luatable["frames"][i]["visuals"][j]["scale"].getDefault(Vector3d(1., 1., 1.));
@@ -89,8 +90,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			visual_translate = axis_transform * visual_translate; 
 			Vector3d visual_center = model_luatable["frames"][i]["visuals"][j]["mesh_center"].getDefault(Vector3d(0., 0., 0.));
 			visual_center = axis_transform * visual_center;
-
-			std::cout << segment_name << ", " << visual_center.transpose() << ", " << visual_translate.transpose() << std::endl;
 
 			Qt3DCore::QTransform* visual_transform = new Qt3DCore::QTransform;
 			visual_transform->setScale3D(QVector3D(visual_dimensions[0] * visual_scale[0], visual_dimensions[1] * visual_scale[1], visual_dimensions[2] * visual_scale[2]));
@@ -143,7 +142,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		segment_transform->setTranslation(QVector3D(segment_spacial_transform[0], segment_spacial_transform[1], segment_spacial_transform[2]));
 		segment_transform->setRotation(QQuaternion(segment_rotation[3], segment_rotation[0], segment_rotation[1], segment_rotation[2]));
 
-		std::cout << segment_spacial_transform.transpose() << std::endl;
+		//std::cout << segment_spacial_transform.transpose() << std::endl;
 
 		segment_render_node->addComponent(segment_transform);
 		segment_render_node->setParent(model_render_obj);
