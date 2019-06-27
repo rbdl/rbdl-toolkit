@@ -23,7 +23,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	QFileInfo check_file(model_file);
 	// Is it really a file and no directory?
 	if (!check_file.exists() || !check_file.isFile()) {
-		//Todo raise error
+		throw "The file you tried to load does not exists!";
 	}
 
 	this->model_file = model_file;
@@ -34,7 +34,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 
 	//try loading model into rbdl to check its validity
 	if (!RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false)) {
-		//Todo raise error
+		throw "";
 	}
 
 	auto q = VectorNd::Zero(rbdl_model->q_size);

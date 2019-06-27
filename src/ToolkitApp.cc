@@ -1,10 +1,13 @@
 #include "ToolkitApp.h"
 #include "render_util.h"
+#include "errors.h"
 
 #include <QDir>
 #include <QFileDialog>
 #include <QStandardPaths>
 #include <QKeySequence>
+#include <QMessageBox>
+#include <Qt3DCore>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
@@ -62,11 +65,33 @@ void ToolkitApp::action_load_model() {
 
 void ToolkitApp::loadModel(const QString &model_file) {
 	RBDLModelWrapper *model = new RBDLModelWrapper();
-	//Todo error catching
-	auto model_scene_obj = model->loadFromFile(model_file);
+	bool errors_happend = false;
 
-	loaded_models.push_back(model);
-	main_display->addSceneObject(model_scene_obj);
+	Qt3DCore::QEntity* model_scene_obj;
+
+	try {
+		model_scene_obj = model->loadFromFile(model_file);
+	} catch (std::exception& e) {
+		errors_happend = true;
+		QMessageBox errorBox;
+		errorBox.setText(e.what());
+		errorBox.setStandardButtons(QMessageBox::Cancel);
+		errorBox.setDefaultButton(QMessageBox::Cancel);
+		errorBox.exec();
+	} catch (const char* e) {
+		errors_happend = true;
+		QMessageBox errorBox;
+		errorBox.setText(e);
+		errorBox.setStandardButtons(QMessageBox::Cancel);
+		errorBox.setDefaultButton(QMessageBox::Cancel);
+		errorBox.exec();
+	}
+
+	if (!errors_happend) {
+		loaded_models.push_back(model);
+		main_display->addSceneObject(model_scene_obj);
+	}
+
 }
 
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {
