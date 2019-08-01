@@ -1,12 +1,15 @@
 #include "util.h"
 
+#include "rbdl/rbdl_errors.h"
+#include <sstream>
+
 #include <QDir>
 #include <QFileInfo>
 
 QString findFile(QString file) {
-	//if empty just return no file to be found
+	//if empty no file to be found
 	if (file == "") {
-		return file;
+		throw RigidBodyDynamics::Errors::RBDLInvalidFileError("Cannot find file with no name!");
 	}
 
 	QFileInfo check_file(file);
@@ -22,7 +25,9 @@ QString findFile(QString file) {
 			return file_path;
 		}
 	}
-	return QString("");
+	std::ostringstream errormsg;
+	errormsg << "No file with filename: " << file.toStdString() << " found!" << std::endl;
+	throw RigidBodyDynamics::Errors::RBDLInvalidFileError(errormsg.str());
 
 }
 

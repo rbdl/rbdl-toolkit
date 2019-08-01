@@ -1,4 +1,5 @@
 #include "rbdl_wrapper.h"
+#include "rbdl/rbdl_errors.h"
 
 #include <QFileInfo>
 
@@ -23,7 +24,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	QFileInfo check_file(model_file);
 	// Is it really a file and no directory?
 	if (!check_file.exists() || !check_file.isFile()) {
-		throw "The file you tried to load does not exists!";
+		throw Errors::RBDLInvalidFileError("The file you tried to load does not exists!");
 	}
 
 	this->model_file = model_file;
@@ -32,10 +33,8 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	}
 	rbdl_model = new RigidBodyDynamics::Model();
 
-	//try loading model into rbdl to check its validity
-	if (!RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false)) {
-		throw "";
-	}
+	//loading model into rbdl to check its validity, may throw error
+	RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false);
 
 	auto q = VectorNd::Zero(rbdl_model->q_size);
 	if (model_render_obj != NULL) {
@@ -78,7 +77,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		for (int j=1; j<=visuals_cnt; j++) {
 			//read visual parameters and transform to correct coordinates
 			QString visual_mesh_src = findFile(model_luatable["frames"][i]["visuals"][j]["src"].get<std::string>());
-			std::cout << visual_mesh_src.toLocal8Bit().toStdString() << std::endl;
 			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
 
 			Vector3d visual_scale = model_luatable["frames"][i]["visuals"][j]["scale"].getDefault(Vector3d(1., 1., 1.));

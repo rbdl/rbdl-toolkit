@@ -1,6 +1,6 @@
 #include "ToolkitApp.h"
 #include "render_util.h"
-#include "errors.h"
+#include "rbdl/rbdl_errors.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -71,6 +71,18 @@ void ToolkitApp::loadModel(const QString &model_file) {
 
 	try {
 		model_scene_obj = model->loadFromFile(model_file);
+	} catch (RigidBodyDynamics::Errors::RBDLFileParseError& e) {
+		errors_happend = true;
+		QMessageBox errorBox;
+		errorBox.setText(e.what());
+		errorBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Cancel);
+		errorBox.setDefaultButton(QMessageBox::Cancel);
+		int ret = errorBox.exec();
+		switch(ret) {
+			case QMessageBox::Retry:
+				loadModel(model_file);
+				break;
+		}
 	} catch (std::exception& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
@@ -78,14 +90,7 @@ void ToolkitApp::loadModel(const QString &model_file) {
 		errorBox.setStandardButtons(QMessageBox::Cancel);
 		errorBox.setDefaultButton(QMessageBox::Cancel);
 		errorBox.exec();
-	} catch (const char* e) {
-		errors_happend = true;
-		QMessageBox errorBox;
-		errorBox.setText(e);
-		errorBox.setStandardButtons(QMessageBox::Cancel);
-		errorBox.setDefaultButton(QMessageBox::Cancel);
-		errorBox.exec();
-	}
+	} 
 
 	if (!errors_happend) {
 		loaded_models.push_back(model);
