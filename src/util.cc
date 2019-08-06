@@ -1,10 +1,13 @@
 #include "util.h"
 
 #include "rbdl/rbdl_errors.h"
+
 #include <sstream>
+#include <iostream>
 
 #include <QDir>
 #include <QFileInfo>
+#include <QLibrary>
 
 QString findFile(QString file) {
 	//if empty no file to be found
@@ -33,4 +36,22 @@ QString findFile(QString file) {
 
 QString findFile(std::string file) { 
 	return findFile(QString::fromStdString(file)); 
+}
+
+QStringList findAllPlugins() {
+	QStringList plugin_list;
+
+	auto paths = QDir::searchPaths("plugins");
+	for (int i=0; i<paths.size(); i++) {
+		QDir dir(paths.at(i));
+		auto file_list = dir.entryList(QDir::Files);
+		foreach (const QString &f, file_list) {
+			auto f_info = QFileInfo(dir.path(), f);
+			if (QLibrary::isLibrary(f_info.absoluteFilePath())) {
+				plugin_list << f_info.absoluteFilePath();
+			}
+		}
+	}
+
+	return plugin_list;
 }

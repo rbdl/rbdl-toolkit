@@ -8,6 +8,8 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QDockWidget>
+#include <QPluginLoader>
+#include <QSettings>
 
 #include "SceneWidget.h"
 #include "rbdl_wrapper.h"
@@ -23,9 +25,13 @@ class ToolkitApp : public QMainWindow
 		QMenuBar* main_menu_bar;
 		QMenu* file_menu;
 		QMenu* view_menu;
+		QMenu* plugin_menu;
 
 		std::vector<QDockWidget*> view_widgets;
 		std::vector<RBDLModelWrapper*> loaded_models;
+		std::vector<QPluginLoader*> availible_plugins;
+
+		void initPlugins();
 
 	public:
 		ToolkitApp(QWidget *parent = 0);
@@ -35,7 +41,6 @@ class ToolkitApp : public QMainWindow
 		void action_reload_files();
 		void loadModel(const QString &model_file); 
 		void action_load_model();
-
 };
 
 

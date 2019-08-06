@@ -1,5 +1,6 @@
 #include "ToolkitApp.h"
 #include "render_util.h"
+#include "util.h"
 #include "rbdl/rbdl_errors.h"
 
 #include <QDir>
@@ -8,11 +9,13 @@
 #include <QKeySequence>
 #include <QMessageBox>
 #include <Qt3DCore>
+#include <QCoreApplication>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
 	file_menu = main_menu_bar->addMenu("File");
 	view_menu = main_menu_bar->addMenu("Views");
+	plugin_menu = main_menu_bar->addMenu("Plugins");
 
 	file_menu->addAction("Load Model", this, "aaction_load_model()");
 	file_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
@@ -24,8 +27,8 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
 
+	//set standard search paths
 	QDir::addSearchPath("", "meshes/");
-
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	for (int i=0; i<paths.size(); i++) {
 		QFileInfo check_file(paths.at(i));
@@ -35,9 +38,21 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 			if (dir.cd("meshes")) {
 				QDir::addSearchPath("", dir.path());
 			}
+			QDir dir1(paths.at(i));
+			if (dir1.cd("plugins")) {
+				QCoreApplication::addLibraryPath(dir1.path());
+				QDir::addSearchPath("plugins", dir1.path());
+			}
 		}
 	}
 
+	//create list of availible plugins to load and put them in menu
+	auto plugins = findAllPlugins();
+	std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
+	foreach (const QString plugin_path, plugins) {
+		availible_plugins.push_back(new QPluginLoader(plugin_path));
+	}
+	initPlugins();
 }
 
 void ToolkitApp::action_reload_files() {
@@ -107,4 +122,8 @@ void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea 
 
 	view_widgets.push_back(dock);
 	view_menu->addAction(dock->toggleViewAction());
+}
+
+void ToolkitApp::initPlugins() {
+	//Todo
 }
