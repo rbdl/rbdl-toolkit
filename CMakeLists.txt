@@ -24,6 +24,7 @@ ADD_DEFINITIONS (${QT_DEFINITIONS})
 QT5_WRAP_CPP ( MOC_SRCS
 	include/ToolkitApp.h
 	include/SceneWidget.h
+	include/toolkit_interfaces.h
 )
 
 SET ( Toolkit_SRCS
@@ -33,6 +34,10 @@ SET ( Toolkit_SRCS
 	src/util.cc
 	src/render_util.cc
 	src/rbdl_wrapper.cc
+)
+
+ADD_SUBDIRECTORY (
+	plugins
 )
 
 ADD_EXECUTABLE ( rbdl-toolkit

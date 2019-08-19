@@ -46,12 +46,6 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 		}
 	}
 
-	//create list of availible plugins to load and put them in menu
-	auto plugins = findAllPlugins();
-	std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
-	foreach (const QString plugin_path, plugins) {
-		availible_plugins.push_back(new QPluginLoader(plugin_path));
-	}
 	initPlugins();
 }
 
@@ -125,5 +119,32 @@ void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea 
 }
 
 void ToolkitApp::initPlugins() {
-	//Todo
+	//create list of availible plugins to load and put them in menu
+	auto plugins = findAllPlugins();
+	//std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
+
+	int i = 0;
+	foreach (const QString plugin_path, plugins) {
+		availible_plugins.push_back(new QPluginLoader(plugin_path));
+
+		//create menu action to enable and disable plugins
+		QString action_name = availible_plugins[i]->metaData().value("MetaData").toObject().value("Name").toString();
+		QAction *plugin_action = plugin_menu->addAction(action_name); 
+		plugin_action->setCheckable(true);
+
+		//connect to action via lambda function
+		connect(plugin_action, &QAction::changed, [=] 
+		{ 
+			setPluginUsage(i, plugin_action->isChecked()); 
+		});
+
+		i += 1;
+	}
 }
+
+void ToolkitApp::setPluginUsage(unsigned int plugin_ref, bool state) {
+	std::cout << "Setting mode of plugin " << plugin_ref << " to " << state << std::endl; 
+
+	//Todo actually load plugin
+}
+

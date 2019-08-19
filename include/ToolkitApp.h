@@ -32,6 +32,7 @@ class ToolkitApp : public QMainWindow
 		std::vector<QPluginLoader*> availible_plugins;
 
 		void initPlugins();
+		void setPluginUsage(unsigned int plugin_ref, bool state);
 
 	public:
 		ToolkitApp(QWidget *parent = 0);
