@@ -48,6 +48,7 @@ QStringList findAllPlugins() {
 		foreach (const QString &f, file_list) {
 			auto f_info = QFileInfo(dir.path(), f);
 			if (QLibrary::isLibrary(f_info.absoluteFilePath())) {
+				//std::cout << f_info.absoluteFilePath().toStdString() << std::endl;
 				plugin_list << f_info.absoluteFilePath();
 			}
 		}

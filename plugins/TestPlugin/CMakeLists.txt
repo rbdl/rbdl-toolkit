@@ -6,6 +6,7 @@ SET(TestPlugin_SRCS
 
 SET(TestPlugin_MOC_HDRS
 	TestPlugin.h
+	include/toolkit_interfaces.h
 )
 
 SET(CMAKE_AUTOMOC ON)
@@ -19,9 +20,7 @@ ADD_DEFINITIONS (-DQT_PLUGIN)
 ADD_DEFINITIONS (-DQT_SHARED)
 #ADD_DEFINITIONS(-DQT_NO_DEBUG)
 
-QT5_WRAP_CPP ( TestPlugin_MOC_SRCS )
-
-ADD_LIBRARY (testplugin SHARED ${TestPlugin_SRCS} ${TestPlugin_MOC_SRCS})
+ADD_LIBRARY (testplugin SHARED ${TestPlugin_SRCS})
 
 TARGET_LINK_LIBRARIES (testplugin 
 	${QT_LIBRARIES} 

@@ -2,6 +2,7 @@
 #include "render_util.h"
 #include "util.h"
 #include "rbdl/rbdl_errors.h"
+#include "toolkit_interfaces.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -118,6 +119,16 @@ void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea 
 	view_menu->addAction(dock->toggleViewAction());
 }
 
+void ToolkitApp::deleteView(QString name) {
+	for(auto it = view_widgets.begin(); it != view_widgets.end(); it++) {
+		if ((*it)->windowTitle() == name) {
+			delete (*it);
+			view_widgets.erase(it);
+			break;
+		}
+	}
+}
+
 void ToolkitApp::initPlugins() {
 	//create list of availible plugins to load and put them in menu
 	auto plugins = findAllPlugins();
@@ -143,8 +154,31 @@ void ToolkitApp::initPlugins() {
 }
 
 void ToolkitApp::setPluginUsage(unsigned int plugin_ref, bool state) {
-	std::cout << "Setting mode of plugin " << plugin_ref << " to " << state << std::endl; 
+	//std::cout << "Setting mode of plugin " << plugin_ref << " to " << state << std::endl; 
 
-	//Todo actually load plugin
+	QPluginLoader* loader = availible_plugins[plugin_ref];
+	QString plugin_iid = loader->metaData().value("IID").toString();
+	if (state) {
+		//load plugin
+		if (loader->load()) {
+			QObject* obj = loader->instance();
+			if (obj) {
+				if (plugin_iid == ViewInterface_iid) {
+					ViewInterface* instance = qobject_cast<ViewInterface*>(obj);
+					addView(instance->getViewName(), instance->getViewWidget());
+				}
+			}
+		} else {
+			std::cout << "Loading plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
+			std::cout << loader->errorString().toStdString() << std::endl;
+		}
+	} else {
+		//unload plugin
+		if (plugin_iid == ViewInterface_iid) {
+			ViewInterface* instance = qobject_cast<ViewInterface*>(loader->instance());
+			deleteView(instance->getViewName());
+		}
+		loader->unload();
+	}
 }
 

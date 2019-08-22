@@ -8,11 +8,12 @@
 
 class TestPlugin : public QObject, public ViewInterface {
 	Q_OBJECT
-	Q_PLUGIN_METADATA(IID ViewInterface_iid FILE "metadata.json")
 	Q_INTERFACES(ViewInterface)
+	Q_PLUGIN_METADATA(IID ViewInterface_iid FILE "metadata.json")
 
 	public:
 		TestPlugin();
+		virtual ~TestPlugin();
 
 		QString getViewName();
 		QWidget* getViewWidget();

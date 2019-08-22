@@ -7,7 +7,7 @@
 
 class ViewInterface {
 	public:
-		virtual ~ViewInterface();
+		virtual ~ViewInterface() {}
 
 		virtual QString getViewName() = 0;
 		virtual QWidget* getViewWidget() = 0;
@@ -18,13 +18,19 @@ Q_DECLARE_INTERFACE(ViewInterface, ViewInterface_iid)
 
 class ModelInterface {
 	public:
-		virtual ~ModelInterface();
+		virtual ~ModelInterface() {}
 };
+
+#define ModelInterface_iid "org.orb-hd.rbdl-toolkit.ModelPlugin"
+Q_DECLARE_INTERFACE(ModelInterface, ModelInterface_iid)
 
 class FileInterface {
 	public:
-		virtual ~FileInterface();
+		virtual ~FileInterface() {}
 };
+
+#define FileInterface_iid "org.orb-hd.rbdl-toolkit.FilePlugin"
+Q_DECLARE_INTERFACE(FileInterface, FileInterface_iid)
 
 
 
