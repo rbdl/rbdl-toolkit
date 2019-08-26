@@ -13,6 +13,7 @@
 
 #include "SceneWidget.h"
 #include "rbdl_wrapper.h"
+#include "Timeline.h"
 
 class SceneWidget;
 
@@ -21,6 +22,7 @@ class ToolkitApp : public QMainWindow
 	Q_OBJECT
 	private:
 		SceneWidget* main_display;
+		ToolkitTimeline* timeline;
 
 		QMenuBar* main_menu_bar;
 		QMenu* file_menu;

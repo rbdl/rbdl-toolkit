@@ -28,6 +28,7 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/ToolkitApp.h
 	include/SceneWidget.h
 	include/toolkit_interfaces.h
+	include/rbdl_wrapper.h
 )
 
 SET ( Toolkit_SRCS

@@ -9,8 +9,10 @@
 #include <QString>
 #include <Qt3DCore/QEntity>
 
+#include "wrapper_extention.h"
 
-class RBDLModelWrapper {
+class RBDLModelWrapper : public QObject {
+	Q_OBJECT
 	private:
 		QString model_file;
 
@@ -21,13 +23,16 @@ class RBDLModelWrapper {
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
 
-
+		//all loaded extra data is supposed to be loaded as an extention to the model
+		std::map<std::string, WrapperExtention*> extentions;
 	public:
 		RBDLModelWrapper();
 
 		Qt3DCore::QEntity* getRenderObj() { return model_render_obj; }
 
 		Qt3DCore::QEntity* loadFromFile(QString model_file);
+
+		void addExtention(WrapperExtention* extention);
 
 		void reload();
 
