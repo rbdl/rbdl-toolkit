@@ -13,12 +13,16 @@
 using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
+using namespace Qt3DLogic;
 
 SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f), far(100.f) {
 	qt3d_view = new Qt3DExtras::Qt3DWindow();
     qt3d_view->defaultFrameGraph()->setClearColor(QColor("black"));
 
 	scene_root = new Qt3DCore::QEntity();
+
+	frame_action = new QFrameAction(scene_root);
+	connect(frame_action, SIGNAL(triggered(float)), this, SLOT(frame_action_repeater(float)));
 
 	world_lighting = new Qt3DRender::QDirectionalLight(scene_root);
 	world_lighting->setWorldDirection(QVector3D(1., 1., 1.));
@@ -38,7 +42,7 @@ SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f
 	display_container->setMargin(0);
 	display_container->addWidget(QWidget::createWindowContainer(qt3d_view));
 
-	render_selector = new QWidget(this);
+	render_selector = new QWidget();
 	render_selector->setMinimumWidth(150);
 
 	render_selector_layout = new QVBoxLayout;
@@ -99,7 +103,7 @@ void SceneWidget::removeSceneObject(Qt3DCore::QEntity *scene_obj) {
 		QString group_name = obj_grouping.toString();
 		for(auto it=scene_obj_grouping[group_name].begin(); it<scene_obj_grouping[group_name].end(); it++) {
 			if (*it == scene_obj) {
-				scene_obj_grouping[group_name].erase(it);
+    			scene_obj_grouping[group_name].erase(it);
 				break;
 			}
 		}
@@ -116,4 +120,8 @@ void SceneWidget::toggle_render_obj_group(QString group_name, bool status) {
 			ntty->setEnabled(status);
 		}
 	}
+}
+
+void SceneWidget::frame_action_repeater(float dt) {
+	emit frame_sync_signal(dt);
 }

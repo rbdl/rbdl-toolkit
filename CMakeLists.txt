@@ -18,21 +18,28 @@ INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR}/include)
+INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR}/ui)
 INCLUDE_DIRECTORIES (${RBDL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
 
 ADD_DEFINITIONS (${QT_DEFINITIONS})
+
+QT5_WRAP_UI ( UI_SRC
+	ui/Timeline.ui
+)
 
 #Sources that contain q objects
 QT5_WRAP_CPP ( MOC_SRCS
 	include/ToolkitApp.h
 	include/SceneWidget.h
 	include/toolkit_interfaces.h
+	include/Timeline.h
 	include/rbdl_wrapper.h
 )
 
 SET ( Toolkit_SRCS
 	src/ToolkitApp.cc
+	src/Timeline.cc
 	src/SceneWidget.cc
 	src/main.cc
 	src/util.cc
@@ -47,6 +54,7 @@ ADD_SUBDIRECTORY (
 ADD_EXECUTABLE ( rbdl-toolkit
 	${Toolkit_SRCS}
 	${MOC_SRCS}
+	${UI_SRC}
 )
 
 SET_TARGET_PROPERTIES ( ${PROJECT_EXECUTABLES} PROPERTIES

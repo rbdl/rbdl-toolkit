@@ -26,6 +26,10 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_display = new SceneWidget(this);
 	this->setCentralWidget(main_display);
 
+	timeline = new ToolkitTimeline(this);
+	addView("Timeline", timeline, Qt::BottomDockWidgetArea, false);
+	connect(main_display, SIGNAL(frame_sync_signal(float)), timeline, SLOT(tick(float)));
+
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
 
 	//set standard search paths
@@ -109,10 +113,14 @@ void ToolkitApp::loadModel(const QString &model_file) {
 
 }
 
-void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area) {
+void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_tilte) {
 	QDockWidget* dock = new QDockWidget(name, this);
 	dock->setWidget(view_widget);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	if (!show_tilte) {
+		dock->setTitleBarWidget(new QWidget());
+	}
+
 	addDockWidget(area, dock);
 
 	view_widgets.push_back(dock);

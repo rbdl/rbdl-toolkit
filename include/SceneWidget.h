@@ -14,6 +14,8 @@
 
 #include <Qt3DExtras/Qt3DWindow>
 
+#include <Qt3DLogic/QFrameAction>
+
 #include "ToolkitApp.h"
 class ToolkitApp;
 /*
@@ -46,6 +48,7 @@ class SceneWidget : public QWidget {
 		Qt3DExtras::Qt3DWindow *qt3d_view;
 		Qt3DCore::QEntity *scene_root;
 		Qt3DRender::QDirectionalLight* world_lighting;
+		Qt3DLogic::QFrameAction *frame_action;
 
 		Qt3DRender::QCamera *camera;
 		QHBoxLayout *display_container;
@@ -73,6 +76,10 @@ class SceneWidget : public QWidget {
 
 	public slots:
 		void toggle_render_obj_group(QString group_name, bool status);
+		void frame_action_repeater(float dt);
+
+	signals:
+		void frame_sync_signal(float dt);
 };
 
 

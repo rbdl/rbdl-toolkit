@@ -38,7 +38,7 @@ class ToolkitApp : public QMainWindow
 
 	public:
 		ToolkitApp(QWidget *parent = 0);
-		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea);
+		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
 		void deleteView(QString name);
 
 	public slots:
