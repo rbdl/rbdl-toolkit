@@ -76,6 +76,10 @@ void ToolkitApp::action_load_model() {
 	}	
 }
 
+std::vector<RBDLModelWrapper*>* ToolkitApp::getLoadedModels() {
+	return &loaded_models;
+}
+
 
 void ToolkitApp::loadModel(const QString &model_file) {
 	RBDLModelWrapper *model = new RBDLModelWrapper();
@@ -109,6 +113,8 @@ void ToolkitApp::loadModel(const QString &model_file) {
 	if (!errors_happend) {
 		loaded_models.push_back(model);
 		main_display->addSceneObject(model_scene_obj);
+
+		connect(timeline, SIGNAL(timeChanged(float)), model, SLOT(model_update(float)));
 	}
 
 }

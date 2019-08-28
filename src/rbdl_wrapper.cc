@@ -166,3 +166,19 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 void RBDLModelWrapper::reload() {
 	this->loadFromFile(this->model_file);
 }
+
+void RBDLModelWrapper::model_update(float current_time) {
+
+}
+
+void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
+	std::string extention_name = extention->getExtentionName();
+	extentions[extention_name] = extention;
+	extention->setModelParent(this);
+
+	emit new_extention_added();
+}
+
+void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
+	model_parent = model;
+}

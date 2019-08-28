@@ -39,12 +39,15 @@ class ToolkitApp : public QMainWindow
 	public:
 		ToolkitApp(QWidget *parent = 0);
 		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
+		std::vector<RBDLModelWrapper*>* getLoadedModels();
 		void deleteView(QString name);
 
 	public slots:
 		void action_reload_files();
 		void loadModel(const QString &model_file); 
 		void action_load_model();
+
+	signals:
 };
 
 

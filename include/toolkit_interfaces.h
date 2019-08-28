@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QtPlugin>
 
+#include "ToolkitApp.h"
+
 class ViewInterface {
 	public:
 		virtual ~ViewInterface() {}
@@ -27,6 +29,10 @@ Q_DECLARE_INTERFACE(ModelInterface, ModelInterface_iid)
 class FileInterface {
 	public:
 		virtual ~FileInterface() {}
+
+		virtual QString getFilePurpos() = 0;
+		virtual void loadFile(ToolkitApp* app, QString path) = 0;
+
 };
 
 #define FileInterface_iid "org.orb-hd.rbdl-toolkit.FilePlugin"

@@ -9,7 +9,27 @@
 #include <QString>
 #include <Qt3DCore/QEntity>
 
-#include "wrapper_extention.h"
+class RBDLModelWrapper;
+
+
+/* This class provides an abstact base for adding data to a loaded model, such as (Animations, Forces, etc.).
+ */
+
+class WrapperExtention {
+	protected:
+		RBDLModelWrapper* model_parent;
+
+	public:
+		WrapperExtention();
+
+		void setModelParent(RBDLModelWrapper* model);
+
+		virtual std::string getExtentionName() = 0;
+		virtual void update(float current_time) = 0; 
+};
+
+/* This class provides a wrapper around rbdl models, in order to visualize them with Qt3D
+ */
 
 class RBDLModelWrapper : public QObject {
 	Q_OBJECT
@@ -32,9 +52,17 @@ class RBDLModelWrapper : public QObject {
 
 		Qt3DCore::QEntity* loadFromFile(QString model_file);
 
+		//takes ownership of extention -> only delete via model not where it was created
 		void addExtention(WrapperExtention* extention);
+		void deleteExtention(std::string name);
 
 		void reload();
+
+	public slots:
+		void model_update(float current_time);
+
+	signals:
+		void new_extention_added();
 
 };
 

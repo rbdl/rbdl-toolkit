@@ -45,6 +45,7 @@ SET ( Toolkit_SRCS
 	src/util.cc
 	src/render_util.cc
 	src/rbdl_wrapper.cc
+	src/toolkit_errors.cc
 )
 
 ADD_SUBDIRECTORY (
