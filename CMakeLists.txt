@@ -34,7 +34,6 @@ QT5_WRAP_UI ( UI_SRC
 QT5_WRAP_CPP ( MOC_SRCS
 	include/ToolkitApp.h
 	include/SceneWidget.h
-	include/toolkit_interfaces.h
 	include/Timeline.h
 	include/rbdl_wrapper.h
 )
