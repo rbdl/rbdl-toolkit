@@ -31,6 +31,11 @@ class ToolkitApp : public QMainWindow
 
 		std::vector<QDockWidget*> view_widgets;
 		std::vector<RBDLModelWrapper*> loaded_models;
+
+		//plugins that will always be loaded
+		std::vector<QPluginLoader*> core_plugins;
+
+		//plugins which can be selectively loaded
 		std::vector<QPluginLoader*> availible_plugins;
 
 		void initPlugins();
@@ -38,16 +43,23 @@ class ToolkitApp : public QMainWindow
 
 	public:
 		ToolkitApp(QWidget *parent = 0);
-		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
 		std::vector<RBDLModelWrapper*>* getLoadedModels();
+
+		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
 		void deleteView(QString name);
+
+		void addFileAction(QAction* file_action);
+
+		ToolkitTimeline* getToolkitTimeline() { return timeline; }
 
 	public slots:
 		void action_reload_files();
-		void loadModel(const QString &model_file); 
 		void action_load_model();
 
+		void loadModel(const QString &model_file); 
+
 	signals:
+		void reload_files();
 };
 
 

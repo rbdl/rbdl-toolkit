@@ -48,6 +48,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 				QCoreApplication::addLibraryPath(dir1.path());
 				QDir::addSearchPath("plugins", dir1.path());
 			}
+
 		}
 	}
 
@@ -146,24 +147,40 @@ void ToolkitApp::deleteView(QString name) {
 void ToolkitApp::initPlugins() {
 	//create list of availible plugins to load and put them in menu
 	auto plugins = findAllPlugins();
-	//std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
+	std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
 
 	int i = 0;
 	foreach (const QString plugin_path, plugins) {
-		availible_plugins.push_back(new QPluginLoader(plugin_path));
+		QPluginLoader* loader = new QPluginLoader(plugin_path);
+		QString plugin_iid = loader->metaData().value("IID").toString();
 
-		//create menu action to enable and disable plugins
-		QString action_name = availible_plugins[i]->metaData().value("MetaData").toObject().value("Name").toString();
-		QAction *plugin_action = plugin_menu->addAction(action_name); 
-		plugin_action->setCheckable(true);
+		//core plugins will be loaded directly
+		if (plugin_iid == CoreInterface_iid) {
+			core_plugins.push_back(loader);
+			QObject* obj = loader->instance();
+			if (obj) {
+				CoreInterface* instance = qobject_cast<CoreInterface*>(obj); 
+				instance->init(this);
+			} else {
+				std::cout << "Loading core plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
+				std::cout << loader->errorString().toStdString() << std::endl;
+			}
+		} else {
+			availible_plugins.push_back(loader);
 
-		//connect to action via lambda function
-		connect(plugin_action, &QAction::changed, [=] 
-		{ 
-			setPluginUsage(i, plugin_action->isChecked()); 
-		});
+			//create menu action to enable and disable plugins
+			QString action_name = availible_plugins[i]->metaData().value("MetaData").toObject().value("Name").toString();
+			QAction *plugin_action = plugin_menu->addAction(action_name); 
+			plugin_action->setCheckable(true);
 
-		i += 1;
+			//connect to action via lambda function
+			connect(plugin_action, &QAction::changed, [=] 
+			{ 
+				setPluginUsage(i, plugin_action->isChecked()); 
+			});
+
+			i += 1;
+		}
 	}
 }
 
@@ -196,3 +213,6 @@ void ToolkitApp::setPluginUsage(unsigned int plugin_ref, bool state) {
 	}
 }
 
+void ToolkitApp::addFileAction(QAction* action) {
+	file_menu->addAction(action);
+}

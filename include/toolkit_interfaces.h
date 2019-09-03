@@ -18,25 +18,16 @@ class ViewInterface {
 #define ViewInterface_iid "org.orb-hd.rbdl-toolkit.ViewPlugin"
 Q_DECLARE_INTERFACE(ViewInterface, ViewInterface_iid)
 
-class ModelInterface {
+
+class CoreInterface {
 	public:
-		virtual ~ModelInterface() {}
+		virtual ~CoreInterface() {}
+
+		virtual void init(ToolkitApp* app) = 0;
 };
 
-#define ModelInterface_iid "org.orb-hd.rbdl-toolkit.ModelPlugin"
-Q_DECLARE_INTERFACE(ModelInterface, ModelInterface_iid)
-
-class FileInterface {
-	public:
-		virtual ~FileInterface() {}
-
-		virtual QString getFilePurpos() = 0;
-		virtual void loadFile(ToolkitApp* app, QString path) = 0;
-
-};
-
-#define FileInterface_iid "org.orb-hd.rbdl-toolkit.FilePlugin"
-Q_DECLARE_INTERFACE(FileInterface, FileInterface_iid)
+#define CoreInterface_iid "org.orb-hd.rbdl-toolkit.CorePlugin"
+Q_DECLARE_INTERFACE(CoreInterface, CoreInterface_iid)
 
 
 

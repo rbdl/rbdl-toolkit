@@ -41,7 +41,11 @@ QString findFile(std::string file) {
 QStringList findAllPlugins() {
 	QStringList plugin_list;
 
+#ifdef TOOLKIT_DEBUG
+	auto paths = QStringList("./plugins");
+#else
 	auto paths = QDir::searchPaths("plugins");
+#endif
 	for (int i=0; i<paths.size(); i++) {
 		QDir dir(paths.at(i));
 		auto file_list = dir.entryList(QDir::Files);
