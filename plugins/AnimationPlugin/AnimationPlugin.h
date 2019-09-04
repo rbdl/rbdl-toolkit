@@ -4,7 +4,10 @@
 #include <QWidget>
 #include <QString>
 
+#include <vector>
+
 #include "toolkit_interfaces.h"
+#include "AnimationModelExtention.h"
 
 class AnimationPlugin : public QObject, public CoreInterface {
 	Q_OBJECT
@@ -19,8 +22,11 @@ class AnimationPlugin : public QObject, public CoreInterface {
 
 	private:
 		ToolkitApp* parentApp;
+		QAction* load_file_trigger;
 
-		void loadAnimationFile(QString path);
+		std::vector<AnimationModelExtention*> loaded_animations;
+
+		AnimationModelExtention* loadAnimationFile(QString path);
 
 	public slots:
 		void action_load_animation();
