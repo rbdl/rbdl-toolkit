@@ -147,7 +147,7 @@ void ToolkitApp::deleteView(QString name) {
 void ToolkitApp::initPlugins() {
 	//create list of availible plugins to load and put them in menu
 	auto plugins = findAllPlugins();
-	std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
+	//std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
 
 	int i = 0;
 	foreach (const QString plugin_path, plugins) {

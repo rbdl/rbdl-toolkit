@@ -2,6 +2,7 @@ PROJECT(AnimationPlugin)
 	
 SET(AnimationPlugin_SRCS
 	AnimationPlugin.cc
+	AnimationModelExtention.cc
 )
 
 SET(AnimationPlugin_MOC_HDRS
