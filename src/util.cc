@@ -28,10 +28,10 @@ QString findFile(QString file) {
 			return file_path;
 		}
 	}
+
 	std::ostringstream errormsg;
 	errormsg << "No file with filename: " << file.toStdString() << " found!" << std::endl;
 	throw RigidBodyDynamics::Errors::RBDLInvalidFileError(errormsg.str());
-
 }
 
 QString findFile(std::string file) { 
@@ -41,18 +41,18 @@ QString findFile(std::string file) {
 QStringList findAllPlugins() {
 	QStringList plugin_list;
 
-#ifdef TOOLKIT_DEBUG
-	auto paths = QStringList("./plugins");
-#else
-	auto paths = QDir::searchPaths("plugins");
-#endif
+	#ifdef TOOLKIT_DEBUG
+		auto paths = QStringList("./plugins");
+	#else
+		auto paths = QDir::searchPaths("plugins");
+	#endif
+
 	for (int i=0; i<paths.size(); i++) {
 		QDir dir(paths.at(i));
 		auto file_list = dir.entryList(QDir::Files);
 		foreach (const QString &f, file_list) {
 			auto f_info = QFileInfo(dir.path(), f);
 			if (QLibrary::isLibrary(f_info.absoluteFilePath())) {
-				//std::cout << f_info.absoluteFilePath().toStdString() << std::endl;
 				plugin_list << f_info.absoluteFilePath();
 			}
 		}

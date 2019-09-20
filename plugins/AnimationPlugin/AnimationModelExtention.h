@@ -10,6 +10,9 @@ class AnimationModelExtention : public WrapperExtention {
 		int dof;
 		float max_time; 
 
+		std::vector<float> animation_times;
+		std::vector<RigidBodyDynamics::Math::VectorNd> animation_q_frames;
+
 	public:
 		AnimationModelExtention();
 
@@ -17,6 +20,8 @@ class AnimationModelExtention : public WrapperExtention {
 		void update(float current_time);
 
 		int getDOF();
+
+		void addAnimationFrame(float time, RigidBodyDynamics::Math::VectorNd& Q);
 };
 
 #endif

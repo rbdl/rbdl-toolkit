@@ -45,6 +45,7 @@ SET ( Toolkit_SRCS
 	src/main.cc
 	src/util.cc
 	src/render_util.cc
+	src/math_util.cc
 	src/rbdl_wrapper.cc
 	src/toolkit_errors.cc
 )
