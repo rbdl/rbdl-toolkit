@@ -4,7 +4,6 @@
 #include <rbdl_wrapper.h>
 
 #include <vector>
-#include <Eigen/Dense>
 
 class AnimationModelExtention : public WrapperExtention {
 	private:
