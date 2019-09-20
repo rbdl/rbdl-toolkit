@@ -146,6 +146,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		segment_render_node->setParent(model_render_obj);
 
 		body_mesh_map[segment_name] = segment_render_node;
+		body_transform_map[segment_name] = segment_transform;
 	}
 
 	auto model_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, q, 0, Vector3d(0., 0., 0.));
@@ -163,12 +164,31 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	return model_render_obj;
 }
 
+void RBDLModelWrapper::updateKinematics(RigidBodyDynamics::Math::VectorNd Q) {
+	UpdateKinematics(*rbdl_model, Q, Math::VectorNd::Zero(Q.size()), Math::VectorNd::Zero(Q.size()));
+
+	for (auto it = body_transform_map.begin(); it != body_transform_map.end(); it++) {
+		int body_id = rbdl_model->GetBodyId(it->first.c_str());
+		
+		auto segment_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, Q, body_id, Vector3d(0., 0., 0.), false);
+		segment_spacial_transform = axis_transform * segment_spacial_transform;
+		auto segment_rotation = Quaternion::fromMatrix(CalcBodyWorldOrientation(*rbdl_model, Q, body_id, false));
+
+		Qt3DCore::QTransform* segment_transform = it->second;
+		segment_transform->setTranslation(QVector3D(segment_spacial_transform[0], segment_spacial_transform[1], segment_spacial_transform[2]));
+		segment_transform->setRotation(QQuaternion(segment_rotation[3], segment_rotation[0], segment_rotation[1], segment_rotation[2]));
+	}
+}
+
 void RBDLModelWrapper::reload() {
 	this->loadFromFile(this->model_file);
 }
 
 void RBDLModelWrapper::model_update(float current_time) {
-
+	for (auto it = extentions.begin(); it != extentions.end(); it++) {
+		WrapperExtention* extention = it->second;
+		extention->update(current_time);
+	}
 }
 
 void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
@@ -179,6 +199,14 @@ void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	emit new_extention_added();
 }
 
+int RBDLModelWrapper::getModelDof() {
+	return rbdl_model->dof_count;
+}
+
 void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
 	model_parent = model;
+}
+
+WrapperExtention::WrapperExtention() {
+	model_parent = NULL;
 }

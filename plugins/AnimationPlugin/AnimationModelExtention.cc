@@ -2,6 +2,8 @@
 
 #include "rbdl/rbdl_errors.h"
 
+#include "math_util.h"
+
 AnimationModelExtention::AnimationModelExtention() : dof(0),
                                                      max_time(0.),
                                                      WrapperExtention() 
@@ -13,7 +15,25 @@ std::string AnimationModelExtention::getExtentionName() {
 }
 
 void AnimationModelExtention::update(float current_time) {
-	//TODO
+	unsigned int time_index = 0;
+	for (; time_index < animation_times.size(); time_index++) {
+		if (time_index == animation_times.size()) break;
+		if (animation_times[time_index] <= current_time && animation_times[time_index+1] > current_time) {
+			break;
+		}
+	}
+	float start_time = animation_times[time_index];
+	float end_time = animation_times[time_index+1];
+
+	float time_fraction = (current_time - start_time) / (end_time - start_time);
+
+	RigidBodyDynamics::Math::VectorNd interpolated_q = interpolate_values_linear(
+		animation_q_frames[time_index], 
+		animation_q_frames[time_index+1],
+		time_fraction
+	);
+
+	model_parent->updateKinematics(interpolated_q);
 }
 
 int AnimationModelExtention::getDOF() {
@@ -31,7 +51,7 @@ void AnimationModelExtention::addAnimationFrame(float time, RigidBodyDynamics::M
 	}
 
 	//check time values to be sequential
-	if (time < animation_times[animation_times.size()-1] ) {
+	if ( animation_times.size() != 0 && time < animation_times[animation_times.size()-1] ) {
 		throw RigidBodyDynamics::Errors::RBDLInvalidParameterError("Time values must be sequential!");
 	}
 

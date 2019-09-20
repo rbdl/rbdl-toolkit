@@ -8,6 +8,7 @@
 
 #include <QString>
 #include <Qt3DCore/QEntity>
+#include <Qt3DCore/QTransform>
 
 class RBDLModelWrapper;
 
@@ -42,6 +43,7 @@ class RBDLModelWrapper : public QObject {
 
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
+		std::map<std::string, Qt3DCore::QTransform*> body_transform_map;
 
 		//all loaded extra data is supposed to be loaded as an extention to the model
 		std::map<std::string, WrapperExtention*> extentions;
@@ -55,6 +57,10 @@ class RBDLModelWrapper : public QObject {
 		//takes ownership of extention -> only delete via model not where it was created
 		void addExtention(WrapperExtention* extention);
 		void deleteExtention(std::string name);
+
+		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
+
+		int getModelDof();
 
 		void reload();
 
