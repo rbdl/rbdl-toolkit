@@ -165,14 +165,12 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 }
 
 void RBDLModelWrapper::updateKinematics(RigidBodyDynamics::Math::VectorNd Q) {
-	UpdateKinematics(*rbdl_model, Q, Math::VectorNd::Zero(Q.size()), Math::VectorNd::Zero(Q.size()));
-
 	for (auto it = body_transform_map.begin(); it != body_transform_map.end(); it++) {
 		int body_id = rbdl_model->GetBodyId(it->first.c_str());
 		
-		auto segment_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, Q, body_id, Vector3d(0., 0., 0.), false);
-		segment_spacial_transform = axis_transform * segment_spacial_transform;
-		auto segment_rotation = Quaternion::fromMatrix(CalcBodyWorldOrientation(*rbdl_model, Q, body_id, false));
+		auto segment_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, Q, body_id, Vector3d(0., 0., 0.), true);
+		segment_spacial_transform = segment_spacial_transform;
+		auto segment_rotation = Quaternion::fromMatrix(CalcBodyWorldOrientation(*rbdl_model, Q, body_id, true));
 
 		Qt3DCore::QTransform* segment_transform = it->second;
 		segment_transform->setTranslation(QVector3D(segment_spacial_transform[0], segment_spacial_transform[1], segment_spacial_transform[2]));

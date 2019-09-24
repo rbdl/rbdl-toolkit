@@ -25,6 +25,7 @@ class ToolkitApp : public QMainWindow
 		ToolkitTimeline* timeline;
 
 		QMenuBar* main_menu_bar;
+		QMenu* toolkit_menu;
 		QMenu* file_menu;
 		QMenu* view_menu;
 		QMenu* plugin_menu;

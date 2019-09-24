@@ -20,6 +20,7 @@ class AnimationModelExtention : public WrapperExtention {
 		void update(float current_time);
 
 		int getDOF();
+		float getMaxTime();
 
 		void addAnimationFrame(float time, RigidBodyDynamics::Math::VectorNd& Q);
 };

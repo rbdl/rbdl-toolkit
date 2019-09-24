@@ -40,6 +40,10 @@ int AnimationModelExtention::getDOF() {
 	return dof;
 }
 
+float AnimationModelExtention::getMaxTime() {
+	return max_time;
+}
+
 void AnimationModelExtention::addAnimationFrame(float time, RigidBodyDynamics::Math::VectorNd& Q) {
 	//if first entry then update dof
 	if (dof == 0 && Q.size() != 0) {

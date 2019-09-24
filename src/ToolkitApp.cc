@@ -14,12 +14,14 @@
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
-	file_menu = main_menu_bar->addMenu("File");
+	toolkit_menu = main_menu_bar->addMenu("Toolkit");
+	file_menu = toolkit_menu->addMenu("File");
 	view_menu = main_menu_bar->addMenu("Views");
 	plugin_menu = main_menu_bar->addMenu("Plugins");
 
+
 	file_menu->addAction("Load Model", this, "aaction_load_model()");
-	file_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
+	toolkit_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
 
 	this->setMenuBar(main_menu_bar);
 

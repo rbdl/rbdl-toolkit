@@ -11,7 +11,7 @@ VectorNd interpolate_values_linear(const VectorNd& data0, const VectorNd& data1,
 		throw RigidBodyDynamics::Errors::RBDLInvalidParameterError("The time fraction must be in range 0. to 1.!");
 	}
 
-	VectorNd step = (data0 - data1);
+	VectorNd step = (data1 - data0);
 
 	return data0 + ( time_fraction * step );
 }
