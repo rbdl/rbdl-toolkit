@@ -9,9 +9,9 @@ This Application is intended to be the replacement tool for meshup and puppeteer
 
 Use cmake to build and install
 
-## Dependancies
+## Dependencies
 
-* RBDL with the error handling PR applied (in future this will be merged to master).
+* RBDL with minimum version 3.0.0
 * Eigen
 * Qt5
 
