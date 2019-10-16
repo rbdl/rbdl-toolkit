@@ -1,6 +1,7 @@
 /* ------------------------------------------------------------------------
  *  Static Function for adding some basic things to the scene
  */
+
 #include "render_util.h"
 
 #include <Qt3DCore/QTransform>

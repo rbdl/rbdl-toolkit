@@ -18,5 +18,5 @@ Use cmake to build and install
 # Plugins
 
 This Application is extendable with qt plugins. The Interface is not yet finished but you can take a look at the toolkit_inteface.h and
-the TestPlugin to get an idea of how it will work!
+the AnimationPlugin to get an idea of how it will work!
 

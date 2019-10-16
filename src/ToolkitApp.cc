@@ -196,10 +196,8 @@ void ToolkitApp::setPluginUsage(unsigned int plugin_ref, bool state) {
 		if (loader->load()) {
 			QObject* obj = loader->instance();
 			if (obj) {
-				if (plugin_iid == ViewInterface_iid) {
-					ViewInterface* instance = qobject_cast<ViewInterface*>(obj);
-					addView(instance->getViewName(), instance->getViewWidget());
-				}
+				OptionalInterface* instance = qobject_cast<OptionalInterface*>(obj); 
+				instance->init(this);
 			}
 		} else {
 			std::cout << "Loading plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
@@ -207,10 +205,6 @@ void ToolkitApp::setPluginUsage(unsigned int plugin_ref, bool state) {
 		}
 	} else {
 		//unload plugin
-		if (plugin_iid == ViewInterface_iid) {
-			ViewInterface* instance = qobject_cast<ViewInterface*>(loader->instance());
-			deleteView(instance->getViewName());
-		}
 		loader->unload();
 	}
 }
