@@ -22,6 +22,11 @@ void AnimationModelExtention::update(float current_time) {
 			break;
 		}
 	}
+	if (time_index == animation_times.size()) {
+		model_parent->updateKinematics(animation_q_frames[time_index-1]);
+		return;
+	}
+
 	float start_time = animation_times[time_index];
 	float end_time = animation_times[time_index+1];
 

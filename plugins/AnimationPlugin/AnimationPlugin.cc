@@ -1,5 +1,6 @@
 #include "AnimationPlugin.h"
 #include <iostream>
+#include <clocale>
 
 #include <QFileDialog>
 
@@ -55,7 +56,13 @@ void AnimationPlugin::reload_files() {
 AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	AnimationModelExtention* animation = new AnimationModelExtention();
 
-	rapidcsv::Document animation_file(path.toStdString(), rapidcsv::LabelParams(-1, 0));
+	//make sure local is en_US for consistent float parsing
+	std::setlocale(LC_NUMERIC, "en_US.UTF-8");
+
+	rapidcsv::Document animation_file(
+		path.toStdString(), 
+		rapidcsv::LabelParams(-1, 0),
+		rapidcsv::SeparatorParams(','));
 
 	int animation_dof = animation_file.GetColumnCount();
 	QString first_entry = QString::fromStdString(animation_file.GetCell<std::string>(-1, 0));
