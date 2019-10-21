@@ -33,16 +33,16 @@ class ToolkitApp : public QMainWindow
 		std::vector<QDockWidget*> view_widgets;
 		std::vector<RBDLModelWrapper*> loaded_models;
 
-		//plugins that will always be loaded
-		std::vector<QPluginLoader*> core_plugins;
-
-		//plugins which can be selectively loaded
-		std::vector<QPluginLoader*> availible_plugins;
+		std::map<QString, QPluginLoader*> toolkit_plugins;
 
 		void initPlugins();
-		void setPluginUsage(unsigned int plugin_ref, bool state);
+		void setPluginUsage(QString plugin_name, bool state);
+		QVariant getPluginLoadSetting(QString plugin_name);
+		void setPluginLoadSetting(QString plugin_name, bool load);
 
 	public:
+		QSettings toolkit_settings;
+
 		ToolkitApp(QWidget *parent = 0);
 		std::vector<RBDLModelWrapper*>* getLoadedModels();
 

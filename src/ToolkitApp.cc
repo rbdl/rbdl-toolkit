@@ -13,25 +13,28 @@
 #include <QCoreApplication>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
+
+	//setup standard menu
 	main_menu_bar = new QMenuBar(NULL);
 	toolkit_menu = main_menu_bar->addMenu("Toolkit");
 	file_menu = toolkit_menu->addMenu("File");
 	view_menu = main_menu_bar->addMenu("Views");
 	plugin_menu = main_menu_bar->addMenu("Plugins");
 
-
 	file_menu->addAction("Load Model", this, "aaction_load_model()");
 	toolkit_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
-
 	this->setMenuBar(main_menu_bar);
 
+	//main view
 	main_display = new SceneWidget(this);
 	this->setCentralWidget(main_display);
 
+	//timeline widget
 	timeline = new ToolkitTimeline(this);
 	addView("Timeline", timeline, Qt::BottomDockWidgetArea, false);
 	connect(main_display, SIGNAL(frame_sync_signal(float)), timeline, SLOT(tick(float)));
 
+	//add standard scene objects
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
 
 	//set standard search paths
@@ -146,51 +149,70 @@ void ToolkitApp::deleteView(QString name) {
 	}
 }
 
+QVariant ToolkitApp::getPluginLoadSetting(QString plugin_name) {
+	QString settings_key = QString("plugins.load.%1").arg(plugin_name);
+	return toolkit_settings.value(settings_key);
+}
+
+void ToolkitApp::setPluginLoadSetting(QString plugin_name, bool load) {
+	QString settings_key = QString("plugins.load.%1").arg(plugin_name);
+	toolkit_settings.setValue(settings_key, load);
+}
+
 void ToolkitApp::initPlugins() {
-	//create list of availible plugins to load and put them in menu
 	auto plugins = findAllPlugins();
 	//std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
 
-	int i = 0;
 	foreach (const QString plugin_path, plugins) {
 		QPluginLoader* loader = new QPluginLoader(plugin_path);
 		QString plugin_iid = loader->metaData().value("IID").toString();
+		QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
+		toolkit_plugins[plugin_name] = loader;
 
-		//core plugins will be loaded directly
+		//core plugins will be loaded directly if not disabled in settings
 		if (plugin_iid == CoreInterface_iid) {
-			core_plugins.push_back(loader);
-			QObject* obj = loader->instance();
-			if (obj) {
-				CoreInterface* instance = qobject_cast<CoreInterface*>(obj); 
-				instance->init(this);
-			} else {
-				std::cout << "Loading core plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
-				std::cout << loader->errorString().toStdString() << std::endl;
+			if (getPluginLoadSetting(plugin_name).isNull()) {
+				//core plugins are loaded per default
+				setPluginLoadSetting(plugin_name, true);
+			} else if ( getPluginLoadSetting(plugin_name).toBool() == true) {
+				QObject* obj = loader->instance();
+				if (obj) {
+					CoreInterface* instance = qobject_cast<CoreInterface*>(obj); 
+					instance->init(this);
+				} else {
+					std::cout << "Loading core plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
+					std::cout << loader->errorString().toStdString() << std::endl;
+				}
 			}
-		} else {
-			availible_plugins.push_back(loader);
 
+		//All other plugins will be toggled via the plugins menu
+		} else {
 			//create menu action to enable and disable plugins
-			QString action_name = availible_plugins[i]->metaData().value("MetaData").toObject().value("Name").toString();
-			QAction *plugin_action = plugin_menu->addAction(action_name); 
+			QAction *plugin_action = plugin_menu->addAction(plugin_name); 
 			plugin_action->setCheckable(true);
 
 			//connect to action via lambda function
 			connect(plugin_action, &QAction::changed, [=] 
 			{ 
-				setPluginUsage(i, plugin_action->isChecked()); 
+				setPluginUsage(plugin_name, plugin_action->isChecked()); 
 			});
 
-			i += 1;
+			if (getPluginLoadSetting(plugin_name).isNull()) {
+				//optional plugins only get loaded if user enables them
+				setPluginLoadSetting(plugin_name, false);
+			} else if ( getPluginLoadSetting(plugin_name).toBool() == true) {
+				plugin_action->setChecked(true);
+			}
 		}
 	}
 }
 
-void ToolkitApp::setPluginUsage(unsigned int plugin_ref, bool state) {
-	//std::cout << "Setting mode of plugin " << plugin_ref << " to " << state << std::endl; 
+void ToolkitApp::setPluginUsage(QString plugin_name, bool state) {
 
-	QPluginLoader* loader = availible_plugins[plugin_ref];
+	QPluginLoader* loader = toolkit_plugins[plugin_name];
 	QString plugin_iid = loader->metaData().value("IID").toString();
+	setPluginLoadSetting(plugin_name, state);
+
 	if (state) {
 		//load plugin
 		if (loader->load()) {
