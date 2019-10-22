@@ -174,7 +174,8 @@ void ToolkitApp::initPlugins() {
 			if (getPluginLoadSetting(plugin_name).isNull()) {
 				//core plugins are loaded per default
 				setPluginLoadSetting(plugin_name, true);
-			} else if ( getPluginLoadSetting(plugin_name).toBool() == true) {
+			} 
+			if ( getPluginLoadSetting(plugin_name).toBool() == true) {
 				QObject* obj = loader->instance();
 				if (obj) {
 					CoreInterface* instance = qobject_cast<CoreInterface*>(obj); 

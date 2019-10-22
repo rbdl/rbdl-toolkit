@@ -23,6 +23,10 @@ This Application is extendable with qt plugins. The Interface is not yet finishe
 the AnimationPlugin to get an idea of how it will work!
 
 # Settings
+
 The behavior of the toolkit can be adjusted by editing the settings of the application. This can be done by
 editing the settings file. On linux systems it will be located at ```~/.config/ORB/rbdl-toolkit.conf```.
+
+For example, it is possible to tell *rbdl-toolkit* to use a different seperator when reading csv files, by setting
+the csv_seperator parameter to the ascii value of the desired seperator.
 

@@ -23,6 +23,34 @@ void AnimationPlugin::init(ToolkitApp* app) {
 	parentApp->addFileAction(load_file_trigger);
 
 	connect(load_file_trigger, SIGNAL(triggered(bool)), this, SLOT(action_load_animation()));
+
+	getCSVSettings();
+}
+
+void AnimationPlugin::getCSVSettings() {
+	parentApp->toolkit_settings.beginGroup("FileReaderOptions");
+
+	//seperator setting
+	QVariant val = parentApp->toolkit_settings.value("csv.seperator");
+	if (val.isNull()) {
+		csv_seperator = ',';
+		parentApp->toolkit_settings.setValue("csv.seperator", csv_seperator);
+	} else {
+		//read as int because it is saved as one, otherwise it would not load correctly
+		//watch out for overflow -> will silently fail because char is uint8
+		csv_seperator = val.toInt();
+	}
+
+	//trimming setting
+	val = parentApp->toolkit_settings.value("csv.trim");
+	if (val.isNull()) {
+		csv_trim = false;
+		parentApp->toolkit_settings.setValue("csv.trim", csv_trim);
+	} else {
+		csv_trim = val.toBool();
+	}
+
+	parentApp->toolkit_settings.endGroup();
 }
 
 void AnimationPlugin::action_load_animation() {
@@ -62,7 +90,7 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	rapidcsv::Document animation_file(
 		path.toStdString(), 
 		rapidcsv::LabelParams(-1, 0),
-		rapidcsv::SeparatorParams(','));
+		rapidcsv::SeparatorParams(csv_seperator, csv_trim));
 
 	int animation_dof = animation_file.GetColumnCount();
 	QString first_entry = QString::fromStdString(animation_file.GetCell<std::string>(-1, 0));

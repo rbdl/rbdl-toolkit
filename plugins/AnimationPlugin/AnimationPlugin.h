@@ -24,9 +24,14 @@ class AnimationPlugin : public QObject, public CoreInterface {
 		ToolkitApp* parentApp;
 		QAction* load_file_trigger;
 
+		char csv_seperator;
+		bool csv_trim;
+
 		std::vector<AnimationModelExtention*> loaded_animations;
 
 		AnimationModelExtention* loadAnimationFile(QString path);
+
+		void getCSVSettings();
 
 	public slots:
 		void action_load_animation();
