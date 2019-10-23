@@ -201,6 +201,10 @@ int RBDLModelWrapper::getModelDof() {
 	return rbdl_model->dof_count;
 }
 
+QString RBDLModelWrapper::getModelFile() {
+	return model_file;
+}
+
 void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
 	model_parent = model;
 }
@@ -208,3 +212,4 @@ void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
 WrapperExtention::WrapperExtention() {
 	model_parent = NULL;
 }
+

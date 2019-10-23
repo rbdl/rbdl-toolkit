@@ -57,12 +57,15 @@ class RBDLModelWrapper : public QObject {
 		//takes ownership of extention -> only delete via model not where it was created
 		void addExtention(WrapperExtention* extention);
 		void deleteExtention(std::string name);
+		bool hasExtention(std::string name);
 
 		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 
 		int getModelDof();
 
 		void reload();
+
+		QString getModelFile();
 
 	public slots:
 		void model_update(float current_time);

@@ -14,6 +14,7 @@
 #include "SceneWidget.h"
 #include "rbdl_wrapper.h"
 #include "Timeline.h"
+#include "ModelSelectorDialog.h"
 
 class SceneWidget;
 
@@ -45,6 +46,8 @@ class ToolkitApp : public QMainWindow
 
 		ToolkitApp(QWidget *parent = 0);
 		std::vector<RBDLModelWrapper*>* getLoadedModels();
+
+		RBDLModelWrapper* selectModel(ModelFilter filter);
 
 		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
 		void deleteView(QString name);

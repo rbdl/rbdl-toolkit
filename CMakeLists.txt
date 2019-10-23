@@ -28,12 +28,14 @@ ADD_DEFINITIONS (${QT_DEFINITIONS})
 
 QT5_WRAP_UI ( UI_SRC
 	ui/Timeline.ui
+	ui/ModelSelector.ui
 )
 
 #Sources that contain q objects
 QT5_WRAP_CPP ( MOC_SRCS
 	include/ToolkitApp.h
 	include/SceneWidget.h
+	include/ModelSelectorDialog.h
 	include/Timeline.h
 	include/rbdl_wrapper.h
 )
@@ -42,6 +44,7 @@ SET ( Toolkit_SRCS
 	src/ToolkitApp.cc
 	src/Timeline.cc
 	src/SceneWidget.cc
+	src/ModelSelectorDialog.cc
 	src/main.cc
 	src/util.cc
 	src/render_util.cc

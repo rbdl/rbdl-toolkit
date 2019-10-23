@@ -235,3 +235,15 @@ void ToolkitApp::setPluginUsage(QString plugin_name, bool state) {
 void ToolkitApp::addFileAction(QAction* action) {
 	file_menu->addAction(action);
 }
+
+RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
+	ModelSelectorDialog select_dialog(&loaded_models, filter, this);
+
+	if(select_dialog.exec()) {
+		return select_dialog.getSelectetModel();
+	}
+
+	//no model was selected
+	return nullptr;
+}
+

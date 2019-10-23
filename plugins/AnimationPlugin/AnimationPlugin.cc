@@ -64,10 +64,18 @@ void AnimationPlugin::action_load_animation() {
 			AnimationModelExtention* ext = loadAnimationFile (file_dialog.selectedFiles().at(0));
 
 			if (parentApp->getLoadedModels()->size() != 0) {
-				RBDLModelWrapper* rbdl_model = (*parentApp->getLoadedModels())[0];
+				RBDLModelWrapper* rbdl_model = nullptr;
 
-				rbdl_model->addExtention(ext);
-				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+				if (parentApp->getLoadedModels()->size() == 1) {
+					rbdl_model = parentApp->getLoadedModels()->at(0);
+				} else {
+					rbdl_model = parentApp->selectModel(nullptr);
+				}
+
+				if (rbdl_model != nullptr) {
+					rbdl_model->addExtention(ext);
+					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+				}
 			}
 		}	
 
