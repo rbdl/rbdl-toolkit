@@ -1,6 +1,7 @@
 #include "ModelSelectorDialog.h"
 
 #include <QFileInfo>
+#include <QDialogButtonBox>
 
 ModelSelectorDialog::ModelSelectorDialog( 
 	ModelListRef model_list,
@@ -14,15 +15,17 @@ ModelSelectorDialog::ModelSelectorDialog(
 		filter_models = false;
 		checkBoxShowAll->setCheckState(Qt::Checked);
 		checkBoxShowAll->setDisabled(true);
+		update_model_list(0);
 	} else {
 		filter_models = true;
+		update_model_list(2);
 	}
 
-	for (RBDLModelWrapper* model : *model_list) {
-		ModelListItem* model_item = new ModelListItem(model, listWidgetModelList);
-		list_items.push_back(model_item);
-		listWidgetModelList->addItem(model_item);
-	}
+	ok = buttonBox->button(QDialogButtonBox::Ok);
+	ok->setDisabled(true);
+
+	connect(checkBoxShowAll, SIGNAL(stateChanged(int)), this, SLOT(update_model_list(int)));
+	connect(listWidgetModelList, SIGNAL(itemSelectionChanged(void)), this, SLOT(model_selected(void)));
 }
 
 RBDLModelWrapper* ModelSelectorDialog::getSelectetModel() {
@@ -30,7 +33,45 @@ RBDLModelWrapper* ModelSelectorDialog::getSelectetModel() {
 	return ((ModelListItem*)selected)->model_ref;
 }
 
-ModelListItem::ModelListItem(RBDLModelWrapper* model, QListWidget* parent): model_ref(model) {
-	QString model_file = model->getModelFile();
-	setText(QFileInfo(model_file).baseName());
+void ModelSelectorDialog::model_selected() {
+	if (listWidgetModelList->selectedItems().size() > 0) {
+		ok->setEnabled(true);
+	} else {
+		ok->setEnabled(false);
+	}
 }
+
+void ModelSelectorDialog::update_model_list(int filter_enabled) {
+	if (filter_enabled == 2) {
+		filter_models = true;
+	} else {
+		filter_models = false;
+	}
+
+	if (list_items.size() > 0) {
+		for (auto item : list_items) {
+			delete item;
+		}
+		list_items.clear();
+	}
+
+	for (RBDLModelWrapper* model : *models) {
+		if (filter_models) {
+			if (filter(model)) {
+				ModelListItem* model_item = new ModelListItem(model, listWidgetModelList);
+				list_items.push_back(model_item);
+				listWidgetModelList->addItem(model_item);
+			}
+		} else {
+			ModelListItem* model_item = new ModelListItem(model, listWidgetModelList);
+			list_items.push_back(model_item);
+			listWidgetModelList->addItem(model_item);
+		}
+	}
+}
+
+ModelListItem::ModelListItem(RBDLModelWrapper* model, QListWidget* parent): model_ref(model) {
+	QString model_file = QFileInfo(model->getModelFile()).baseName();
+	setText(QString("%1\t(dof=%2)").arg(model_file, QString::number(model->getModelDof())));
+}
+

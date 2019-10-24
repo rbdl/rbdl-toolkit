@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QListWidgetItem>
+#include <QPushButton>
 #include "ui_ModelSelector.h"
 
 #include <rbdl_wrapper.h>
@@ -24,6 +25,8 @@ class ModelSelectorDialog : public QDialog, public Ui::ModelSelector {
 		ModelFilter filter;
 
 		ModelListRef models;
+
+		QPushButton* ok;
 	public:
 		ModelSelectorDialog( ModelListRef model_list, 
 		                     ModelFilter filter_func=nullptr, 
@@ -33,9 +36,8 @@ class ModelSelectorDialog : public QDialog, public Ui::ModelSelector {
 		std::vector<ModelListItem*> list_items;
 
 	public slots:
-
-	signals:
-
+		void update_model_list(int filter_enabled);
+		void model_selected();
 };
 
 #endif 

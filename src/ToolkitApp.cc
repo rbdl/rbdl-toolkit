@@ -13,7 +13,6 @@
 #include <QCoreApplication>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
-
 	//setup standard menu
 	main_menu_bar = new QMenuBar(NULL);
 	toolkit_menu = main_menu_bar->addMenu("Toolkit");
