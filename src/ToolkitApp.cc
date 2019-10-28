@@ -28,6 +28,11 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_display = new SceneWidget(this);
 	this->setCentralWidget(main_display);
 
+	//setup parser
+	cmd_parser.setApplicationDescription("Application for visualizing and working with rbdl models");
+	cmd_parser.addHelpOption();
+	cmd_parser.addVersionOption();
+
 	//timeline widget
 	timeline = new ToolkitTimeline(this);
 	addView("Timeline", timeline, Qt::BottomDockWidgetArea, false);
@@ -235,6 +240,10 @@ void ToolkitApp::addFileAction(QAction* action) {
 	file_menu->addAction(action);
 }
 
+void ToolkitApp::parseCmd(QApplication& app) {
+	cmd_parser.process(app);
+}
+
 RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
 	ModelSelectorDialog select_dialog(&loaded_models, filter, this);
 
@@ -246,3 +255,6 @@ RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
 	return nullptr;
 }
 
+void ToolkitApp::addCmdOption(QCommandLineOption &option) {
+	cmd_parser.addOption(option);
+}

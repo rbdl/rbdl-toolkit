@@ -10,6 +10,7 @@
 #include <QDockWidget>
 #include <QPluginLoader>
 #include <QSettings>
+#include <QCommandLineParser>
 
 #include "SceneWidget.h"
 #include "rbdl_wrapper.h"
@@ -24,6 +25,7 @@ class ToolkitApp : public QMainWindow
 	private:
 		SceneWidget* main_display;
 		ToolkitTimeline* timeline;
+		QCommandLineParser cmd_parser;
 
 		QMenuBar* main_menu_bar;
 		QMenu* toolkit_menu;
@@ -53,6 +55,9 @@ class ToolkitApp : public QMainWindow
 		void deleteView(QString name);
 
 		void addFileAction(QAction* file_action);
+
+		void addCmdOption(QCommandLineOption &option);
+		void parseCmd(QApplication& app);
 
 		ToolkitTimeline* getToolkitTimeline() { return timeline; }
 
