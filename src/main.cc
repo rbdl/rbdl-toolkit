@@ -9,7 +9,9 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	putenv("QT_LOGGING_RULES=qt5ct.debug=false");
+	#ifndef TOOLKIT_DEBUG
+		putenv("QT_LOGGING_RULES=qt5ct.debug=false");
+	#endif
 	QApplication app(argc, argv);
 
 	QCoreApplication::setOrganizationName("ORB");
@@ -17,8 +19,12 @@ int main(int argc, char *argv[])
 	QCoreApplication::setApplicationVersion(TOOKIT_VERSION);
 
 	ToolkitApp *rbdl_toolkit = new ToolkitApp;
-	rbdl_toolkit->parseCmd(app);
-	rbdl_toolkit->show();
 
+	//may terminate while parsing in errors where detected or special options like help and version are
+	//executed
+	rbdl_toolkit->parseCmd(app);
+
+	//start Gui 
+	rbdl_toolkit->show();
 	return app.exec();
 }

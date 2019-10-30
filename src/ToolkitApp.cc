@@ -46,7 +46,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	for (int i=0; i<paths.size(); i++) {
 		QFileInfo check_file(paths.at(i));
-		if (check_file.exists()) {
+		if (check_file.isDir()) {
 			QDir dir(paths.at(i));
 			QDir::addSearchPath("", dir.path());
 			if (dir.cd("meshes")) {
