@@ -20,8 +20,7 @@ int main(int argc, char *argv[])
 
 	ToolkitApp *rbdl_toolkit = new ToolkitApp;
 
-	//may terminate while parsing in errors where detected or special options like help and version are
-	//executed
+	//may terminate while parsing in errors if special options like help or version are used
 	rbdl_toolkit->parseCmd(app);
 
 	//start Gui 

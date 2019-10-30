@@ -11,6 +11,7 @@
 #include <QMessageBox>
 #include <Qt3DCore>
 #include <QCoreApplication>
+#include <QCommandLineOption>
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	//setup standard menu
@@ -32,6 +33,12 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	cmd_parser.setApplicationDescription("Application for visualizing and working with rbdl models");
 	cmd_parser.addHelpOption();
 	cmd_parser.addVersionOption();
+
+	QCommandLineOption model_option( QStringList() << "m" << "model",
+	                                 "Load lua model files <file>", 
+	                                 "file"
+	                               );
+	addCmdOption(model_option);
 
 	//timeline widget
 	timeline = new ToolkitTimeline(this);
@@ -242,6 +249,12 @@ void ToolkitApp::addFileAction(QAction* action) {
 
 void ToolkitApp::parseCmd(QApplication& app) {
 	cmd_parser.process(app);
+
+	//load models
+	auto model_list = cmd_parser.values("model");
+	for (auto m : model_list) {
+		loadModel(findFile(m));
+	}
 }
 
 RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {

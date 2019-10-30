@@ -17,6 +17,12 @@ Use cmake to build and install
 * Eigen3
 * Qt5 version >= 5.9
 
+# Command Line Options
+*rbdl-toolkit* supports command line options. To see all availible options execute ``rbdl-toolkit --help``, plugins may add options
+so make sure all plugins you want to load are enabled in the settigs!
+
+Options may be specified multiple times in order to load multiple models for example.
+
 # Plugins
 
 This Application is extendable with qt plugins. The Interface is not yet finished but you can take a look at the toolkit_inteface.h and
