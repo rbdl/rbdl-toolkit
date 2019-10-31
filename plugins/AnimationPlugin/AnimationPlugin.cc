@@ -3,6 +3,8 @@
 #include <clocale>
 
 #include <QFileDialog>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 
 #include <rapidcsv.h>
 
@@ -25,6 +27,26 @@ void AnimationPlugin::init(ToolkitApp* app) {
 	connect(load_file_trigger, SIGNAL(triggered(bool)), this, SLOT(action_load_animation()));
 
 	getCSVSettings();
+
+	QCommandLineOption animation_option( QStringList() << "a" << "animation",
+	                                 "Load Animation files <file>", 
+	                                 "file"
+	                               );
+	parentApp->addCmdOption(animation_option, [this](QCommandLineParser& parser){
+		auto animation_list = parser.values("animation");
+
+		for (int i=0; i<animation_list.size(); i++) {
+			if (i < parentApp->getLoadedModels()->size() ) {
+				auto ext = this->loadAnimationFile(animation_list[i]);
+				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
+				model->addExtention(ext);
+				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+				loaded_animations.push_back(ext);
+			} else {
+				std::cout << QString("Animationfile %1 can not be mapped to a model ... Ignoring!").arg(animation_list[i]).toStdString() << std::endl;
+			}
+		}
+	});
 }
 
 void AnimationPlugin::getCSVSettings() {
@@ -75,6 +97,9 @@ void AnimationPlugin::action_load_animation() {
 				if (rbdl_model != nullptr) {
 					rbdl_model->addExtention(ext);
 					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+					loaded_animations.push_back(ext);
+				} else {
+					delete ext;
 				}
 			}
 		}	
@@ -128,14 +153,16 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 		float time = animation_file.GetCell<float>(-1, i);
 
 		RigidBodyDynamics::Math::VectorNd data(animation_dof);
+		//std::cout << time << " [ "; 
 
 		for ( int j = 0; j < animation_dof; j++) {
 			data[j] = values[j];
+			//std::cout << data[j] << ", ";
 		}
+		//std::cout << "]" << std::endl; 
 
 		animation->addAnimationFrame(time, data);
 	}
 
 	return animation;
 }
-

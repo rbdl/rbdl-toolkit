@@ -20,6 +20,7 @@ class AnimationPlugin : public QObject, public CoreInterface {
 
 		void init(ToolkitApp* app);
 
+		AnimationModelExtention* loadAnimationFile(QString path);
 	private:
 		ToolkitApp* parentApp;
 		QAction* load_file_trigger;
@@ -29,7 +30,6 @@ class AnimationPlugin : public QObject, public CoreInterface {
 
 		std::vector<AnimationModelExtention*> loaded_animations;
 
-		AnimationModelExtention* loadAnimationFile(QString path);
 
 		void getCSVSettings();
 
