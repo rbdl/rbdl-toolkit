@@ -5,6 +5,8 @@
  * A class that implements an extendable Application to render and work with RBDL Models
  */
 
+#include <functional>
+
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QDockWidget>
@@ -36,6 +38,7 @@ class ToolkitApp : public QMainWindow
 		std::vector<QDockWidget*> view_widgets;
 		std::vector<RBDLModelWrapper*> loaded_models;
 
+		std::vector<std::function<void(QCommandLineParser&)>> cmd_hooks;
 		std::map<QString, QPluginLoader*> toolkit_plugins;
 
 		void initPlugins();
@@ -56,7 +59,7 @@ class ToolkitApp : public QMainWindow
 
 		void addFileAction(QAction* file_action);
 
-		void addCmdOption(QCommandLineOption &option);
+		void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
 		void parseCmd(QApplication& app);
 
 		ToolkitTimeline* getToolkitTimeline() { return timeline; }

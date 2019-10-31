@@ -38,7 +38,13 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	                                 "Load lua model files <file>", 
 	                                 "file"
 	                               );
-	addCmdOption(model_option);
+	addCmdOption(model_option, [this](QCommandLineParser& parser) {
+		//load models
+		auto model_list = parser.values("model");
+		for ( auto m : model_list ) {
+			this->loadModel(findFile(m));
+		}
+	});
 
 	//timeline widget
 	timeline = new ToolkitTimeline(this);
@@ -250,10 +256,9 @@ void ToolkitApp::addFileAction(QAction* action) {
 void ToolkitApp::parseCmd(QApplication& app) {
 	cmd_parser.process(app);
 
-	//load models
-	auto model_list = cmd_parser.values("model");
-	for (auto m : model_list) {
-		loadModel(findFile(m));
+	//execute all cmd hooks to do all actions specified by the options
+	for (int i=0; i<cmd_hooks.size(); i++) {
+		cmd_hooks[i](cmd_parser);
 	}
 }
 
@@ -268,6 +273,8 @@ RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
 	return nullptr;
 }
 
-void ToolkitApp::addCmdOption(QCommandLineOption &option) {
+void ToolkitApp::addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)> option_logic) {
 	cmd_parser.addOption(option);
+
+	cmd_hooks.push_back(option_logic);
 }
