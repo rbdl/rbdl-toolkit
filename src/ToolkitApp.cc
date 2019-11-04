@@ -57,6 +57,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	//set standard search paths
 	QDir::addSearchPath("", "meshes/");
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+	paths << INSTALL_DIR; //for people who use a custom install directory
 	for (int i=0; i<paths.size(); i++) {
 		QFileInfo check_file(paths.at(i));
 		if (check_file.isDir()) {
