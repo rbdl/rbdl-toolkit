@@ -17,6 +17,13 @@ Use cmake to build and install
 * Eigen3
 * Qt5 version >= 5.9
 
+## Building On Ubuntu
+
+Since our research group is mostly using Ubuntu here is a quick one line install command for all
+dependencies except RBDL.
+
+`sudo apt install qt5* qt3d* eigen libassimp-dev`
+
 # Command Line Options
 *rbdl-toolkit* supports command line options. To see all availible options execute ``rbdl-toolkit --help``, plugins may add options
 so make sure all plugins you want to load are enabled in the settigs!
