@@ -125,3 +125,7 @@ void SceneWidget::toggle_render_obj_group(QString group_name, bool status) {
 void SceneWidget::frame_action_repeater(float dt) {
 	emit frame_sync_signal(dt);
 }
+
+QCamera* SceneWidget::getCameraObj() {
+	return camera;
+}

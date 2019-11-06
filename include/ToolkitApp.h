@@ -63,6 +63,7 @@ class ToolkitApp : public QMainWindow
 		void parseCmd(QApplication& app);
 
 		ToolkitTimeline* getToolkitTimeline() { return timeline; }
+		SceneWidget* getSceneObj() { return main_display; }
 
 	public slots:
 		void action_reload_files();

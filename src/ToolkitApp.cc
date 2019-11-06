@@ -55,9 +55,9 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
 
 	//set standard search paths
+	bool install_path_in_standart_list = false;
 	QDir::addSearchPath("", "meshes/");
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
-	paths << INSTALL_DIR; //for people who use a custom install directory
 	for (int i=0; i<paths.size(); i++) {
 		QFileInfo check_file(paths.at(i));
 		if (check_file.isDir()) {
@@ -71,7 +71,14 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 				QCoreApplication::addLibraryPath(dir1.path());
 				QDir::addSearchPath("plugins", dir1.path());
 			}
-
+		}
+		//check if the install dir is one of the standart search paths of qt
+		if (paths.at(i).toStdString() == INSTALL_DIR) {
+			install_path_in_standart_list = true;
+		}
+		//make sure install path gets searched
+		if (i==paths.size()-1 && !install_path_in_standart_list) {
+			paths << INSTALL_DIR;
 		}
 	}
 
@@ -179,7 +186,6 @@ void ToolkitApp::setPluginLoadSetting(QString plugin_name, bool load) {
 
 void ToolkitApp::initPlugins() {
 	auto plugins = findAllPlugins();
-	//std::cout << "Found " << plugins.size() << " plugins to be loaded!" << std::endl;
 
 	foreach (const QString plugin_path, plugins) {
 		QPluginLoader* loader = new QPluginLoader(plugin_path);

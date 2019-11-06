@@ -1,5 +1,5 @@
-#ifndef TESTPLUGIN_H_INCLUDED
-#define TESTPLUGIN_H_INCLUDED
+#ifndef ANIMATION_PLUGIN_H_INCLUDED
+#define ANIMATION_PLUGIN_H_INCLUDED
 
 #include <QWidget>
 #include <QString>
