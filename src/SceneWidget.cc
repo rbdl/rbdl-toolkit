@@ -58,11 +58,21 @@ SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f
 }
 
 void SceneWidget::resizeEvent(QResizeEvent *event) {
-	//qDebug() << event->size().width() << ", " << event->size().height() ;
 	width = event->size().width();
 	height = event->size().height();
 
-	camera->lens()->setPerspectiveProjection(fov, width/height, near, far);
+	setCameraLens(camera->lens()->projectionType());
+}
+
+void SceneWidget::setCameraLens(QCameraLens::ProjectionType projection) {
+	//std::cout << width << " " << height << std::endl;
+	camera->lens()->setProjectionType(projection);
+	if (projection == QCameraLens::PerspectiveProjection) {
+		camera->lens()->setPerspectiveProjection( fov,
+		                                          float(width)/float(height), 
+		                                          near, far);
+	} else if (projection == QCameraLens::OrthographicProjection) {
+	}
 }
 
 void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {

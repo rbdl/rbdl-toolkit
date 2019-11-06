@@ -285,3 +285,7 @@ void ToolkitApp::addCmdOption(QCommandLineOption &option, std::function<void(QCo
 
 	cmd_hooks.push_back(option_logic);
 }
+
+void ToolkitApp::addMenu(QMenu* menu) {
+	main_menu_bar->addMenu(menu);
+}

@@ -59,6 +59,8 @@ class ToolkitApp : public QMainWindow
 
 		void addFileAction(QAction* file_action);
 
+		void addMenu(QMenu* menu);
+
 		void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
 		void parseCmd(QApplication& app);
 
