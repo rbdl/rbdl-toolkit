@@ -16,6 +16,7 @@ Use cmake to build and install
 * RBDL with minimum version 3.0.0
 * Eigen3
 * Qt5 version >= 5.9
+* Qt3D and assimp for model loading
 
 ## Building On Ubuntu
 

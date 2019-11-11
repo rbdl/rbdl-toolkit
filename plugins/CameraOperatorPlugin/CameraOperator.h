@@ -30,7 +30,6 @@ class CameraOperatorPlugin : public QObject, public CoreInterface {
 		void setTopView();
 		void setSideView();
 		void setFrontView();
-
 };
 
 #endif 

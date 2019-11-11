@@ -40,6 +40,7 @@ class RenderGroupCheckBox : public QCheckBox {
 
 };
 
+
 class SceneWidget : public QWidget {
 	Q_OBJECT
 	private:
@@ -80,6 +81,7 @@ class SceneWidget : public QWidget {
 	public slots:
 		void toggle_render_obj_group(QString group_name, bool status);
 		void frame_action_repeater(float dt);
+		void update_orthographic_scale();
 
 	signals:
 		void frame_sync_signal(float dt);

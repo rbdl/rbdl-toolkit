@@ -10,6 +10,8 @@
 #include <Qt3DExtras/QForwardRenderer>
 #include <Qt3DExtras/QOrbitCameraController>
 
+#include <math.h>
+
 using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
@@ -72,6 +74,20 @@ void SceneWidget::setCameraLens(QCameraLens::ProjectionType projection) {
 		                                          float(width)/float(height), 
 		                                          near, far);
 	} else if (projection == QCameraLens::OrthographicProjection) {
+		QVector3D eye = camera->viewVector();
+		QVector3D poi = camera->viewCenter();
+
+		float aspect = float(width)/float(height);
+		float dist = eye.distanceToPoint(poi);
+
+		float w = tan(fov * M_PI / 180.) * 0.001 * width * dist / 2.;
+		float h = w / aspect;
+
+		camera->lens()->setOrthographicProjection( -0.5 * w,
+		                                            0.5 * w,
+		                                           -0.5 * h,
+		                                            0.5 * h,
+		                                            near, far);
 	}
 }
 
@@ -138,4 +154,8 @@ void SceneWidget::frame_action_repeater(float dt) {
 
 QCamera* SceneWidget::getCameraObj() {
 	return camera;
+}
+
+void SceneWidget::update_orthographic_scale() {
+	setCameraLens(camera->lens()->projectionType());
 }
