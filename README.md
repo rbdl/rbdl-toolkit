@@ -44,3 +44,7 @@ editing the settings file. On linux systems it will be located at ```~/.config/O
 For example, it is possible to tell *rbdl-toolkit* to use a different seperator when reading csv files, by setting
 the csv_seperator parameter to the ascii value of the desired seperator.
 
+# Animation
+To load a model animation the AnimationPlugin needs to be active. *rbdl-toolkit* does not support the custom
+file header format used by Meshup. So you will need to use a standart csv format.
+
