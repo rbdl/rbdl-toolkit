@@ -191,7 +191,14 @@ void ToolkitApp::initPlugins() {
 		QPluginLoader* loader = new QPluginLoader(plugin_path);
 		QString plugin_iid = loader->metaData().value("IID").toString();
 		QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
-		toolkit_plugins[plugin_name] = loader;
+
+		//check if plugin was already loaded
+		if (toolkit_plugins.find(plugin_name) == toolkit_plugins.end()) {
+			toolkit_plugins[plugin_name] = loader;
+		} else {
+			//plugin with same name was already found so skip this duplicate
+			continue;
+		}
 
 		//core plugins will be loaded directly if not disabled in settings
 		if (plugin_iid == CoreInterface_iid) {
