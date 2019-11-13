@@ -62,6 +62,7 @@ def main():
 
 		center = np.array([(bbox_x_max+bbox_x_min)*0.5, (bbox_y_max+bbox_y_min)*0.5, (bbox_z_max+bbox_z_min)*0.5])
 
+		vertexes -= center
 		vertexes /= np.array([diff_x, diff_y, diff_z])
 
 		# write transformed mesh file

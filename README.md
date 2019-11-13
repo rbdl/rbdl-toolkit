@@ -48,3 +48,7 @@ the csv_seperator parameter to the ascii value of the desired seperator.
 To load a model animation the AnimationPlugin needs to be active. *rbdl-toolkit* does not support the custom
 file header format used by Meshup. So you will need to use a standart csv format.
 
+# Extras
+In the extra folders are some python skripts that might be usefull when converting models from meshup to
+rbdl-toolkit.
+
