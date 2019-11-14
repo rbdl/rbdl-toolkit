@@ -75,6 +75,8 @@ class SceneWidget : public QWidget {
 		Qt3DRender::QCamera* getCameraObj();
 		void setCameraLens(Qt3DRender::QCameraLens::ProjectionType projection);
 
+		Qt3DCore::QEntity* getSceneRoot() { return scene_root; }
+
 	protected:
 		void resizeEvent(QResizeEvent *event);
 

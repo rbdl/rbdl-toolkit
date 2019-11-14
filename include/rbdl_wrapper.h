@@ -7,6 +7,7 @@
 #include <rbdl/addons/luamodel/luatables.h>
 
 #include <QString>
+#include <QFileInfo>
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
@@ -60,6 +61,7 @@ class RBDLModelWrapper : public QObject {
 		bool hasExtention(std::string name);
 
 		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
+		QString getFileName() { return QFileInfo(model_file).baseName(); }
 
 		int getModelDof();
 

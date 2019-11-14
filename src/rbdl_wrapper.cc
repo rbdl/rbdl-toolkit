@@ -159,8 +159,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	model_transform->setTranslation(QVector3D(model_spacial_transform[0], model_spacial_transform[1], model_spacial_transform[2]));
 	model_render_obj->addComponent(model_transform);
 
-	model_render_obj->setProperty("Scene.ObjGroup", QVariant("Model"));
-
 	return model_render_obj;
 }
 
