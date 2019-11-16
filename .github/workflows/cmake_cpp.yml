@@ -12,6 +12,8 @@ jobs:
     - uses: actions/checkout@v1
       with:
           fetch-depth: 1
+    - name: install dependencies
+      run: sudo apt install qt5* qt3d* libeigen3-dev libassimp-dev
     - name: cmake
       run: mkdir build; cd build; cmake ..
     - name: make
