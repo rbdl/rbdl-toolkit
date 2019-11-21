@@ -49,7 +49,7 @@ void RenderPlugin::action_render_image() {
 	offscreen_render->create();
 
 	parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
-	QRenderCaptureReply* capture_reply = parentApp->getSceneObj()->requestFrameCapture(w,h);
+	QRenderCaptureReply* capture_reply = parentApp->getSceneObj()->requestFrameCapture();
 
 	connect(capture_reply, &QRenderCaptureReply::completed, [=]
 	        {

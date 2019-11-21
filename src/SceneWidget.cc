@@ -169,8 +169,7 @@ void SceneWidget::setOffscreenRender(QObject* surface) {
 	}
 }
 
-Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture(int width, int height) {
-	qt3d_view->defaultFrameGraph()->setExternalRenderTargetSize(QSize(width, height));
+Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture() {
 	if (render_capture == nullptr) {
 		render_capture = new QRenderCapture();
 		qt3d_view->activeFrameGraph()->setParent(render_capture);

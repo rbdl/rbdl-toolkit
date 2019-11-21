@@ -85,7 +85,7 @@ class SceneWidget : public QWidget {
 		int getWidth() { return width; }
 		int getHeight() { return height; }
 
-		Qt3DRender::QRenderCaptureReply* requestFrameCapture(int width, int height);
+		Qt3DRender::QRenderCaptureReply* requestFrameCapture();
 
 		void setOffscreenRender(QObject* surface);
 
