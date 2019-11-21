@@ -12,6 +12,9 @@
 #include <Qt3DRender/QCamera>
 #include <Qt3DRender/QDirectionalLight>
 
+#include <Qt3DRender/QRenderCapture>
+#include <Qt3DRender/QRenderCaptureReply>
+
 #include <Qt3DExtras/Qt3DWindow>
 
 #include <Qt3DLogic/QFrameAction>
@@ -54,6 +57,8 @@ class SceneWidget : public QWidget {
 		Qt3DRender::QCamera *camera;
 		QHBoxLayout *display_container;
 
+		Qt3DRender::QRenderCapture* render_capture;
+
 		QWidget* render_selector;
 		QVBoxLayout* render_selector_layout;
 		std::vector<RenderGroupCheckBox*> render_select_check_boxes;
@@ -76,6 +81,13 @@ class SceneWidget : public QWidget {
 		void setCameraLens(Qt3DRender::QCameraLens::ProjectionType projection);
 
 		Qt3DCore::QEntity* getSceneRoot() { return scene_root; }
+
+		int getWidth() { return width; }
+		int getHeight() { return height; }
+
+		Qt3DRender::QRenderCaptureReply* requestFrameCapture(int width, int height);
+
+		void setOffscreenRender(QObject* surface);
 
 	protected:
 		void resizeEvent(QResizeEvent *event);

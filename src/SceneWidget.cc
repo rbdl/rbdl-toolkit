@@ -17,7 +17,7 @@ using namespace Qt3DRender;
 using namespace Qt3DExtras;
 using namespace Qt3DLogic;
 
-SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f), far(100.f) {
+SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f), far(100.f), render_capture(nullptr) {
 	qt3d_view = new Qt3DExtras::Qt3DWindow();
     qt3d_view->defaultFrameGraph()->setClearColor(QColor("black"));
 
@@ -159,3 +159,23 @@ QCamera* SceneWidget::getCameraObj() {
 void SceneWidget::update_orthographic_scale() {
 	setCameraLens(camera->lens()->projectionType());
 }
+
+
+void SceneWidget::setOffscreenRender(QObject* surface) {
+	if (surface != nullptr) {
+		qt3d_view->defaultFrameGraph()->setSurface(surface);
+	} else {
+		qt3d_view->defaultFrameGraph()->setSurface(qt3d_view);
+	}
+}
+
+Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture(int width, int height) {
+	qt3d_view->defaultFrameGraph()->setExternalRenderTargetSize(QSize(width, height));
+	if (render_capture == nullptr) {
+		render_capture = new QRenderCapture();
+		qt3d_view->activeFrameGraph()->setParent(render_capture);
+		qt3d_view->setActiveFrameGraph(render_capture);
+	}
+	return render_capture->requestCapture();
+}
+

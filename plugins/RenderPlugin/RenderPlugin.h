@@ -4,6 +4,9 @@
 #include <QWidget>
 #include <QString>
 #include <QMenu>
+#include <QWindow>
+#include <QSurface>
+#include <QSurfaceFormat>
 
 #include "toolkit_interfaces.h"
 
@@ -19,8 +22,14 @@ class RenderPlugin : public QObject, public OptionalInterface {
 
 		QMenu render_menu;
 
+
 	private:
 		ToolkitApp* parentApp;
+
+		QWindow* offscreen_render;
+
+	public slots:
+		void action_render_image();
 };
 
 #endif 
