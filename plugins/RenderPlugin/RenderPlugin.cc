@@ -33,6 +33,7 @@ void RenderPlugin::action_render_image() {
 	RenderImageDialog* renderImageDialog = new RenderImageDialog(parentApp);
 	renderImageDialog->WidthSpinBox->setValue(parentApp->getSceneObj()->getWidth());
 	renderImageDialog->HeightSpinBox->setValue(parentApp->getSceneObj()->getHeight());
+	renderImageDialog->setFilename(QString("image.png"));
 
 	int result = renderImageDialog->exec();
 
@@ -41,6 +42,7 @@ void RenderPlugin::action_render_image() {
 
 	int w = renderImageDialog->WidthSpinBox->value();
 	int h = renderImageDialog->HeightSpinBox->value();
+	QString filename = renderImageDialog->filenameEdit->text();
 
 	offscreen_render = new QWindow();
 	offscreen_render->setSurfaceType(QSurface::OpenGLSurface);
@@ -48,12 +50,17 @@ void RenderPlugin::action_render_image() {
 	offscreen_render->setGeometry(0,0,w,h);
 	offscreen_render->create();
 
-	parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
+	if (renderImageDialog->TransparentBackgroundCheckBox->isChecked()) {
+		parentApp->getSceneObj()->setOffscreenRender(offscreen_render, QColor("transparent"));
+	} else {
+		parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
+	}
+
 	QRenderCaptureReply* capture_reply = parentApp->getSceneObj()->requestFrameCapture();
 
 	connect(capture_reply, &QRenderCaptureReply::completed, [=]
 	        {
-	             capture_reply->saveImage("image00.png");
+	             capture_reply->saveImage(filename);
 	             delete capture_reply;
 	             delete offscreen_render;
 	             parentApp->getSceneObj()->setOffscreenRender(nullptr);

@@ -33,6 +33,7 @@ void ToolkitTimeline::reset() {
 }
 
 void ToolkitTimeline::setMaxTime(float max) {
+	float old_max = max_time;
 	max_time = std::max(max, max_time);
 }
 

@@ -161,12 +161,20 @@ void SceneWidget::update_orthographic_scale() {
 }
 
 
-void SceneWidget::setOffscreenRender(QObject* surface) {
+void SceneWidget::setOffscreenRender(QObject* surface, QColor clear_color) {
 	if (surface != nullptr) {
 		qt3d_view->defaultFrameGraph()->setSurface(surface);
+		QWindow* window = qobject_cast<QWindow*>(surface);
+		width = window->width();
+		height = window->height();
+
 	} else {
 		qt3d_view->defaultFrameGraph()->setSurface(qt3d_view);
+		width = qt3d_view->width();
+		height = qt3d_view->height();
 	}
+    qt3d_view->defaultFrameGraph()->setClearColor(clear_color);
+	setCameraLens(camera->lens()->projectionType());	
 }
 
 Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture() {

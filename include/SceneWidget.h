@@ -87,7 +87,7 @@ class SceneWidget : public QWidget {
 
 		Qt3DRender::QRenderCaptureReply* requestFrameCapture();
 
-		void setOffscreenRender(QObject* surface);
+		void setOffscreenRender(QObject* surface, QColor clear_color=QColor("black"));
 
 	protected:
 		void resizeEvent(QResizeEvent *event);

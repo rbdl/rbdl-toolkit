@@ -79,7 +79,7 @@ void AnimationPlugin::action_load_animation() {
 	if (parentApp != NULL) {
 		QFileDialog file_dialog (parentApp, "Select Animation File");
 
-		file_dialog.setNameFilter(tr("Animation File (*.csv, *.txt)"));
+		file_dialog.setNameFilter(tr("Animation File (*.csv *.txt)"));
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
 		if (file_dialog.exec()) {

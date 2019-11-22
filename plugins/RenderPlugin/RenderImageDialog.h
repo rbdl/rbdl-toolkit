@@ -11,13 +11,31 @@
 #define RENDERIMAGEDIALOG_H
  
 #include "ui_RenderImageDialog.h"
+#include <QFileDialog>
 
 class RenderImageDialog : public QDialog, public Ui::RenderImageDialog {
     Q_OBJECT
  
-public:
+	public:
 		RenderImageDialog (QWidget *parent = 0) {
 			setupUi(this);
+
+			connect(filenameSelect, &QPushButton::clicked, this, &RenderImageDialog::action_select_file);
+		}
+
+		void setFilename(QString text) {
+			filenameEdit->setText(text);
+		}
+
+	public slots:
+
+		void action_select_file() {
+			QFileDialog file_dialog (this, "Select Model File");
+			file_dialog.setFileMode(QFileDialog::AnyFile);
+
+			if (file_dialog.exec()) {
+				filenameEdit->setText(file_dialog.selectedFiles().at(0));
+			}
 		}
 
 };
