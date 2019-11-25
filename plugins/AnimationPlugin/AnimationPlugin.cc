@@ -37,7 +37,13 @@ void AnimationPlugin::init(ToolkitApp* app) {
 
 		for (int i=0; i<animation_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
-				auto ext = this->loadAnimationFile(animation_list[i]);
+				AnimationModelExtention* ext;
+				try {
+					ext = this->loadAnimationFile(animation_list[i]);
+				} catch (RigidBodyDynamics::Errors::RBDLError& e){
+					ToolkitApp::showExceptionDialog(e);
+					continue;
+				}
 				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
 				model->addExtention(ext);
 				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
@@ -83,7 +89,13 @@ void AnimationPlugin::action_load_animation() {
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
 		if (file_dialog.exec()) {
-			AnimationModelExtention* ext = loadAnimationFile (file_dialog.selectedFiles().at(0));
+			AnimationModelExtention* ext;
+			try {
+				ext = loadAnimationFile (file_dialog.selectedFiles().at(0));
+			} catch (RigidBodyDynamics::Errors::RBDLError& e) {
+				ToolkitApp::showExceptionDialog(e);
+				return;
+			}
 
 			if (parentApp->getLoadedModels()->size() != 0) {
 				RBDLModelWrapper* rbdl_model = nullptr;
@@ -126,27 +138,32 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 		rapidcsv::SeparatorParams(csv_seperator, csv_trim));
 
 	int animation_dof = animation_file.GetColumnCount();
-	QString first_entry = QString::fromStdString(animation_file.GetCell<std::string>(-1, 0));
-	bool header_found;
+	QString first_entry;
 
 	// if the first entry in csv is not a string, then it does not have a header
 	// if it has a header we need to read it first, otherwise just read in the
 	// values
 	//auto names = animation_file.GetColumnNames();
 
-	bool ok;
-	first_entry.toFloat(&ok);
+	bool ok = false;
+	int start = -1;
 
-	int start = 0;
-	if (ok) {
-		//no header found
-		header_found = false;
-		start = 0;
-	} else {
-		//header found
-		header_found = true;
-		start = 1;
+	while (!ok) {
+		first_entry = QString::fromStdString(animation_file.GetCell<std::string>(-1, start+1));
+		first_entry.toFloat(&ok);
+		start++;
+		std::cout << first_entry.toStdString() << ", " << start << std::endl;
 	}
+
+	if (start != 0) {
+		throw RigidBodyDynamics::Errors::RBDLError("Trying to read csv with header, which currently" \
+		"is still buggy, for now please remove the header until this bug is fixed!");
+	}
+
+	animation_file = rapidcsv::Document(
+		path.toStdString(), 
+		rapidcsv::LabelParams(-1, start),
+		rapidcsv::SeparatorParams(csv_seperator, csv_trim));
 
 	for (int i=start; i<animation_file.GetRowCount()-1; i++) {
 		auto values = animation_file.GetRow<float>(i);

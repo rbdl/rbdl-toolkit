@@ -45,8 +45,15 @@ For example, it is possible to tell *rbdl-toolkit* to use a different seperator 
 the csv_seperator parameter to the ascii value of the desired seperator.
 
 # Animation
-To load a model animation the AnimationPlugin needs to be active. *rbdl-toolkit* does not support the custom
-file header format used by Meshup. So you will need to use a standart csv format.
+To load a model animation the AnimationPlugin needs to be active. *rbdl-toolkit* does not support parsing the custom
+file header format used by Meshup. The first column of the csv should always represent the time, and the amount of following columns need
+to match the dof of your model!
+
+# Rendering
+
+In order to be enable rendering to images and videos you will need to enable building the optional plugins by 
+setting the cmake option `TOOLKIT_BUILD_OPTIONAL_PLUGINS` to `ON`. This will add compilation of the render plugin
+which has more dependencies such as `libffmpeg`.
 
 # Extras
 In the extra folders are some python skripts that might be usefull when converting models from meshup to

@@ -64,6 +64,8 @@ class ToolkitApp : public QMainWindow
 		void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
 		void parseCmd(QApplication& app);
 
+		static void showExceptionDialog(std::exception& e);
+
 		ToolkitTimeline* getToolkitTimeline() { return timeline; }
 		SceneWidget* getSceneObj() { return main_display; }
 

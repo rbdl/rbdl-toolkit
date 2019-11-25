@@ -157,6 +157,14 @@ void ToolkitApp::loadModel(const QString &model_file) {
 
 }
 
+void ToolkitApp::showExceptionDialog(std::exception& e) {
+	QMessageBox errorBox;
+	errorBox.setText(e.what());
+	errorBox.setStandardButtons(QMessageBox::Cancel);
+	errorBox.setDefaultButton(QMessageBox::Cancel);
+	errorBox.exec();
+}
+
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_tilte) {
 	QDockWidget* dock = new QDockWidget(name, this);
 	dock->setWidget(view_widget);
