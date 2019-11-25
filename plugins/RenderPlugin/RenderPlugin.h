@@ -22,7 +22,6 @@ class RenderPlugin : public QObject, public OptionalInterface {
 
 		QMenu render_menu;
 
-
 	private:
 		ToolkitApp* parentApp;
 

@@ -67,6 +67,8 @@ class SceneWidget : public QWidget {
 		float fov;
 		float near, far;
 
+		QColor default_clear_color;
+
 		GroupingMap scene_obj_grouping;
 
 	public:
@@ -81,13 +83,13 @@ class SceneWidget : public QWidget {
 		void setCameraLens(Qt3DRender::QCameraLens::ProjectionType projection);
 
 		Qt3DCore::QEntity* getSceneRoot() { return scene_root; }
+		QColor getDefaultClearColor() { return default_clear_color; }
 
 		int getWidth() { return width; }
 		int getHeight() { return height; }
 
 		Qt3DRender::QRenderCaptureReply* requestFrameCapture();
 
-		void setOffscreenRender(QObject* surface, QColor clear_color=QColor("black"));
 
 	protected:
 		void resizeEvent(QResizeEvent *event);
@@ -96,6 +98,9 @@ class SceneWidget : public QWidget {
 		void toggle_render_obj_group(QString group_name, bool status);
 		void frame_action_repeater(float dt);
 		void update_orthographic_scale();
+		void setOffscreenRender(QObject* surface);
+		void setClearColor(QColor color);
+		void setDefaultClearColor(QColor color);
 
 	signals:
 		void frame_sync_signal(float dt);

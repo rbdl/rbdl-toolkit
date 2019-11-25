@@ -9,6 +9,12 @@
 
 #include <Qt3DExtras/QForwardRenderer>
 #include <Qt3DExtras/QOrbitCameraController>
+#include <Qt3DCore>
+#include <Qt3DRender>
+#include <Qt3DExtras>
+#include <QWindow>
+#include <QSurface>
+#include <QSurfaceFormat>
 
 #include <math.h>
 
@@ -17,9 +23,33 @@ using namespace Qt3DRender;
 using namespace Qt3DExtras;
 using namespace Qt3DLogic;
 
-SceneWidget::SceneWidget(QWidget *parent): QWidget(parent), fov(45.f), near(0.1f), far(100.f), render_capture(nullptr) {
+SceneWidget::SceneWidget(QWidget *parent): 
+	QWidget(parent),
+	fov(45.f),
+	near(0.1f),
+	far(100.f),
+	render_capture(nullptr),
+	default_clear_color(QColor("black")) 
+{
+	//set default surface format to be able to use the alpha channel from the start
+	QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+#ifdef QT_OPENGL_ES_2
+		format.setRenderableType(QSurfaceFormat::OpenGLES);
+#else
+		if (QOpenGLContext::openGLModuleType() == QOpenGLContext::LibGL) {
+			format.setVersion(4, 3);
+			format.setProfile(QSurfaceFormat::CoreProfile);
+		}
+#endif
+	format.setDepthBufferSize(24);
+	format.setSamples(4);
+	format.setStencilBufferSize(8);
+	format.setAlphaBufferSize(8);
+	QSurfaceFormat::setDefaultFormat(format);
+
+	//setup actual widget
 	qt3d_view = new Qt3DExtras::Qt3DWindow();
-    qt3d_view->defaultFrameGraph()->setClearColor(QColor("black"));
+    qt3d_view->defaultFrameGraph()->setClearColor(default_clear_color);
 
 	scene_root = new Qt3DCore::QEntity();
 
@@ -160,21 +190,29 @@ void SceneWidget::update_orthographic_scale() {
 	setCameraLens(camera->lens()->projectionType());
 }
 
+void SceneWidget::setClearColor(QColor color){
+	qt3d_view->defaultFrameGraph()->setClearColor(color);
+}
 
-void SceneWidget::setOffscreenRender(QObject* surface, QColor clear_color) {
+void SceneWidget::setDefaultClearColor(QColor color){
+	default_clear_color = color;
+}
+
+void SceneWidget::setOffscreenRender(QObject* surface) {
 	if (surface != nullptr) {
 		qt3d_view->defaultFrameGraph()->setSurface(surface);
 		QWindow* window = qobject_cast<QWindow*>(surface);
+
 		width = window->width();
 		height = window->height();
-
+		setCameraLens(camera->lens()->projectionType());	
 	} else {
-		qt3d_view->defaultFrameGraph()->setSurface(qt3d_view);
 		width = qt3d_view->width();
 		height = qt3d_view->height();
+		setCameraLens(camera->lens()->projectionType());	
+
+		qt3d_view->defaultFrameGraph()->setSurface(qobject_cast<QWindow*>(qt3d_view));
 	}
-    qt3d_view->defaultFrameGraph()->setClearColor(clear_color);
-	setCameraLens(camera->lens()->projectionType());	
 }
 
 Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture() {

@@ -6,6 +6,8 @@
 #include <Qt3DRender>
 #include <Qt3DExtras>
 
+#include <iostream>
+
 using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
@@ -46,13 +48,20 @@ void RenderPlugin::action_render_image() {
 
 	offscreen_render = new QWindow();
 	offscreen_render->setSurfaceType(QSurface::OpenGLSurface);
+
+	QSurfaceFormat format = QSurfaceFormat::defaultFormat();
+	offscreen_render->setFormat(format);
+
 	offscreen_render->setVisibility(QWindow::Hidden);
 	offscreen_render->setGeometry(0,0,w,h);
 	offscreen_render->create();
+    QColor standard_clear_color = parentApp->getSceneObj()->getDefaultClearColor();
 
 	if (renderImageDialog->TransparentBackgroundCheckBox->isChecked()) {
-		parentApp->getSceneObj()->setOffscreenRender(offscreen_render, QColor("transparent"));
+		parentApp->getSceneObj()->setClearColor(QColor("transparent"));
+		parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
 	} else {
+		parentApp->getSceneObj()->setClearColor(standard_clear_color);
 		parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
 	}
 
@@ -60,10 +69,12 @@ void RenderPlugin::action_render_image() {
 
 	connect(capture_reply, &QRenderCaptureReply::completed, [=]
 	        {
-	             capture_reply->saveImage(filename);
+		         QImage rendered_image = capture_reply->image();
+	             rendered_image.save(filename);
 	             delete capture_reply;
-	             delete offscreen_render;
+	             parentApp->getSceneObj()->setClearColor(standard_clear_color);
 	             parentApp->getSceneObj()->setOffscreenRender(nullptr);
+	             delete offscreen_render;
 		    });
 
 }
