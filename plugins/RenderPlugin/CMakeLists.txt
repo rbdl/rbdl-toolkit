@@ -34,10 +34,14 @@ ADD_DEFINITIONS (-DQT_SHARED)
 
 QT5_WRAP_UI ( RenderPlugin_UI_SRC
 	ui/RenderImageDialog.ui	
+	ui/RenderImageSeriesDialog.ui	
+	ui/RenderVideoDialog.ui	
 )
 
 QT5_WRAP_CPP ( RenderPlugin_MOC_SRCS
 	RenderImageDialog.h
+	RenderImageSeriesDialog.h
+	RenderVideoDialog.h
 )
 
 ADD_LIBRARY (renderplugin SHARED 

@@ -152,7 +152,7 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 		first_entry = QString::fromStdString(animation_file.GetCell<std::string>(-1, start+1));
 		first_entry.toFloat(&ok);
 		start++;
-		std::cout << first_entry.toStdString() << ", " << start << std::endl;
+		//std::cout << first_entry.toStdString() << ", " << start << std::endl;
 	}
 
 	if (start != 0) {

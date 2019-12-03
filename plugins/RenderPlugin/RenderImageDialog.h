@@ -30,7 +30,7 @@ class RenderImageDialog : public QDialog, public Ui::RenderImageDialog {
 	public slots:
 
 		void action_select_file() {
-			QFileDialog file_dialog (this, "Select Model File");
+			QFileDialog file_dialog (this, "Select Image File");
 			file_dialog.setFileMode(QFileDialog::AnyFile);
 
 			if (file_dialog.exec()) {

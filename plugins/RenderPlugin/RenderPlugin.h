@@ -8,6 +8,15 @@
 #include <QSurface>
 #include <QSurfaceFormat>
 
+#include "RenderImageDialog.h"
+#include "RenderImageSeriesDialog.h"
+#include "RenderVideoDialog.h"
+
+#include "RenderImageDialog.h"
+#include "RenderImageSeriesDialog.h"
+#include "RenderVideoDialog.h"
+
+
 #include "toolkit_interfaces.h"
 
 class RenderPlugin : public QObject, public OptionalInterface {
@@ -27,8 +36,16 @@ class RenderPlugin : public QObject, public OptionalInterface {
 
 		QWindow* offscreen_render;
 
+		RenderImageDialog* render_image_dialog;
+		RenderImageSeriesDialog* render_imageseries_dialog;
+		RenderVideoDialog* render_video_dialog;
+
+		void init_offscreen_render_surface(int width, int height);
+
 	public slots:
 		void action_render_image();
+		void action_render_image_series();
+		void action_render_video();
 };
 
 #endif 

@@ -41,9 +41,6 @@ SceneWidget::SceneWidget(QWidget *parent):
 			format.setProfile(QSurfaceFormat::CoreProfile);
 		}
 #endif
-	format.setDepthBufferSize(24);
-	format.setSamples(4);
-	format.setStencilBufferSize(8);
 	format.setAlphaBufferSize(8);
 	QSurfaceFormat::setDefaultFormat(format);
 

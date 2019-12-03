@@ -1,12 +1,13 @@
 // RenderVideoDialog.h
 // header file for render video dialog box
-// Author: Stephen Meisenbacher
+// Author: Felix Richter
 
 #ifndef RENDERVIDEODIALOG_H
 #define RENDERVIDEODIALOG_H
 
 #include <QValidator>
 #include <QSpinBox>
+#include <QFileDialog>
 #include <QAbstractButton>
 
 class RenderVideoDialog;
@@ -22,6 +23,7 @@ class RenderVideoDialog : public QDialog, public Ui::RenderVideoDialog {
 			setupUi(this);
 			connect(HeightSpinBox, SIGNAL(valueChanged(int)), this, SLOT(checkValues()));
 			connect(WidthSpinBox, SIGNAL(valueChanged(int)), this, SLOT(checkValues()));
+			connect(filenameSelect, &QPushButton::clicked, this, &RenderVideoDialog::action_select_file);
 			checkValues();
 		}
 		void set_video_lenght(double len) {
@@ -43,6 +45,15 @@ class RenderVideoDialog : public QDialog, public Ui::RenderVideoDialog {
 			} else {
 				accept_but->setEnabled(true);
 				warningLabel->setText("");
+			}
+		}
+
+		void action_select_file() {
+			QFileDialog file_dialog (this, "Select Video File");
+			file_dialog.setFileMode(QFileDialog::AnyFile);
+
+			if (file_dialog.exec()) {
+				filenameEdit->setText(file_dialog.selectedFiles().at(0));
 			}
 		}
 
