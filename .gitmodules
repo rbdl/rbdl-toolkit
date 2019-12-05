@@ -1,0 +1,3 @@
+[submodule "plugins/RenderPlugin/vendor/QtFFmpegWrapper"]
+	path = plugins/RenderPlugin/vendor/QtFFmpegWrapper
+	url = https://github.com/ju6ge/QtFFmpegWrapper

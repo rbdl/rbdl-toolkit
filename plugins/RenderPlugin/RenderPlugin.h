@@ -16,6 +16,10 @@
 #include "RenderImageSeriesDialog.h"
 #include "RenderVideoDialog.h"
 
+#include <QProgressDialog>
+#include <Qt3DRender>
+
+#include "QVideoEncoder.h"
 
 #include "toolkit_interfaces.h"
 
@@ -40,12 +44,30 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		RenderImageSeriesDialog* render_imageseries_dialog;
 		RenderVideoDialog* render_video_dialog;
 
+		QAction* render_image;
+		QAction* render_image_series;
+		QAction* render_video;
+
+		Qt3DRender::QRenderCaptureReply* capture_reply;
+
+		bool last_frame_captured;
+		int current_frame;
+		unsigned frame_count;
+		float current_time;
+		float timestep;
+
+		QProgressDialog* pbar;
+		QVideoEncoder* encoder;
+
 		void init_offscreen_render_surface(int width, int height);
 
 	public slots:
 		void action_render_image();
 		void action_render_image_series();
 		void action_render_video();
+		void timelineChange(float max_time);
+
+		void handle_video_frame();
 };
 
 #endif 

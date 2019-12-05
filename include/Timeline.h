@@ -18,7 +18,8 @@ class ToolkitTimeline : public QWidget, public Ui::Timeline {
 		ToolkitTimeline(QWidget* parent);
 
 		void setMaxTime(float max_time);
-		void setCurrentTime(float current_time);
+		float getMaxTime() { return max_time; }
+		void setCurrentTime(float current_time, bool stop_playing=false);
 		void reset();
 
 	public slots:

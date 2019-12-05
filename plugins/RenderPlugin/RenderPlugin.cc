@@ -3,6 +3,7 @@
 #include <Qt3DCore>
 #include <Qt3DRender>
 #include <Qt3DExtras>
+#include <QProgressDialog>
 
 #include <iostream>
 
@@ -39,16 +40,18 @@ void RenderPlugin::init(ToolkitApp* app) {
 
 	render_menu.setTitle("Render");
 
-	QAction* render_image = render_menu.addAction("Render Image");
+	render_image = render_menu.addAction("Render Image");
 	connect(render_image, &QAction::triggered, this, &RenderPlugin::action_render_image);
 
-	QAction* render_image_series = render_menu.addAction("Render Image Series");
-	render_image_series->setDisabled("true");
+	render_image_series = render_menu.addAction("Render Image Series");
 	connect(render_image_series, &QAction::triggered, this, &RenderPlugin::action_render_image_series);
 
-	QAction* render_video = render_menu.addAction("Render Video");
-	render_video->setDisabled("true");
+	render_video = render_menu.addAction("Render Video");
 	connect(render_video, &QAction::triggered, this, &RenderPlugin::action_render_video);
+
+	timelineChange(0.0);
+
+	connect(parentApp->getToolkitTimeline(), &ToolkitTimeline::maxTimeChanged, this, &RenderPlugin::timelineChange);
 
 	parentApp->addMenu(&render_menu);
 }
@@ -63,6 +66,16 @@ void RenderPlugin::init_offscreen_render_surface(int width, int height) {
 	offscreen_render->setVisibility(QWindow::Hidden);
 	offscreen_render->setGeometry(0, 0, width, height);
 	offscreen_render->create();
+}
+
+void RenderPlugin::timelineChange(float max_time) {
+	if (max_time == 0.) {
+		render_image_series->setDisabled(true);
+		render_video->setDisabled(true);
+	} else {
+		render_image_series->setDisabled(false);
+		render_video->setDisabled(false);
+	}
 }
 
 void RenderPlugin::action_render_image() {
@@ -82,7 +95,6 @@ void RenderPlugin::action_render_image() {
 	init_offscreen_render_surface(w, h);
 
     QColor standard_clear_color = parentApp->getSceneObj()->getDefaultClearColor();
-
 	if (render_image_dialog->TransparentBackgroundCheckBox->isChecked()) {
 		parentApp->getSceneObj()->setClearColor(QColor("transparent"));
 	} else {
@@ -91,7 +103,7 @@ void RenderPlugin::action_render_image() {
 	parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
 
 
-	QRenderCaptureReply* capture_reply = parentApp->getSceneObj()->requestFrameCapture();
+	capture_reply = parentApp->getSceneObj()->requestFrameCapture();
 	connect(capture_reply, &QRenderCaptureReply::completed, [=]
 	        {
 		         QImage rendered_image = capture_reply->image();
@@ -150,5 +162,64 @@ void RenderPlugin::action_render_video() {
 	length = render_video_dialog->TimeSpinBox->value(); 
 	filename = render_video_dialog->filenameEdit->text();
 
-	//Todo Render Video
+	init_offscreen_render_surface(width, height);
+	parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
+
+	float duration = parentApp->getToolkitTimeline()->getMaxTime();
+	frame_count = fps * (length);
+	timestep = duration / frame_count;
+
+	pbar = new QProgressDialog("Rendering offscreen", "Abort Render", 0, frame_count, parentApp);
+	pbar->setWindowModality(Qt::WindowModal);
+	pbar->setMinimumDuration(0);
+
+	encoder = new QVideoEncoder;
+	encoder->createFile(filename, width, height, fps);
+	last_frame_captured = false;
+	current_frame = 0;
+	current_time = (float) current_frame * timestep;
+
+	parentApp->getToolkitTimeline()->setCurrentTime(current_time, true);
+
+	capture_reply = parentApp->getSceneObj()->requestFrameCapture();
+	connect(capture_reply, &QRenderCaptureReply::completed, this, &RenderPlugin::handle_video_frame);
+}
+
+void RenderPlugin::handle_video_frame() {
+		pbar->setValue(current_frame);
+		QImage rendered_image = capture_reply->image().convertToFormat(QImage::Format_ARGB32);
+		encoder->encodeImage(rendered_image);
+
+		if (last_frame_captured) {
+			for(int i=0;i<7;i++) {
+				encoder->encodeImage(rendered_image);
+			}
+
+			encoder->close();
+			parentApp->getSceneObj()->setOffscreenRender(nullptr);
+			delete offscreen_render;
+			delete encoder;
+		}
+
+		current_frame++;
+		current_time = (float)current_frame * timestep;
+		parentApp->getToolkitTimeline()->setCurrentTime(current_time, true);
+
+
+		if (pbar->wasCanceled()) {
+			parentApp->getSceneObj()->setOffscreenRender(nullptr);
+			delete offscreen_render;
+			delete encoder;
+			delete pbar;
+			delete capture_reply;
+			return;
+		}
+
+		delete capture_reply;
+		if (!last_frame_captured) {
+			capture_reply = parentApp->getSceneObj()->requestFrameCapture();
+			connect(capture_reply, &QRenderCaptureReply::completed, this, &RenderPlugin::handle_video_frame);
+		}
+
+		last_frame_captured = (current_frame == frame_count);
 }

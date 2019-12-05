@@ -35,6 +35,9 @@ void ToolkitTimeline::reset() {
 void ToolkitTimeline::setMaxTime(float max) {
 	float old_max = max_time;
 	max_time = std::max(max, max_time);
+
+	if (old_max != max_time)
+		emit maxTimeChanged(max_time);
 }
 
 void ToolkitTimeline::togglePlaying() {
@@ -57,7 +60,10 @@ void ToolkitTimeline::sliderMoved(int pos) {
 	setCurrentTime( max_time * p);
 }
 
-void ToolkitTimeline::setCurrentTime(float current) {
+void ToolkitTimeline::setCurrentTime(float current, bool stop_playing) {
+	if (stop_playing) {
+		playing = false;
+	}
 	current_time = current;
 
 	//reset to start when reached max time
