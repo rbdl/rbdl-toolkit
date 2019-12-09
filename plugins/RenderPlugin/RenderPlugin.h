@@ -50,6 +50,7 @@ class RenderPlugin : public QObject, public OptionalInterface {
 
 		Qt3DRender::QRenderCaptureReply* capture_reply;
 
+		QString file_loc;
 		bool last_frame_captured;
 		int current_frame;
 		unsigned frame_count;
@@ -68,6 +69,7 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		void timelineChange(float max_time);
 
 		void handle_video_frame();
+		void handle_image_series_frame();
 };
 
 #endif 
