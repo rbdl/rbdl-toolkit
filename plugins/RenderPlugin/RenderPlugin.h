@@ -7,6 +7,7 @@
 #include <QWindow>
 #include <QSurface>
 #include <QSurfaceFormat>
+#include <QPainter>
 
 #include "RenderImageDialog.h"
 #include "RenderImageSeriesDialog.h"
@@ -49,6 +50,9 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		QAction* render_video;
 
 		Qt3DRender::QRenderCaptureReply* capture_reply;
+		QColor standard_clear_color;
+		QPainter image_composer;
+		QImage saved_frame;
 
 		QString file_loc;
 		bool last_frame_captured;
@@ -56,6 +60,8 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		unsigned frame_count;
 		float current_time;
 		float timestep;
+		bool do_compositon;
+		bool render_transparent;
 
 		QProgressDialog* pbar;
 		QVideoEncoder* encoder;

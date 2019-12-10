@@ -98,11 +98,9 @@ void RenderPlugin::action_render_image() {
 
 	init_offscreen_render_surface(w, h);
 
-    QColor standard_clear_color = parentApp->getSceneObj()->getDefaultClearColor();
+    standard_clear_color = parentApp->getSceneObj()->getDefaultClearColor();
 	if (render_image_dialog->TransparentBackgroundCheckBox->isChecked()) {
 		parentApp->getSceneObj()->setClearColor(QColor("transparent"));
-	} else {
-		parentApp->getSceneObj()->setClearColor(standard_clear_color);
 	}
 	parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
 
@@ -123,10 +121,9 @@ void RenderPlugin::action_render_image() {
 void RenderPlugin::action_render_image_series() {
 	int fps;
 	bool fps_mode;
-	bool doComposite;
-	bool render_transparent;
 	int width;
 	int height;
+	float duration = parentApp->getToolkitTimeline()->getMaxTime();
 
 	int result = render_imageseries_dialog->exec();
 
@@ -136,18 +133,35 @@ void RenderPlugin::action_render_image_series() {
 	width = render_imageseries_dialog->WidthSpinBox->value();
 	height = render_imageseries_dialog->HeightSpinBox->value();
 	fps = render_imageseries_dialog->FpsSpinBox->value();
+	do_compositon = render_imageseries_dialog->compositeBox->isChecked();
+	render_transparent = render_imageseries_dialog->transparentBackgroundCheckBox->isChecked();
+	file_loc = render_imageseries_dialog->filenameEdit->text();
 
 	if (render_imageseries_dialog->fpsModeRadioButton->isChecked())
 		fps_mode = true;
 	else
 		fps_mode = false;
 
-	doComposite = render_imageseries_dialog->compositeBox->isChecked();
-	render_transparent = render_imageseries_dialog->transparentBackgroundCheckBox->isChecked();
+	if (fps_mode) {
+		frame_count = duration / (float)fps;
+	} else {
+		frame_count = fps;
+	}
 
-	file_loc = render_imageseries_dialog->filenameEdit->text();
+	timestep = duration / (float)frame_count;
 
 	init_offscreen_render_surface(width, height);
+	if (do_compositon) {
+		saved_frame = QImage(width, height, QImage::Format_ARGB32);
+		image_composer.begin(&saved_frame);
+		image_composer.setCompositionMode(QPainter::CompositionMode_Source);
+		image_composer.fillRect(saved_frame.rect(), Qt::transparent);
+		image_composer.setCompositionMode(QPainter::CompositionMode_Plus);
+	}
+
+	if (render_transparent) {
+		parentApp->getSceneObj()->setClearColor(QColor("transparent"));
+	}
 	parentApp->getSceneObj()->setOffscreenRender(offscreen_render);
 
 	pbar = new QProgressDialog("Rendering offscreen", "Abort Render", 0, frame_count, parentApp);
@@ -167,9 +181,23 @@ void RenderPlugin::action_render_image_series() {
 void RenderPlugin::handle_image_series_frame() {
 		pbar->setValue(current_frame);
 		QImage rendered_image = capture_reply->image().convertToFormat(QImage::Format_ARGB32);
+		QString save_path = QDir(file_loc).filePath(QString("image-series-%1.png").arg((int)current_frame, 6, 10, QLatin1Char('0')));
+		rendered_image.save(save_path);
+
+		if (do_compositon) {
+			image_composer.drawImage(0, 0, rendered_image);
+		}
 
 		if (last_frame_captured) {
+			if (do_compositon) {
+				image_composer.end();
+				QString composed_path = QDir(file_loc).filePath(QString("image-series-%1.png").arg("composed"));
+				saved_frame.save(composed_path);
+			}
+	        parentApp->getSceneObj()->setClearColor(standard_clear_color);
+			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
+			delete capture_reply;
 			return;
 		}
 
@@ -181,6 +209,7 @@ void RenderPlugin::handle_image_series_frame() {
 		}
 
 		if (pbar->wasCanceled()) {
+	        parentApp->getSceneObj()->setClearColor(standard_clear_color);
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
 			delete capture_reply;
@@ -205,8 +234,8 @@ void RenderPlugin::action_render_video() {
 	float duration = parentApp->getToolkitTimeline()->getMaxTime();
 
 	render_video_dialog->set_video_lenght(duration);
-	int result = render_video_dialog->exec();
 
+	int result = render_video_dialog->exec();
 	if (result == QDialog::Rejected)
 		return;
 

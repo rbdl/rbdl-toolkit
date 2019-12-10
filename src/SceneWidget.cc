@@ -42,6 +42,7 @@ SceneWidget::SceneWidget(QWidget *parent):
 		}
 #endif
 	format.setAlphaBufferSize(8);
+	format.setSamples(16);
 	QSurfaceFormat::setDefaultFormat(format);
 
 	//setup actual widget
