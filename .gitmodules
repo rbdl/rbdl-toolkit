@@ -1,3 +1,3 @@
-[submodule "plugins/RenderPlugin/vendor/QtFFmpegWrapper"]
-	path = plugins/RenderPlugin/vendor/QtFFmpegWrapper
-	url = https://github.com/ju6ge/QtFFmpegWrapper
+[submodule "plugins/RenderPlugin/vendor/QVideoWriter"]
+	path = plugins/RenderPlugin/vendor/QVideoWriter
+	url = https://github.com/ju6ge/QVideoWriter

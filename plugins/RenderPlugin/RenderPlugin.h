@@ -20,7 +20,7 @@
 #include <QProgressDialog>
 #include <Qt3DRender>
 
-#include "QVideoEncoder.h"
+#include "QVideoWriter.h"
 
 #include "toolkit_interfaces.h"
 
@@ -64,7 +64,7 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		bool render_transparent;
 
 		QProgressDialog* pbar;
-		QVideoEncoder* encoder;
+		QVideoWriter* encoder;
 
 		void init_offscreen_render_surface(int width, int height);
 

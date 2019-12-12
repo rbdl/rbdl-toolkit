@@ -254,8 +254,8 @@ void RenderPlugin::action_render_video() {
 	pbar->setWindowModality(Qt::WindowModal);
 	pbar->setMinimumDuration(0);
 
-	encoder = new QVideoEncoder;
-	encoder->createFile(filename, width, height, fps);
+	encoder = new QVideoWriter;
+	encoder->createVideo(filename, width, height, fps);
 	last_frame_captured = false;
 	current_frame = 0;
 	current_time = (float) current_frame * timestep;
@@ -269,14 +269,10 @@ void RenderPlugin::action_render_video() {
 void RenderPlugin::handle_video_frame() {
 		pbar->setValue(current_frame);
 		QImage rendered_image = capture_reply->image().convertToFormat(QImage::Format_ARGB32);
-		encoder->encodeImage(rendered_image);
+		encoder->addFrame(rendered_image);
 
 		if (last_frame_captured) {
-			rendered_image.save("debug.png");
-			for (int i=0; i<24; i++) {
-				encoder->encodeImage(rendered_image);
-			}
-			encoder->close();
+			encoder->finish();
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
 			delete encoder;
