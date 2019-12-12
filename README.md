@@ -15,17 +15,34 @@ Use cmake to build and install
 
 * RBDL with minimum version 3.0.0
 * Eigen3
-* Qt5 version >= 5.9
+* Qt5 version >= 5.13
 * Qt3D and assimp for model loading
 
 ## Building On Ubuntu
+
+**Warning** *rbdl-toolkit* builds with qt5.9 but the rendering plugin will not work du to bugs in qt.
 
 Since our research group is mostly using Ubuntu here is a quick one line install command for all
 dependencies except RBDL.
 
 `sudo apt install qt5* qt3d* libeigen3-dev libassimp-dev`
 
+Ubuntu installs qt5.9 per default and rbdl-toolkit will work with the exception of the rendering plugin.
+In order use the rendering plugin you will have to install qt your self. To do this download the open
+source version of qt from the website and follow the installation instructions. Make sure to install at 
+minimum version *5.13*!
+
+Afterwards build *rbdl-toolkit* with cmake and adding the CMAKE_PREFIX_PATH variable set to 
+your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]/lib/cmake. 
+For me that looked like this:
+
+```code
+cmake -DCMAKE_PREFIX_PATH=~/Qt5.13/5.13.2/gcc_64/lib/cmake ..
+make
+```
+
 # Command Line Options
+
 *rbdl-toolkit* supports command line options. To see all availible options execute ``rbdl-toolkit --help``, plugins may add options
 so make sure all plugins you want to load are enabled in the settigs!
 

@@ -98,7 +98,7 @@ void RenderPlugin::action_render_image() {
 
 	init_offscreen_render_surface(w, h);
 
-    standard_clear_color = parentApp->getSceneObj()->getDefaultClearColor();
+	standard_clear_color = parentApp->getSceneObj()->getDefaultClearColor();
 	if (render_image_dialog->TransparentBackgroundCheckBox->isChecked()) {
 		parentApp->getSceneObj()->setClearColor(QColor("transparent"));
 	}
