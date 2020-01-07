@@ -272,9 +272,6 @@ void RenderPlugin::handle_video_frame() {
 		encoder->addFrame(rendered_image);
 
 		if (last_frame_captured) {
-			for (int i=0; i<25; i++)
-				encoder->addFrame(rendered_image);
-
 			encoder->finish();
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
