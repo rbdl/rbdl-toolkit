@@ -7,5 +7,9 @@ class RBDLToolkitError : public RigidBodyDynamics::Errors::RBDLError {
 	public:
 		RBDLToolkitError(std::string text);
 };
+class RBDLToolkitWarning : public RBDLToolkitError{
+	public:
+		RBDLToolkitWarning(std::string text);
+};
 
 #endif

@@ -6,7 +6,8 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
-#include <rapidcsv.h>
+#include "filterinput.hpp"
+#include <parser.hpp>
 
 using namespace RigidBodyDynamics::Math;
 
@@ -129,56 +130,81 @@ void AnimationPlugin::reload_files() {
 AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	AnimationModelExtention* animation = new AnimationModelExtention();
 
+	std::vector<std::string> names;
+	std::vector<float> row_values;
+
 	//make sure local is en_US for consistent float parsing
 	std::setlocale(LC_NUMERIC, "en_US.UTF-8");
 
-	rapidcsv::Document animation_file(
-		path.toStdString(), 
-		rapidcsv::LabelParams(-1, 0),
-		rapidcsv::SeparatorParams(csv_seperator, csv_trim));
+	io::filtering_istream csv_stream;
 
-	int animation_dof = animation_file.GetColumnCount();
+	std::ifstream file(path.toStdString().c_str(), std::ios_base::in);
+	csv_stream.push(csv_filter<char>());
+	csv_stream.push(file);
+
+	aria::csv::CsvParser parser(csv_stream);
+
+	bool has_header = false;
+	bool first_row_parsed = false;
+	unsigned int first_row_count = 0;
+
+	unsigned int header_dof = 0;
+	unsigned int animation_dof = 0;
+
 	QString first_entry;
+	bool ok = true;
 
-	// if the first entry in csv is not a string, then it does not have a header
-	// if it has a header we need to read it first, otherwise just read in the
-	// values
-	//auto names = animation_file.GetColumnNames();
-
-	bool ok = false;
-	int start = -1;
-
-	while (!ok) {
-		first_entry = QString::fromStdString(animation_file.GetCell<std::string>(-1, start+1));
-		first_entry.toFloat(&ok);
-		start++;
-		//std::cout << first_entry.toStdString() << ", " << start << std::endl;
-	}
-
-	if (start != 0) {
-		throw RigidBodyDynamics::Errors::RBDLError("Trying to read csv with header, which currently" \
-		"is still buggy, for now please remove the header until this bug is fixed!");
-	}
-
-	animation_file = rapidcsv::Document(
-		path.toStdString(), 
-		rapidcsv::LabelParams(-1, start),
-		rapidcsv::SeparatorParams(csv_seperator, csv_trim));
-
-	for (int i=start; i<animation_file.GetRowCount()-1; i++) {
-		auto values = animation_file.GetRow<float>(i);
-		float time = animation_file.GetCell<float>(-1, i);
-
-		RigidBodyDynamics::Math::VectorNd data(animation_dof);
-		//std::cout << time << " [ "; 
-
-		for ( int j = 0; j < animation_dof; j++) {
-			data[j] = values[j];
-			//std::cout << data[j] << ", ";
+	for (auto& row : parser) {
+		for (auto& field : row) {
+			if (!first_row_parsed) {
+				first_row_count++;
+				if (ok) {
+					first_entry = QString::fromStdString(field);
+					first_entry.toFloat(&ok);
+					if (!ok) {
+						has_header = true;
+					}
+				}
+			}
+			if (has_header && !first_row_parsed) {
+				names.push_back(field);
+			} else {
+				row_values.push_back(QString::fromStdString(field).toFloat());
+			}
 		}
-		//std::cout << "]" << std::endl; 
 
-		animation->addAnimationFrame(time, data);
+		if (!has_header || first_row_parsed) {
+			if (animation_dof == 0 && row_values.size() != 0) {
+				animation_dof = row_values.size() - 1;
+			} else if (row_values.size() == 0) {
+				continue;
+			} else if (animation_dof != row_values.size()-1) {
+				throw RBDLToolkitError("Inconsistent amount of columns in animation file! Can not display Animation!\n");
+			}
+			float time = row_values[0];
+			RigidBodyDynamics::Math::VectorNd data(animation_dof);
+			//std::cout << time << " [ "; 
+			for ( int j = 0; j < animation_dof; j++) {
+				data[j] = row_values[j+1];
+				//std::cout << data[j] << ", ";
+			}
+			//std::cout << "]" << std::endl; 
+
+			//write read values to animation object
+			animation->addAnimationFrame(time, data);
+		}
+
+		//this only gets executed once after the first row was read
+		if (!first_row_parsed) {
+			first_row_parsed = true;
+		}
+
+		//reset array for next row
+		row_values.clear();
+	}
+
+	if (has_header) {
+		//throw RigidBodyDynamics::Errors::RBDLError("Todo Useful Message!");
 	}
 
 	return animation;
