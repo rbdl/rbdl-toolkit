@@ -10,6 +10,7 @@
 #include <boost/iostreams/read.hpp>                // check_eof 
 #include <boost/iostreams/pipeline.hpp>
 #include <boost/iostreams/write.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <fstream>
 #include <iostream>
 
@@ -19,9 +20,11 @@ namespace io = boost::iostreams;
 
 using namespace io;
 
+//this class is used to remove comments and Custom Columns Section format from animation files
+//and convert them to normal csv files in order for them to get parsed nicely
 template< typename Ch,
           typename Alloc = std::allocator<Ch> >
-class csv_filter {
+class CSV_IOstream_Sanatiser{
 	private:
 		typedef typename std::basic_string<Ch>::traits_type  string_traits;
 
@@ -41,8 +44,8 @@ class csv_filter {
 
 		struct category : dual_use, filter_tag, multichar_tag {};
 
-		csv_filter(): columns_section(false), data_section(false), pos_(string_type::npos), flags_(0) {}
-		virtual ~csv_filter() {}
+		CSV_IOstream_Sanatiser(): columns_section(false), data_section(false), pos_(string_type::npos), flags_(0) {}
+		virtual ~CSV_IOstream_Sanatiser() {}
 
 		template<typename Source>
 		std::streamsize read(Source& src, char_type* s, std::streamsize n) {
@@ -124,15 +127,15 @@ class csv_filter {
 			if (line.find_first_of("#") == 0 ) {
 				return false;
 			}
-			if (line.starts_with("COLUMNS:")) {
+			if (boost::starts_with(line, "COLUMNS:")) {
 				columns_section = true;
 				return false;
 			}
-			if (line.starts_with("DATA:")) {
+			if (boost::starts_with(line, "DATA:")) {
 				data_section = true;
 				return false;
 			}
-			if (line.starts_with("DATA_FROM:")) {
+			if (boost::starts_with(line, "DATA_FROM:")) {
 				throw RBDLToolkitError("RBDL Toolkit does not support DATA_FROM statements in Animation files! Please put your DATA direktly into the file!\n");
 			}
 			return true;
@@ -201,7 +204,7 @@ class csv_filter {
 		typename string_type::size_type  pos_;
 		int                              flags_;
 };
-BOOST_IOSTREAMS_PIPABLE(csv_filter, 2)
+BOOST_IOSTREAMS_PIPABLE(CSV_IOstream_Sanatiser, 2)
 
 #endif 
 

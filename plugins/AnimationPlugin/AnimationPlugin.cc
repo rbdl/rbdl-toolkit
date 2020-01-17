@@ -6,7 +6,7 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
-#include "filterinput.hpp"
+#include "csv_input_sanatiser.hpp"
 #include <parser.hpp>
 
 using namespace RigidBodyDynamics::Math;
@@ -139,7 +139,7 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	io::filtering_istream csv_stream;
 
 	std::ifstream file(path.toStdString().c_str(), std::ios_base::in);
-	csv_stream.push(csv_filter<char>());
+	csv_stream.push(CSV_IOstream_Sanatiser<char>());
 	csv_stream.push(file);
 
 	aria::csv::CsvParser parser(csv_stream);

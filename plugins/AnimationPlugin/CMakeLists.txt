@@ -41,4 +41,3 @@ TARGET_LINK_LIBRARIES (animationplugin
 )
 
 INSTALL( TARGETS animationplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	
-set_property(TARGET animationplugin PROPERTY CXX_STANDARD 20)
