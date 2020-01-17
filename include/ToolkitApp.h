@@ -64,6 +64,8 @@ class ToolkitApp : public QMainWindow
 		void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
 		void parseCmd(QApplication& app);
 
+		void showWarningDialog(QString warning_msg);
+
 		static void showExceptionDialog(std::exception& e);
 
 		ToolkitTimeline* getToolkitTimeline() { return timeline; }
@@ -77,6 +79,7 @@ class ToolkitApp : public QMainWindow
 
 	signals:
 		void reload_files();
+
 };
 
 

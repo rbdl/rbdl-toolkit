@@ -136,8 +136,9 @@ class CSV_IOstream_Sanatiser{
 				return false;
 			}
 			if (boost::starts_with(line, "DATA_FROM:")) {
-				throw RBDLToolkitError("RBDL Toolkit does not support DATA_FROM statements in Animation files! Please put your DATA direktly into the file!\n");
-			}
+				data_section = true;
+				//do not filter this, since parser looks for it to create error message
+    		}
 			return true;
 		}
 
@@ -160,6 +161,7 @@ class CSV_IOstream_Sanatiser{
 							buffer += traits_type::to_int_type(c);
 					}
 					if (valid_csv_line(buffer)) {
+						cur_line_.append(" ");
 						cur_line_.append(buffer);
 					}
 				}

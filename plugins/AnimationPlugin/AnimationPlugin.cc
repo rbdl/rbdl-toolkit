@@ -3,6 +3,7 @@
 #include <clocale>
 
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
@@ -139,10 +140,12 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	io::filtering_istream csv_stream;
 
 	std::ifstream file(path.toStdString().c_str(), std::ios_base::in);
-	csv_stream.push(CSV_IOstream_Sanatiser<char>());
+	CSV_IOstream_Sanatiser<char> csv_sanatiser;
+	csv_stream.push(csv_sanatiser);
 	csv_stream.push(file);
 
 	aria::csv::CsvParser parser(csv_stream);
+	parser.delimiter(csv_seperator);
 
 	bool has_header = false;
 	bool first_row_parsed = false;
@@ -157,6 +160,9 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	for (auto& row : parser) {
 		for (auto& field : row) {
 			if (!first_row_parsed) {
+				if (boost::algorithm::contains(field, "DATA_FROM:")) {
+					throw RBDLToolkitError("Error: RBDL-Toolkit does not support external data files. Please put your animation data direktly below the DATA: tag!\n");
+				}
 				first_row_count++;
 				if (ok) {
 					first_entry = QString::fromStdString(field);
@@ -204,7 +210,7 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 	}
 
 	if (has_header) {
-		//throw RigidBodyDynamics::Errors::RBDLError("Todo Useful Message!");
+		parentApp->showWarningDialog("Detected Header in CSV: Warning RBDL Toolkit does not assume the order of values in the header to be correct. It expects the values to be ordered accoring to the order in the RBDL Model. Please make sure this is the case!\n");
 	}
 
 	return animation;

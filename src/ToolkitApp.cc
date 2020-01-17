@@ -165,6 +165,8 @@ void ToolkitApp::showExceptionDialog(std::exception& e) {
 	errorBox.exec();
 }
 
+
+
 void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_tilte) {
 	QDockWidget* dock = new QDockWidget(name, this);
 	dock->setWidget(view_widget);
@@ -311,3 +313,19 @@ void ToolkitApp::addCmdOption(QCommandLineOption &option, std::function<void(QCo
 void ToolkitApp::addMenu(QMenu* menu) {
 	main_menu_bar->addMenu(menu);
 }
+
+void ToolkitApp::showWarningDialog(QString warning_msg) {
+	if (toolkit_settings.value("toolkit.showWarnings").isNull()) {
+		//if the value is not set make default true 
+		toolkit_settings.setValue("toolkit.showWarnings", true);
+	}
+	if (toolkit_settings.value("toolkit.showWarnings").toBool()) {
+		//if warnings are enabled 
+		QMessageBox warningBox;
+		warningBox.setText(warning_msg);
+		warningBox.setStandardButtons(QMessageBox::Ok);
+		warningBox.setDefaultButton(QMessageBox::Ok);
+		warningBox.exec();
+	}
+}
+
