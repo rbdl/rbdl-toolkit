@@ -27,6 +27,7 @@ class WrapperExtention {
 		void setModelParent(RBDLModelWrapper* model);
 
 		virtual std::string getExtentionName() = 0;
+		virtual Qt3DCore::QEntity* getVisual();
 		virtual void update(float current_time) = 0; 
 };
 

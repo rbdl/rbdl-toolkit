@@ -192,6 +192,11 @@ void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	extentions[extention_name] = extention;
 	extention->setModelParent(this);
 
+	Qt3DCore::QEntity* visual = extention->getVisual();
+	if (visual != nullptr) {
+		visual->setParent(model_render_obj);
+	}
+
 	emit new_extention_added();
 }
 
@@ -205,6 +210,10 @@ QString RBDLModelWrapper::getModelFile() {
 
 void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
 	model_parent = model;
+}
+
+Qt3DCore::QEntity* WrapperExtention::getVisual() {
+	return nullptr;
 }
 
 WrapperExtention::WrapperExtention() {

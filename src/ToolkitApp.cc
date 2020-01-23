@@ -145,10 +145,10 @@ void ToolkitApp::loadModel(const QString &model_file) {
 		//add group to scene object to toggle single models in render settings
 		model_scene_obj->setProperty("Scene.ObjGroup", 
 		                              QVariant(QString("%1: %2").arg(
-			                                     QString::number(loaded_models.size()), 
-			                                     model->getFileName()
-			                                   )
-			                         ));
+		                                         QString::number(loaded_models.size()), 
+		                                         model->getFileName()
+		                                       )
+		                             ));
 		loaded_models.push_back(model);
 		main_display->addSceneObject(model_scene_obj);
 

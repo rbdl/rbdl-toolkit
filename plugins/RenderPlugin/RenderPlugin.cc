@@ -277,6 +277,7 @@ void RenderPlugin::handle_video_frame() {
 
 			encoder->finish();
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
+			delete capture_reply;
 			delete offscreen_render;
 			delete encoder;
 			return;

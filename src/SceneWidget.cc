@@ -198,8 +198,8 @@ void SceneWidget::setDefaultClearColor(QColor color){
 
 void SceneWidget::setOffscreenRender(QObject* surface) {
 	if (surface != nullptr) {
-		qt3d_view->defaultFrameGraph()->setSurface(surface);
 		QWindow* window = qobject_cast<QWindow*>(surface);
+		qt3d_view->defaultFrameGraph()->setSurface(window);
 
 		width = window->width();
 		height = window->height();
