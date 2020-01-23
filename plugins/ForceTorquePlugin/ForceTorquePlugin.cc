@@ -124,6 +124,34 @@ void ForceTorquePlugin::action_load_data() {
 
 	field->addArrowFieldFrame(0, pos, dir);
 	parentApp->getLoadedModels()->at(0)->addExtention(field);
+	//if (parentApp != NULL) {
+	//	QFileDialog file_dialog (parentApp, "Select Force/Torque Data File");
+
+	//	file_dialog.setNameFilter(tr("Force/Torque File (*.csv *.txt)"));
+	//	file_dialog.setFileMode(QFileDialog::ExistingFile);
+
+	//	if (file_dialog.exec()) {
+
+	//		if (parentApp->getLoadedModels()->size() != 0) {
+	//			RBDLModelWrapper* rbdl_model = nullptr;
+
+	//			if (parentApp->getLoadedModels()->size() == 1) {
+	//				rbdl_model = parentApp->getLoadedModels()->at(0);
+	//			} else {
+	//				rbdl_model = parentApp->selectModel(nullptr);
+	//			}
+
+	//			if (rbdl_model != nullptr) {
+	//			} else {
+	//				delete ext;
+	//			}
+	//		}
+	//	}	
+
+
+	//} else {
+	//	throw RigidBodyDynamics::Errors::RBDLError("Force/Torque plugin was not initialized correctly!");
+	//}
 }
 
 void ForceTorquePlugin::reload_files() {

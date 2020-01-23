@@ -61,10 +61,13 @@ void ArrowFieldModelExtention::update(float current_time) {
 		pos_frame = pos;
 		dir_frame = dir;
 	}
-
-	for (int i=0; i<arrow_count/3;i++) {
-		std::cout << arrow_count << std::endl;
-		arrow_transforms[i]->setTranslation(QVector3D(pos_frame(0,i), pos_frame(1,i), pos_frame(2,i)));
+	for (int i=0; i<arrow_count;i++) {
+		QVector3D trans;
+		trans[0] = pos_frame(0,i);
+		trans[1] = pos_frame(1,i);
+		trans[2] = pos_frame(2,i);
+		arrow_transforms[i]->setTranslation(trans);
+		arrow_transforms[i]->setRotation(QQuaternion(0, 0, 0, 0));
 	}
 }
 
