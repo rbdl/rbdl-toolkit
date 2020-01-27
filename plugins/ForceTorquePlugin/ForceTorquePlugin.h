@@ -26,7 +26,7 @@ class ForceTorquePlugin : public QObject, public OptionalInterface{
 
 		void init(ToolkitApp* app);
 
-		void loadForceTorqueFile(QString path);
+		void loadForceTorqueFile(QString path, ArrowFieldModelExtention* force_field, ArrowFieldModelExtention* torque_field);
 
 	private:
 		ToolkitApp* parentApp;

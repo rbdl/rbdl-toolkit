@@ -64,8 +64,8 @@ void AnimationModelExtention::addAnimationFrame(float time, RigidBodyDynamics::M
 		throw RigidBodyDynamics::Errors::RBDLInvalidParameterError("Time values must be sequential!");
 	}
 
-	animation_times.push_back(time);
+	animation_times.push_back(std::move(time));
 	max_time = time;
 
-	animation_q_frames.push_back(Q);
+	animation_q_frames.push_back(std::move(Q));
 }

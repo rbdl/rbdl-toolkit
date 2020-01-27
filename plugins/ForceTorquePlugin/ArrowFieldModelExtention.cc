@@ -108,7 +108,7 @@ void ArrowFieldModelExtention::addArrowFieldFrame(float time, const Matrix3fd& p
 		throw RBDLToolkitError("Amount of arrows does not match the amount previously provided!");
 	}
 
-	arrow_times.push_back(time);
-	arrow_positions.push_back(pos);
-	arrow_directions.push_back(dir);
+	arrow_times.push_back(std::move(time));
+	arrow_positions.push_back(std::move(pos));
+	arrow_directions.push_back(std::move(dir));
 }

@@ -11,6 +11,7 @@
 #include <Qt3DCore/QTransform>
 
 #include <parser.hpp>
+#include <toolkit_errors.h>
 
 using namespace RigidBodyDynamics::Math;
 
@@ -50,6 +51,18 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 
 		for (int i=0; i<data_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
+			ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color);
+			ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color);
+
+			try {
+				this->loadForceTorqueFile(data_list[i], force_field, torque_field);
+			} catch (RigidBodyDynamics::Errors::RBDLError& e){
+				ToolkitApp::showExceptionDialog(e);
+				delete force_field;
+				delete torque_field;
+				continue;
+			}
+				std::cout << QString("Force/Torque file %1 can not be mapped to a model ... Ignoring!").arg(data_list[i]).toStdString() << std::endl;
 			}
 		}
 	});
@@ -111,53 +124,113 @@ void ForceTorquePlugin::getCSVSettings() {
 void ForceTorquePlugin::action_load_data() {
 	ArrowFieldModelExtention *field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color);
 
-	Matrix3fd pos;
-	pos.resize(3,1);
-	pos(0,0) = 0;
-	pos(1,0) = 0;
-	pos(2,0) = 0;
-	Matrix3fd dir;
-	dir.resize(3,1);
-	dir(0,0) = 1;
-	dir(1,0) = 0;
-	dir(2,0) = 1;
+	if (parentApp != NULL) {
+		QFileDialog file_dialog (parentApp, "Select Force/Torque Data File");
 
-	field->addArrowFieldFrame(0, pos, dir);
-	parentApp->getLoadedModels()->at(0)->addExtention(field);
-	//if (parentApp != NULL) {
-	//	QFileDialog file_dialog (parentApp, "Select Force/Torque Data File");
+		file_dialog.setNameFilter(tr("Force/Torque File (*.csv *.ff)"));
+		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
-	//	file_dialog.setNameFilter(tr("Force/Torque File (*.csv *.txt)"));
-	//	file_dialog.setFileMode(QFileDialog::ExistingFile);
+		ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color);
+		ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color);
 
-	//	if (file_dialog.exec()) {
+		if (file_dialog.exec()) {
+			try {
+				loadForceTorqueFile(file_dialog.selectedFiles().at(0), force_field, torque_field);
+			} catch (RigidBodyDynamics::Errors::RBDLError& e){
+				ToolkitApp::showExceptionDialog(e);
+				delete force_field;
+				delete torque_field;
+			}
+			if (parentApp->getLoadedModels()->size() != 0) {
+				RBDLModelWrapper* rbdl_model = nullptr;
 
-	//		if (parentApp->getLoadedModels()->size() != 0) {
-	//			RBDLModelWrapper* rbdl_model = nullptr;
+				if (parentApp->getLoadedModels()->size() == 1) {
+					rbdl_model = parentApp->getLoadedModels()->at(0);
+				} else {
+					rbdl_model = parentApp->selectModel(nullptr);
+				}
 
-	//			if (parentApp->getLoadedModels()->size() == 1) {
-	//				rbdl_model = parentApp->getLoadedModels()->at(0);
-	//			} else {
-	//				rbdl_model = parentApp->selectModel(nullptr);
-	//			}
-
-	//			if (rbdl_model != nullptr) {
-	//			} else {
-	//				delete ext;
-	//			}
-	//		}
-	//	}	
-
-
-	//} else {
-	//	throw RigidBodyDynamics::Errors::RBDLError("Force/Torque plugin was not initialized correctly!");
-	//}
+				if (rbdl_model != nullptr) {
+					rbdl_model->addExtention(force_field);
+					rbdl_model->addExtention(torque_field);
+				} else {
+					delete force_field;
+					delete torque_field;
+				}
+			}
+		}	
+	} else {
+		//should never happen
+		throw RigidBodyDynamics::Errors::RBDLError("Force/Torque plugin was not initialized correctly!");
+	}
 }
 
 void ForceTorquePlugin::reload_files() {
 
 }
 
-void ForceTorquePlugin::loadForceTorqueFile(QString path) {
+void ForceTorquePlugin::loadForceTorqueFile(QString path, ArrowFieldModelExtention* force_field, ArrowFieldModelExtention *torque_field) {
+	std::setlocale(LC_NUMERIC, "en_US.UTF-8");
 
+	std::vector<std::string> names;
+	std::vector<float> row_values;
+
+	std::ifstream file(path.toStdString().c_str(), std::ios_base::in);
+	aria::csv::CsvParser parser(file);
+	parser.delimiter(csv_seperator);
+
+	bool header_check = false;
+
+	for (auto& row : parser) {
+		bool ok = true;
+		if (!header_check) {
+			header_check = true; 
+
+			QString first_entry = QString::fromStdString(row[0]);
+			first_entry.toFloat(&ok);
+			if (!ok) {
+				//found header
+				for (auto& field : row) {
+					names.push_back(field);
+				}
+			}
+		}
+		if (!ok) continue;
+
+		//check for correct column size
+		//column format : time + ( pos_x, pos_y, pos_z, force_x, force_y, force_z, torque_x, torque_y, torque_z)+
+		if ( (row.size() - 1) % 9 != 0 ) {
+			throw RBDLToolkitError("Could not load Force / Torque data from file, due to incorrect amount of data columns!\n");
+		}
+		int entry_count = (row.size() - 1) / 9;
+
+		for (auto& field : row) {
+			row_values.push_back(QString::fromStdString(field).toFloat());
+		}
+
+		float time = row_values[0];
+		Matrix3fd pos, force_data, torque_data;
+		pos.resize(3, entry_count);
+		force_data.resize(3, entry_count);
+		torque_data.resize(3, entry_count);
+
+		for (int i=0; i<entry_count; i++) {
+			pos(0, i) = row_values[ (9*i+0) +1 ];
+			pos(1, i) = row_values[ (9*i+1) +1 ];
+			pos(2, i) = row_values[ (9*i+2) +1 ];
+
+			force_data(0, i) = row_values[ (9*i+3) +1 ];
+			force_data(1, i) = row_values[ (9*i+4) +1 ];
+			force_data(2, i) = row_values[ (9*i+5) +1 ];
+
+			torque_data(0, i) = row_values[ (9*i+6) +1 ];
+			torque_data(1, i) = row_values[ (9*i+7) +1 ];
+			torque_data(2, i) = row_values[ (9*i+8) +1 ];
+ 		}
+
+ 		force_field->addArrowFieldFrame(time, pos, force_data);
+ 		torque_field->addArrowFieldFrame(time, pos, torque_data);
+
+ 		row_values.clear();
+	}
 }
