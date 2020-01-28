@@ -14,12 +14,16 @@ using namespace Qt3DExtras;
 ArrowFieldModelExtention::ArrowFieldModelExtention(
 	Qt3DRender::QMesh *arrow_mesh, 
 	QString group_name,
-	QColor arrow_color) : 
+	QColor arrow_color,
+	float draw_threshold,
+	float arrow_scale_factor ) : 
 		arrow_mesh(arrow_mesh),
 		max_time(0.),
 		arrow_count(0),
 		arrow_color(arrow_color),
 		group_name(group_name),
+		draw_threshold(draw_threshold),
+		arrow_scale_factor(arrow_scale_factor),
 		WrapperExtention()
 {
 	arrow_field_root = new QEntity;
@@ -66,8 +70,22 @@ void ArrowFieldModelExtention::update(float current_time) {
 		trans[0] = pos_frame(0,i);
 		trans[1] = pos_frame(1,i);
 		trans[2] = pos_frame(2,i);
-		arrow_transforms[i]->setTranslation(trans);
-		arrow_transforms[i]->setRotation(QQuaternion(0, 0, 0, 0));
+
+		QVector3D direction;
+		direction[0] = dir_frame(0,i);
+		direction[1] = dir_frame(1,i);
+		direction[2] = dir_frame(2,i);
+
+		if (direction.length() > draw_threshold) {
+			arrow_entities[i]->setEnabled(true);
+			float scale = direction.length() * arrow_scale_factor;
+			direction.normalize();
+			arrow_transforms[i]->setScale(scale);
+			arrow_transforms[i]->setTranslation(trans);
+			arrow_transforms[i]->setRotation(QQuaternion::fromDirection(QVector3D(0, 0, 1), direction));
+		} else {
+			arrow_entities[i]->setEnabled(false);
+		}
 	}
 }
 
@@ -78,16 +96,19 @@ QEntity* ArrowFieldModelExtention::getVisual() {
 	for (int i=0;i<arrow_count;i++) {
 		QEntity* arrow_entity = new QEntity(arrow_field_root);
 
-		Qt3DExtras::QDiffuseSpecularMaterial* material = new QDiffuseSpecularMaterial;
+		Qt3DExtras::QPhongAlphaMaterial* material = new QPhongAlphaMaterial;
 		material->setAmbient(arrow_color);
-		material->setAlphaBlendingEnabled(true);
+		float alpha = (float)arrow_color.alpha() / 255.;
+		material->setAlpha(alpha);
 
 		Qt3DCore::QTransform* transform = new Qt3DCore::QTransform;
-		arrow_transforms.push_back(transform);
 
 		arrow_entity->addComponent(arrow_mesh);
 		arrow_entity->addComponent(material);
 		arrow_entity->addComponent(transform);
+
+		arrow_transforms.push_back(std::move(transform));
+		arrow_entities.push_back(std::move(arrow_entity));
 	}
 
 	update(0.);

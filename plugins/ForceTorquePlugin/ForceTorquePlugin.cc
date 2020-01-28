@@ -51,17 +51,21 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 
 		for (int i=0; i<data_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
-			ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color);
-			ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color);
+				ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color, draw_threshold, arrow_scale_factor);
+				ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color, draw_threshold, arrow_scale_factor);
 
-			try {
-				this->loadForceTorqueFile(data_list[i], force_field, torque_field);
-			} catch (RigidBodyDynamics::Errors::RBDLError& e){
-				ToolkitApp::showExceptionDialog(e);
-				delete force_field;
-				delete torque_field;
-				continue;
-			}
+				try {
+					this->loadForceTorqueFile(data_list[i], force_field, torque_field);
+				} catch (RigidBodyDynamics::Errors::RBDLError& e){
+					ToolkitApp::showExceptionDialog(e);
+					delete force_field;
+					delete torque_field;
+					continue;
+				}
+				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
+				model->addExtention(force_field);
+				model->addExtention(torque_field);
+			} else {
 				std::cout << QString("Force/Torque file %1 can not be mapped to a model ... Ignoring!").arg(data_list[i]).toStdString() << std::endl;
 			}
 		}
@@ -70,10 +74,11 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 void ForceTorquePlugin::getArrowSettings() {
 	parentApp->toolkit_settings.beginGroup("RenderOptions");
 
+
 	//force color setting
 	QVariant val = parentApp->toolkit_settings.value("force.color");
 	if (val.isNull()) {
-		force_color = QColor::fromRgbF(1., 0., 0., 0.5);
+		force_color = QColor::fromRgbF(1., 0., 0., 0.9);
 		parentApp->toolkit_settings.setValue("force.color", force_color.rgba());
 	} else {
 		//read as int because it is saved as one, otherwise it would not load correctly
@@ -84,12 +89,29 @@ void ForceTorquePlugin::getArrowSettings() {
 	//torque color setting
 	val = parentApp->toolkit_settings.value("torque.color");
 	if (val.isNull()) {
-		torque_color = QColor::fromRgbF(0., 1., 0., 0.5);
+		torque_color = QColor::fromRgbF(0., 1., 0., 0.9);
 		parentApp->toolkit_settings.setValue("torque.color", torque_color.rgba());
 	} else {
 		//read as int because it is saved as one, otherwise it would not load correctly
 		//watch out for overflow -> will silently fail because char is uint8
 		torque_color = QColor::fromRgba(val.toUInt());
+	}
+
+	//arrow display size threshold
+	val = parentApp->toolkit_settings.value("arrow.display_threshold");
+	if (val.isNull()) {
+		draw_threshold = 0.001;
+		parentApp->toolkit_settings.setValue("arrow.display_threshold", draw_threshold);
+	} else {
+		draw_threshold = val.toFloat();
+	}
+
+	val = parentApp->toolkit_settings.value("arrow.arrow_scale_factor");
+	if (val.isNull()) {
+		arrow_scale_factor = 0.001;
+		parentApp->toolkit_settings.setValue("arrow.arrow_scale_factor", arrow_scale_factor);
+	} else {
+		arrow_scale_factor = val.toFloat();
 	}
 
 	parentApp->toolkit_settings.endGroup();
@@ -130,8 +152,8 @@ void ForceTorquePlugin::action_load_data() {
 		file_dialog.setNameFilter(tr("Force/Torque File (*.csv *.ff)"));
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
-		ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color);
-		ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color);
+		ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color, draw_threshold, arrow_scale_factor);
+		ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color, draw_threshold, arrow_scale_factor);
 
 		if (file_dialog.exec()) {
 			try {

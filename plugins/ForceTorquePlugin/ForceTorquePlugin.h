@@ -35,6 +35,9 @@ class ForceTorquePlugin : public QObject, public OptionalInterface{
 		Qt3DRender::QMesh* force_arrow_mesh;
 		Qt3DRender::QMesh* torque_arrow_mesh;
 
+		float draw_threshold;
+		float arrow_scale_factor;
+
 		QColor force_color;
 		QColor torque_color;
 

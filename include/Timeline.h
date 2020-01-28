@@ -19,6 +19,7 @@ class ToolkitTimeline : public QWidget, public Ui::Timeline {
 
 		void setMaxTime(float max_time);
 		float getMaxTime() { return max_time; }
+		float getCurrentTime() { return current_time; }
 		void setCurrentTime(float current_time, bool stop_playing=false);
 		void reset();
 

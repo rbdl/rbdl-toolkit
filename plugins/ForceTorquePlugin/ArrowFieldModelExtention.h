@@ -14,6 +14,10 @@ class ArrowFieldModelExtention : public WrapperExtention {
 	private:
 		float max_time; 
 		int arrow_count;
+
+		float draw_threshold;
+		float arrow_scale_factor;
+
 		QString group_name;
 		QColor arrow_color;
 
@@ -25,15 +29,23 @@ class ArrowFieldModelExtention : public WrapperExtention {
 		std::vector<Matrix3fd> arrow_directions;
 
 		std::vector<Qt3DCore::QTransform*> arrow_transforms;
+		std::vector<Qt3DCore::QEntity*> arrow_entities;
 
 	public:
-		ArrowFieldModelExtention(Qt3DRender::QMesh* arrow_mesh, QString group_name, QColor arrow_color);
+		ArrowFieldModelExtention(Qt3DRender::QMesh* arrow_mesh, 
+		                         QString group_name,
+		                         QColor arrow_color,
+		                         float draw_threshold = 0.001,
+		                         float arrow_scale_factor = 0.001);
 
 		std::string getExtentionName();
 		void update(float current_time);
 		Qt3DCore::QEntity* getVisual();
 
 		void addArrowFieldFrame(float time, const Matrix3fd& positions, const Matrix3fd& directions);
+
+		void setDrawTheshold(float draw_threshold) { this->draw_threshold = draw_threshold; }
+		void setScaleFactor(float arrow_scale_factor) { this->arrow_scale_factor = arrow_scale_factor; }
 };
 
 #endif

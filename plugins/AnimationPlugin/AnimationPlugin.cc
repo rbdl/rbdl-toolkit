@@ -49,6 +49,7 @@ void AnimationPlugin::init(ToolkitApp* app) {
 				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
 				model->addExtention(ext);
 				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+				model->model_update(parentApp->getToolkitTimeline()->getCurrentTime());
 				loaded_animations.push_back(ext);
 			} else {
 				std::cout << QString("Animationfile %1 can not be mapped to a model ... Ignoring!").arg(animation_list[i]).toStdString() << std::endl;
