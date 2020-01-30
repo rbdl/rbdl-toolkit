@@ -82,7 +82,7 @@ void ArrowFieldModelExtention::update(float current_time) {
 			direction.normalize();
 			arrow_transforms[i]->setScale(scale);
 			arrow_transforms[i]->setTranslation(trans);
-			arrow_transforms[i]->setRotation(QQuaternion::fromDirection(QVector3D(0, 0, 1), direction));
+			arrow_transforms[i]->setRotation(QQuaternion::fromDirection(direction, QVector3D(0,1,0)));
 		} else {
 			arrow_entities[i]->setEnabled(false);
 		}

@@ -26,4 +26,3 @@ class AnimationModelExtention : public WrapperExtention {
 };
 
 #endif
-

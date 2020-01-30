@@ -34,7 +34,12 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 	getCSVSettings();
 	getArrowSettings();
 
-	QString force_arrow_src = findFile(QString("force_arrow.obj"));
+	QString force_arrow_src;
+	if (pos_at_tip) {
+		force_arrow_src = findFile(QString("force_arrow_tip.obj"));
+	} else {
+		force_arrow_src = findFile(QString("force_arrow.obj"));
+	}
 	force_arrow_mesh = new Qt3DRender::QMesh;
 	force_arrow_mesh->setSource(QUrl::fromLocalFile(force_arrow_src));
 
@@ -112,6 +117,14 @@ void ForceTorquePlugin::getArrowSettings() {
 		parentApp->toolkit_settings.setValue("arrow.arrow_scale_factor", arrow_scale_factor);
 	} else {
 		arrow_scale_factor = val.toFloat();
+	}
+
+	val = parentApp->toolkit_settings.value("arrow.pos_at_tip");
+	if (val.isNull()) {
+		pos_at_tip = false;
+		parentApp->toolkit_settings.setValue("arrow.pos_at_tip", pos_at_tip);
+	} else {
+		pos_at_tip = val.toBool();
 	}
 
 	parentApp->toolkit_settings.endGroup();

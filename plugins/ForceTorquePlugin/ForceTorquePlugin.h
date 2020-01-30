@@ -37,6 +37,7 @@ class ForceTorquePlugin : public QObject, public OptionalInterface{
 
 		float draw_threshold;
 		float arrow_scale_factor;
+		bool  pos_at_tip;
 
 		QColor force_color;
 		QColor torque_color;
