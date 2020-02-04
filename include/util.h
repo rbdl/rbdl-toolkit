@@ -9,9 +9,9 @@
 
 // returs an empty file on failure
 QString findFile(QString file);
-
 QString findFile(std::string file); 
 
+QString findPlugin(QString plugin);
 QStringList findAllPlugins();
 
 #endif 

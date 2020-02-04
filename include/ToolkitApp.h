@@ -75,6 +75,8 @@ class ToolkitApp : public QMainWindow
 		void action_reload_files();
 		void action_load_model();
 
+		void model_visual_update(Qt3DCore::QEntity* visual);
+
 		void loadModel(const QString &model_file); 
 
 	signals:

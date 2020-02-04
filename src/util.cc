@@ -1,6 +1,7 @@
 #include "util.h"
 
 #include "rbdl/rbdl_errors.h"
+#include "toolkit_errors.h"
 
 #include <sstream>
 #include <iostream>
@@ -36,6 +37,41 @@ QString findFile(QString file) {
 
 QString findFile(std::string file) { 
 	return findFile(QString::fromStdString(file)); 
+}
+
+QString findPlugin(QString plugin) {
+	QFileInfo check_file(plugin);
+	if (check_file.exists()) {
+		return plugin;
+	}
+
+	QString filename0 = QString("lib%1.so").arg(plugin);
+	QFileInfo check_file0(filename0);
+	if (check_file.exists()) {
+		return filename0;
+	}
+
+	QString filename1 = QString("lib%1plugin.so").arg(plugin);
+	QFileInfo check_file1(filename1);
+	if (check_file.exists()) {
+		return filename1;
+	}
+
+	auto paths = QDir::searchPaths("plugins");
+	paths << "./plugins";
+	for (auto path : paths) {
+		QDir dir(path);
+		if (dir.exists(plugin))
+			return dir.filePath(plugin);
+		if (dir.exists(filename0))
+			return dir.filePath(filename0);
+		if (dir.exists(filename1))
+			return dir.filePath(filename1);
+	}
+
+	std::ostringstream errormsg;
+	errormsg << "No plugin library matching the name " << plugin.toStdString() << " found!" << std::endl;
+	throw RBDLFileNotFoundError(errormsg.str());
 }
 
 QStringList findAllPlugins() {

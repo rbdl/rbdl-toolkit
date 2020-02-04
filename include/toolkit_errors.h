@@ -8,4 +8,9 @@ class RBDLToolkitError : public RigidBodyDynamics::Errors::RBDLError {
 		RBDLToolkitError(std::string text);
 };
 
+class RBDLFileNotFoundError: public RBDLToolkitError {
+	public:
+		RBDLFileNotFoundError(std::string text);
+};
+
 #endif

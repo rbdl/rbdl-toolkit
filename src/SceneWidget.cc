@@ -127,24 +127,53 @@ void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {
 	QVariant obj_grouping = scene_obj->property("Scene.ObjGroup");
 	if (obj_grouping.isValid()) {
 		QString group_name = obj_grouping.toString();
-		scene_obj_grouping[group_name].push_back(scene_obj);
+		addSceneObjectToGroup(scene_obj, group_name);
+	}
 
-		bool check_box_exsist = false;
-		for (RenderGroupCheckBox* box : render_select_check_boxes) {
-			if (box->text() == group_name) {
-				check_box_exsist = true;
-				break;
-			}
+	int i=0;
+	for ( auto child : scene_obj->findChildren<QEntity*>()) {
+		QVariant obj_grouping = child->property("Scene.ObjGroup");
+		if (obj_grouping.isValid()) {
+			QString group_name = obj_grouping.toString();
+			addSceneObjectToGroup(qobject_cast<QEntity*>(child), group_name);
 		}
+	}
+}
 
-		if (!check_box_exsist) {
-			RenderGroupCheckBox* check_box = new RenderGroupCheckBox(group_name);
-			check_box->setCheckState(Qt::Checked);
+void SceneWidget::addSceneObjectToGroup(QEntity* scene_obj, QString group_name) {
+	bool found = false;
+	for(auto it=scene_obj_grouping[group_name].begin(); it<scene_obj_grouping[group_name].end(); it++) {
+		if (*it == scene_obj) {
+			found = true;
+			break;
+		}
+	}
+	if (!found)
+		scene_obj_grouping[group_name].push_back(scene_obj);
+	else
+		return;
 
-			connect(check_box, SIGNAL(renderGroupStateChanged(QString, bool)), this, SLOT(toggle_render_obj_group(QString, bool)));
+	bool check_box_exsist = false;
+	for (RenderGroupCheckBox* box : render_select_check_boxes) {
+		if (box->text() == group_name) {
+			check_box_exsist = true;
+			break;
+		}
+	}
+	if (!check_box_exsist) {
+		RenderGroupCheckBox* check_box = new RenderGroupCheckBox(group_name);
+		check_box->setCheckState(Qt::Checked);
+		connect(check_box, SIGNAL(renderGroupStateChanged(QString, bool)), this, SLOT(toggle_render_obj_group(QString, bool)));
+		render_select_check_boxes.push_back(check_box);
+		render_selector_layout->addWidget(check_box, 0, Qt::AlignTop);
+	}
+}
 
-			render_select_check_boxes.push_back(check_box);
-			render_selector_layout->addWidget(check_box, 0, Qt::AlignTop);
+void SceneWidget::removeSceneObjectFromGroup(QEntity* scene_obj, QString group_name) {
+	for(auto it=scene_obj_grouping[group_name].begin(); it<scene_obj_grouping[group_name].end(); it++) {
+		if (*it == scene_obj) {
+			scene_obj_grouping[group_name].erase(it);
+			break;
 		}
 	}
 }
@@ -155,11 +184,13 @@ void SceneWidget::removeSceneObject(Qt3DCore::QEntity *scene_obj) {
 	QVariant obj_grouping = scene_obj->property("Scene.ObjGroup");
 	if (obj_grouping.isValid()) {
 		QString group_name = obj_grouping.toString();
-		for(auto it=scene_obj_grouping[group_name].begin(); it<scene_obj_grouping[group_name].end(); it++) {
-			if (*it == scene_obj) {
-    			scene_obj_grouping[group_name].erase(it);
-				break;
-			}
+		removeSceneObjectFromGroup(scene_obj, group_name);
+	}
+	for ( auto child : scene_obj->findChildren<QEntity*>()) {
+		QVariant obj_grouping = child->property("Scene.ObjGroup");
+		if (obj_grouping.isValid()) {
+			QString group_name = obj_grouping.toString();
+			removeSceneObjectFromGroup(qobject_cast<QEntity*>(child), group_name);
 		}
 	}
 }

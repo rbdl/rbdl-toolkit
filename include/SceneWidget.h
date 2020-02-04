@@ -78,6 +78,8 @@ class SceneWidget : public QWidget {
 		// that you don't have to care about freeing the memory again
 		void addSceneObject(Qt3DCore::QEntity *scene_obj);
 		void removeSceneObject(Qt3DCore::QEntity *scene_obj);
+		void addSceneObjectToGroup(Qt3DCore::QEntity* scene_obj, QString group_name);
+		void removeSceneObjectFromGroup(Qt3DCore::QEntity* scene_obj, QString group_name);
 
 		Qt3DRender::QCamera* getCameraObj();
 		void setCameraLens(Qt3DRender::QCameraLens::ProjectionType projection);

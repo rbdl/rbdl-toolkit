@@ -75,6 +75,7 @@ class RBDLModelWrapper : public QObject {
 
 	signals:
 		void new_extention_added();
+		void visual_added(Qt3DCore::QEntity* visual);
 
 };
 

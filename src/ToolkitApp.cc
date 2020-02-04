@@ -3,6 +3,7 @@
 #include "util.h"
 #include "rbdl/rbdl_errors.h"
 #include "toolkit_interfaces.h"
+#include "toolkit_errors.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -38,11 +39,39 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	                                 "Load lua model files <file>", 
 	                                 "file"
 	                               );
+	QCommandLineOption plugin_option( QStringList() << "p" << "plugin",
+	                                 "Load additional plugins <plugin name/path>", 
+	                                 "plugin"
+	                               );
 	addCmdOption(model_option, [this](QCommandLineParser& parser) {
 		//load models
 		auto model_list = parser.values("model");
 		for ( auto m : model_list ) {
 			this->loadModel(findFile(m));
+		}
+	});
+	addCmdOption(plugin_option, [this](QCommandLineParser& parser) {
+		//load models
+		auto plugin_list = parser.values("plugin");
+		for ( auto p : plugin_list) {
+			try {
+				QString plugin_path = findPlugin(p);
+				QPluginLoader* loader = new QPluginLoader(plugin_path);
+				QString plugin_iid = loader->metaData().value("IID").toString();
+				QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
+
+				//check if plugin was already loaded
+				if (toolkit_plugins.find(plugin_name) == toolkit_plugins.end()) {
+					toolkit_plugins[plugin_name] = loader;
+				} else {
+					//plugin with same name was already found so skip this duplicate
+					delete loader;
+					continue;
+				}
+			} catch (RBDLToolkitError& e) {
+				showWarningDialog(e.what());
+				continue;
+			}
 		}
 	});
 
@@ -153,8 +182,17 @@ void ToolkitApp::loadModel(const QString &model_file) {
 		main_display->addSceneObject(model_scene_obj);
 
 		connect(timeline, SIGNAL(timeChanged(float)), model, SLOT(model_update(float)));
-	}
 
+		connect(model, SIGNAL(visual_added(Qt3DCore::QEntity*)), this, SLOT(model_visual_update(Qt3DCore::QEntity*)));
+	}
+}
+
+void ToolkitApp::model_visual_update(Qt3DCore::QEntity* visual) {
+	QVariant obj_grouping = visual->property("Scene.ObjGroup");
+	if (obj_grouping.isValid()) {
+		QString group_name = obj_grouping.toString();
+		this->getSceneObj()->addSceneObjectToGroup(visual, group_name);
+	}
 }
 
 void ToolkitApp::showExceptionDialog(std::exception& e) {

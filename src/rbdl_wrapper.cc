@@ -94,6 +94,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			visual_transform->setTranslation(QVector3D(visual_center[0], visual_center[1], visual_center[2]));
 
 			Qt3DCore::QEntity* visual_entity = new Qt3DCore::QEntity(segment_render_node);
+			visual_entity->setProperty("Scene.ObjGroup", QVariant(QString("Segments"))); 
 			Qt3DCore::QEntity* mesh_entity = new Qt3DCore::QEntity(visual_entity);
 
 			//Calculate and set mesh transforms 
@@ -195,6 +196,7 @@ void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	Qt3DCore::QEntity* visual = extention->getVisual();
 	if (visual != nullptr) {
 		visual->setParent(model_render_obj);
+		emit visual_added(visual);
 	}
 
 	emit new_extention_added();
