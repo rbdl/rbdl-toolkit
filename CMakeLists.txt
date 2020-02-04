@@ -48,6 +48,7 @@ ENDIF( ${CMAKE_VERSION} VERSION_LESS 3.12.0 )
 QT5_WRAP_UI ( UI_SRC
 	ui/Timeline.ui
 	ui/ModelSelector.ui
+	ui/SceneGroupList.ui
 )
 
 #Sources that contain q objects
@@ -57,6 +58,7 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/ModelSelectorDialog.h
 	include/Timeline.h
 	include/rbdl_wrapper.h
+	include/SceneGroupsWidget.h
 )
 
 SET ( Toolkit_SRCS

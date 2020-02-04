@@ -20,6 +20,8 @@
 #include <Qt3DLogic/QFrameAction>
 
 #include "ToolkitApp.h"
+#include "SceneGroupsWidget.h"
+
 class ToolkitApp;
 /*
  * A small wrapper class to render with the Qt3D Engine to be used as a QWidget
@@ -59,8 +61,7 @@ class SceneWidget : public QWidget {
 
 		Qt3DRender::QRenderCapture* render_capture;
 
-		QWidget* render_selector;
-		QVBoxLayout* render_selector_layout;
+		SceneGroupsWidget* render_selector;
 		std::vector<RenderGroupCheckBox*> render_select_check_boxes;
 
 		int width, height;

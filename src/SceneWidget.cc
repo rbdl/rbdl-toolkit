@@ -72,19 +72,10 @@ SceneWidget::SceneWidget(QWidget *parent):
 	display_container->setMargin(0);
 	display_container->addWidget(QWidget::createWindowContainer(qt3d_view));
 
-	render_selector = new QWidget();
-	render_selector->setMinimumWidth(150);
-
-	render_selector_layout = new QVBoxLayout;
-	render_selector_layout->setDirection(QBoxLayout::TopToBottom);
-	render_selector_layout->setAlignment(Qt::AlignTop);
-	render_selector_layout->setSpacing(0);
-	render_selector_layout->setMargin(0);
-
-	render_selector->setLayout(render_selector_layout);
+	render_selector = new SceneGroupsWidget(this);
 
 	main_app = qobject_cast<ToolkitApp*>(parent);
-	main_app->addView("RenderSelect", render_selector);
+	main_app->addView("RenderSelect", qobject_cast<QWidget*>(render_selector));
 }
 
 void SceneWidget::resizeEvent(QResizeEvent *event) {
@@ -165,7 +156,7 @@ void SceneWidget::addSceneObjectToGroup(QEntity* scene_obj, QString group_name) 
 		check_box->setCheckState(Qt::Checked);
 		connect(check_box, SIGNAL(renderGroupStateChanged(QString, bool)), this, SLOT(toggle_render_obj_group(QString, bool)));
 		render_select_check_boxes.push_back(check_box);
-		render_selector_layout->addWidget(check_box, 0, Qt::AlignTop);
+		render_selector->addSelector(check_box);
 	}
 }
 
