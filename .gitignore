@@ -2,4 +2,6 @@ debug
 release
 build
 
+**/*.bak
+
 

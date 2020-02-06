@@ -82,6 +82,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 
 	//add standard scene objects
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
+	resize(800, 600);
 
 	//set standard search paths
 	bool install_path_in_standart_list = false;
