@@ -15,10 +15,10 @@
 
 #include "ArrowFieldModelExtention.h"
 
-class ForceTorquePlugin : public QObject, public OptionalInterface{
+class ForceTorquePlugin : public QObject, public CoreInterface{
 	Q_OBJECT
-	Q_INTERFACES(OptionalInterface)
-	Q_PLUGIN_METADATA(IID OptionalInterface_iid FILE "metadata.json")
+	Q_INTERFACES(CoreInterface)
+	Q_PLUGIN_METADATA(IID CoreInterface_iid FILE "metadata.json")
 
 	public:
 		ForceTorquePlugin();
