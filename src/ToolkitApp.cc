@@ -87,6 +87,9 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	//set standard search paths
 	bool install_path_in_standart_list = false;
 	QDir::addSearchPath("", "meshes/");
+	#ifdef TOOLKIT_DEBUG
+		QDir::addSearchPath("plugins", "./plugins");
+	#endif
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	for (int i=0; i<paths.size(); i++) {
 		QFileInfo check_file(paths.at(i));

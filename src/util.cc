@@ -77,11 +77,7 @@ QString findPlugin(QString plugin) {
 QStringList findAllPlugins() {
 	QStringList plugin_list;
 
-	#ifdef TOOLKIT_DEBUG
-		auto paths = QStringList("./plugins");
-	#else
-		auto paths = QDir::searchPaths("plugins");
-	#endif
+	auto paths = QDir::searchPaths("plugins");
 
 	for (int i=0; i<paths.size(); i++) {
 		QDir dir(paths.at(i));
