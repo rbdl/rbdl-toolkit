@@ -1,0 +1,196 @@
+name: rbdl-toolkit
+base: core18
+version: 'v0.9-beta'
+architectures: [ 'x86' ]
+summary: Visualization Toolkit for RBDL models
+description: |
+  Standalone package for rbdl-toolkit an application for visualizing rigid
+  body dynamics models. This tool is mainly used at the robotic research
+  group at the university of Heidelberg.
+
+grade: devel
+confinement: classic
+
+parts:
+  qt513:
+    plugin: autotools
+    source-type: tar
+    source: https://download.qt.io/official_releases/qt/5.13/5.13.2/single/qt-everywhere-src-5.13.2.tar.xz
+    install-via: prefix
+    build-packages:
+      - g++
+      - make
+      - libassimp-dev
+      - libclang-dev
+      - libdbus-1-dev
+      - libvulkan-dev
+      - libxkbcommon-dev
+      - libsystemd-dev
+      - libssl-dev
+    configflags: [
+	  "--confirm-license",
+	  "--opensource",
+	  "-v",
+      "--sysconfdir=/etc/xdg",
+      "--openssl-linked",
+      "--nomake=examples",
+      "--no-rpath",
+      "--dbus-linked",
+      "--optimized-qmake",
+      "--journald",
+      "--reduce-relocations",
+      "--assimp=system",
+      "-qt3d-render",
+      "-qt3d-logic",
+      "-qt3d-animation",
+      "-qt3d-input",
+      "-qt3d-extras",
+      "--qt3d-simd=avx2"
+      ]
+    stage-packages:
+      - libegl1
+      - libwayland-client0
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libwayland-server0
+      - libxcb-xfixes0
+      - libxkbcommon0
+  rbdl:
+    plugin: cmake
+    source-type: git
+    source: "https://github.com/ORB-HD/rbdl-orb"
+    configflags: [
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DRBDL_BUILD_ADDON_LUAMODEL=On",
+      "-DRBDL_BUILD_ADDON_URDFREADER=On",
+      "-DRBDL_BUILD_ADDON_GEOMETRY=On",
+      "-DRBDL_BUILD_PYTHON_WRAPPER=On",
+      ]
+    build-packages:
+      - g++
+      - make
+      - libunittest++-dev
+      - libboost-all-dev
+      - lua5.1
+      - liblua5.1-0-dev
+      - cython3
+      - python3-numpy
+      - python3-scipy
+      - python3-matplotlib
+  rbdl-toolkit:
+    plugin: cmake
+    source: .
+    configflags: [
+      "-DCMAKE_BUILD_TYPE=Release",
+      "-DTOOLKIT_BUILD_OPTIONAL_PLUGINS=On"
+      ]
+    after: [ rbdl, qt513 ]
+    build-packages:
+      - g++
+      - make
+      - libavcodec-dev
+      - libavformat-dev
+      - libswresample-dev
+      - libswscale-dev
+      - libeigen3-dev
+      - libassimp-dev
+    stage-packages:
+      - libassimp-dev
+      - libavcodec57
+      - libavformat57
+      - libavutil55
+      - libbluray2
+      - libcairo2
+      - libchromaprint1
+      - libcroco3
+      - libcrystalhd3
+      - libdatrie1
+      - libdouble-conversion1
+      - libdrm2
+      - libfontconfig1
+      - libfreetype6
+      - libgdk-pixbuf2.0-0
+      - libgl1
+      - libglvnd0
+      - libglx0
+      - libgme0
+      - libgomp1
+      - libgraphite2-3
+      - libgsm1
+      - libharfbuzz0b
+      - libicu60
+      - liblua5.1-0
+      - libmp3lame0
+      - libmpg123-0
+      - libnuma1
+      - libogg0
+      - libopenjp2-7
+      - libopenmpt0
+      - libopus0
+      - libpango-1.0-0
+      - libpangocairo-1.0-0
+      - libpangoft2-1.0-0
+      - libpixman-1-0
+      - libpng16-16
+      - librsvg2-2
+      - libshine3
+      - libsnappy1v5
+      - libsoxr0
+      - libspeex1
+      - libssh-gcrypt-4
+      - libswresample2
+      - libswscale4
+      - libthai0
+      - libtheora0
+      - libtwolame0
+      - libva-drm2
+      - libva-x11-2
+      - libva2
+      - libvdpau1
+      - libvorbis0a
+      - libvorbisenc2
+      - libvorbisfile3
+      - libvpx5
+      - libwavpack1
+      - libwebp6
+      - libwebpmux3
+      - libx11-6
+      - libx264-152
+      - libx265-146
+      - libxau6
+      - libxcb-render0
+      - libxcb-shm0
+      - libxcb1
+      - libxdmcp6
+      - libxext6
+      - libxfixes3
+      - libxml2
+      - libxrender1
+      - libxvidcore4
+      - libzvbi0
+
+apps:
+  rbdl-toolkit:
+    command: rbdl-toolkit
+    environment:
+      "LD_LIBRARY_PATH": "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/usr/lib/$ARCH/mesa/:$SNAP/usr/lib/$ARCH/mesa-egl/:/var/lib/snapd/lib/gl:$LD_LIBRARY_PATH"
+      "QT_QPA_PLATFORM_PLUGIN_PATH" : "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/plugins"
+      "XKB_CONFIG_ROOT" : "$SNAP/usr/share/X11/xkb"
+      "XDG_CONFIG_DIRS" : "$SNAP/etc/xdg:$SNAP/usr/xdg:$XDG_CONFIG_DIRS"
+      "XDG_DATA_DIRS" : "$SNAP_USER_DATA:$SNAP/usr/share:$XDG_DATA_DIRS"
+      "XDG_DATA_HOME" : "$SNAP_USER_DATA/usr/share"
+      "LIBGL_DRIVERS_PATH" : "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri"
+      "FONTCONFIG_PATH" : "$SNAP/etc/fonts/config.d"
+      "FONTCONFIG_FILE" : "$SNAP/etc/fonts/fonts.conf"
+      "TOOLKIT_SEARCHDIR_PATH" : "$SNAP/share/ORB/rbdl-toolkit/"
+      "XLOCALEDIR" : "$SNAP/usr/share/X11/locale"
+      "LOCPATH" : "$SNAP/usr/lib/locale"
+      "XDG_RUNTIME_DIR" : "$XDG_RUNTIME_DIR"
+    plugs:
+      - opengl
+      - wayland
+      - x11
+      - desktop
+      - desktop-legacy
+      - home
+
