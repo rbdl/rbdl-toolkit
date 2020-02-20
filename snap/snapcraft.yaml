@@ -21,16 +21,64 @@ parts:
       - g++
       - make
       - libassimp-dev
-      - libclang-dev
+      - libasound2-dev
+      - libatspi2.0-dev
+      - libcups2-dev
       - libdbus-1-dev
-      - libvulkan-dev
-      - libxkbcommon-dev
-      - libsystemd-dev
+      - libdouble-conversion-dev
+      - libdrm-dev
+      - libfontconfig1-dev
+      - libfreetype6-dev
+      - libgbm-dev
+      - libgl-dev
+      - libgles2-mesa-dev
+      - libglib2.0-dev
+      - libglu1-mesa-dev
+      - libglu-dev
+      - libgtk-3-dev
+      - libharfbuzz-dev
+      - libicu-dev
+      - libinput-dev
+      - libjpeg-dev
+      - libmtdev-dev
+      - libnss3-dev
+      - libpcre2-dev
+      - libpng-dev
+      - libpq-dev
+      - libproxy-dev
+      - libpulse-dev
+      - libsqlite3-dev
       - libssl-dev
+      - libudev-dev
+      - libvulkan-dev
+      - libx11-dev
+      - libx11-xcb-dev
+      - libxcb-glx0-dev
+      - libxcb-icccm4-dev
+      - libxcb-image0-dev
+      - libxcb-keysyms1-dev
+      - libxcb-randr0-dev
+      - libxcb-render-util0-dev
+      - libxcb-render0-dev
+      - libxcb-shape0-dev
+      - libxcb-shm0-dev
+      - libxcb-sync-dev
+      - libxcb-xfixes0-dev
+      - libxcb-xinerama0-dev
+      - libxcb-xinput-dev
+      - libxcb-xkb-dev
+      - libxcb1-dev
+      - libxext-dev
+      - libxi-dev
+      - libxkbcommon-dev
+      - libxkbcommon-x11-dev
+      - libxrender-dev
+      - libegl1-mesa-dev
+      - libsystemd-dev
     configflags: [
-	  "--confirm-license",
-	  "--opensource",
-	  "-v",
+      "--confirm-license",
+      "--opensource",
+      "-v",
       "--sysconfdir=/etc/xdg",
       "--openssl-linked",
       "--nomake=examples",
@@ -40,6 +88,7 @@ parts:
       "--journald",
       "--reduce-relocations",
       "--assimp=system",
+      "-qt-xcb",
       "-qt3d-render",
       "-qt3d-logic",
       "-qt3d-animation",
@@ -55,6 +104,56 @@ parts:
       - libwayland-server0
       - libxcb-xfixes0
       - libxkbcommon0
+      - libxcomposite1
+      - libasn1-8-heimdal
+      - libasound2
+      - libasyncns0
+      - libatk-bridge2.0-0
+      - libatk1.0-0
+      - libatspi2.0-0
+      - libavahi-client3
+      - libavahi-common3
+      - libcairo-gobject2
+      - libcups2
+      - libepoxy0
+      - libevdev2
+      - libflac8
+      - libgssapi3-heimdal
+      - libgtk-3-0
+      - libgudev-1.0-0
+      - libhcrypto4-heimdal
+      - libheimbase1-heimdal
+      - libheimntlm0-heimdal
+      - libhx509-5-heimdal
+      - libice6
+      - libinput10
+      - libkrb5-26-heimdal
+      - libldap-2.4-2
+      - libmtdev1
+      - libpcre2-16-0
+      - libpq5
+      - libpulse0
+      - libroken18-heimdal
+      - libsasl2-2
+      - libsm6
+      - libsndfile1
+      - libwacom2
+      - libwind0-heimdal
+      - libxcb-icccm4
+      - libxcb-image0
+      - libxcb-keysyms1
+      - libxcb-randr0
+      - libxcb-render-util0
+      - libxcb-shape0
+      - libxcb-util1
+      - libxcb-xinerama0
+      - libxcb-xinput0
+      - libxcb-xkb1
+      - libxcursor1
+      - libxi6
+      - libxinerama1
+      - libxkbcommon-x11-0
+      - libxrandr2
   rbdl:
     plugin: cmake
     source-type: git
@@ -168,13 +267,14 @@ parts:
       - libxrender1
       - libxvidcore4
       - libzvbi0
-
+      - libpcre2-16-0
 apps:
   rbdl-toolkit:
     command: rbdl-toolkit
     environment:
-      "LD_LIBRARY_PATH": "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/usr/lib/$ARCH/mesa/:$SNAP/usr/lib/$ARCH/mesa-egl/:/var/lib/snapd/lib/gl:$LD_LIBRARY_PATH"
-      "QT_QPA_PLATFORM_PLUGIN_PATH" : "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/qt5/plugins"
+      "LD_LIBRARY_PATH" : "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET/:$LD_LIBRARY_PATH"
+      "QT_QPA_PLATFORM_PLUGIN_PATH" : "$SNAP/plugins/platforms"
+      "QT_PLUGIN_PATH" : "$SNAP/plugins"
       "XKB_CONFIG_ROOT" : "$SNAP/usr/share/X11/xkb"
       "XDG_CONFIG_DIRS" : "$SNAP/etc/xdg:$SNAP/usr/xdg:$XDG_CONFIG_DIRS"
       "XDG_DATA_DIRS" : "$SNAP_USER_DATA:$SNAP/usr/share:$XDG_DATA_DIRS"
@@ -186,11 +286,11 @@ apps:
       "XLOCALEDIR" : "$SNAP/usr/share/X11/locale"
       "LOCPATH" : "$SNAP/usr/lib/locale"
       "XDG_RUNTIME_DIR" : "$XDG_RUNTIME_DIR"
+      "APP_DIR" : "$SNAP"
     plugs:
       - opengl
-      - wayland
       - x11
+      - home
       - desktop
       - desktop-legacy
-      - home
 
