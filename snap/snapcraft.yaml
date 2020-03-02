@@ -154,6 +154,8 @@ parts:
       - libxinerama1
       - libxkbcommon-x11-0
       - libxrandr2
+    after:
+      - mesa
   rbdl:
     plugin: cmake
     source-type: git
@@ -183,7 +185,7 @@ parts:
       "-DCMAKE_BUILD_TYPE=Release",
       "-DTOOLKIT_BUILD_OPTIONAL_PLUGINS=On"
       ]
-    after: [ rbdl, qt513 ]
+    after: [ rbdl, qt513, mesa ]
     build-packages:
       - g++
       - make
@@ -193,6 +195,23 @@ parts:
       - libswscale-dev
       - libeigen3-dev
       - libassimp-dev
+    stage:
+      - -usr/lib/x86_64-linux-gnu/dri/i915_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/i965_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/iris_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/kms_swrast_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/nouveau_vieux_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/r200_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/r300_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/r600_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/radeon_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/radeonsi_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/swrast_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/virtio_gpu_dri.so
+      - -usr/lib/x86_64-linux-gnu/dri/vmwgfx_dri.so
+      - -usr/lib/x86_64-linux-gnu/libglapi.so.0.0.0
+      - -usr/share/doc/libglapi-mesa/changelog.Debian.gz
     stage-packages:
       - libassimp-dev
       - libavcodec57
@@ -268,11 +287,34 @@ parts:
       - libxvidcore4
       - libzvbi0
       - libpcre2-16-0
+      - libdri2-1
+  mesa:
+    plugin: nil
+    stage-packages:
+      - libgl1-mesa-dri
+    build-attributes:
+      - no-patchelf # Otherwise snapcraft may strip the build ID and cause the driver to crash
+    prime:
+      - -lib/udev
+      - -usr/doc
+      - -usr/doc-base
+      - -usr/share/applications
+      - -usr/share/apport
+      - -usr/share/bug
+      - -usr/share/doc
+      - -usr/share/doc-base
+      - -usr/share/icons
+      - -usr/share/libdrm
+      - -usr/share/libwacom
+      - -usr/share/lintian
+      - -usr/share/man
+      - -usr/share/pkgconfig
+
 apps:
   rbdl-toolkit:
     command: rbdl-toolkit
     environment:
-      "LD_LIBRARY_PATH" : "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET/:$LD_LIBRARY_PATH"
+      "LD_LIBRARY_PATH" : "$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/lib/$SNAPCRAFT_ARCH_TRIPLET/:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/mesa:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/mesa-gl:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/xorg"
       "QT_QPA_PLATFORM_PLUGIN_PATH" : "$SNAP/plugins/platforms"
       "QT_PLUGIN_PATH" : "$SNAP/plugins"
       "XKB_CONFIG_ROOT" : "$SNAP/usr/share/X11/xkb"
@@ -293,4 +335,5 @@ apps:
       - home
       - desktop
       - desktop-legacy
+      - wayland
 
