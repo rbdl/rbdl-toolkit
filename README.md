@@ -40,7 +40,7 @@ your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]/lib/cmake.
 For me that looked like this:
 
 ```code
-cmake -DCMAKE_PREFIX_PATH=~/Qt5.13/5.13.2/gcc_64/lib/cmake ..
+cmake -DCUSTOM_QT_PATH=~/Qt5.13/5.13.2/gcc_64/lib ..
 make
 ```
 
