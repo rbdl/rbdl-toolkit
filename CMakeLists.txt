@@ -22,6 +22,10 @@ SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DTOOLKIT_DEBUG")
 SET(CUSTOM_RBDL_PATH "" CACHE PATH "Path to specific RBDL Installation")
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET (CMAKE_SKIP_BUILD_RPATH FALSE)
+SET (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+SET (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+SET (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 FIND_PACKAGE (Qt5 REQUIRED COMPONENTS Core Gui Widgets 3DCore 3DExtras 3DRender 3DInput)
 FIND_PACKAGE (RBDL COMPONENTS LUAMODEL REQUIRED)
@@ -59,11 +63,13 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/Timeline.h
 	include/rbdl_wrapper.h
 	include/SceneGroupsWidget.h
+	include/ToolkitSettings.h
 )
 
 SET ( Toolkit_SRCS
 	src/ToolkitApp.cc
 	src/Timeline.cc
+	src/ToolkitSettings.cc
 	src/SceneWidget.cc
 	src/ModelSelectorDialog.cc
 	src/main.cc
