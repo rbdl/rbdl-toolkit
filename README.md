@@ -35,8 +35,8 @@ the website and follow the installation instructions. Make sure to install
 at version *5.13.2* other versions are not guaranteed to work, since Qt3D is 
 at the moment subject to many changes!
 
-Afterwards build *rbdl-toolkit* with cmake and adding the CMAKE_PREFIX_PATH variable set to 
-your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]/lib/cmake. 
+Afterwards build *rbdl-toolkit* with cmake and adding the CUSTOM_QT_PATH variable set to 
+your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]/lib. 
 For me that looked like this:
 
 ```code
