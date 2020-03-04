@@ -94,7 +94,7 @@ parts:
       "-qt3d-animation",
       "-qt3d-input",
       "-qt3d-extras",
-      "--qt3d-simd=avx2"
+      "--qt3d-simd=no"
       ]
     stage-packages:
       - libegl1
