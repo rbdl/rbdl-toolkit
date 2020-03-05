@@ -17,6 +17,7 @@
 #include "SceneWidget.h"
 #include "rbdl_wrapper.h"
 #include "Timeline.h"
+#include "ToolkitSettings.h"
 #include "ModelSelectorDialog.h"
 
 class SceneWidget;
@@ -47,7 +48,7 @@ class ToolkitApp : public QMainWindow
 		void setPluginLoadSetting(QString plugin_name, bool load);
 
 	public:
-		QSettings toolkit_settings;
+		ToolkitSettings toolkit_settings;
 
 		ToolkitApp(QWidget *parent = 0);
 		std::vector<RBDLModelWrapper*>* getLoadedModels();

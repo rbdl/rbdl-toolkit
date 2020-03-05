@@ -27,6 +27,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 
 	file_menu->addAction("Load Model", this, "aaction_load_model()");
 	toolkit_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
+	toolkit_menu->addAction("Settings", &toolkit_settings, "aeditSettings()");
 	this->setMenuBar(main_menu_bar);
 
 	//main view
@@ -245,7 +246,9 @@ void ToolkitApp::deleteView(QString name) {
 
 QVariant ToolkitApp::getPluginLoadSetting(QString plugin_name) {
 	QString settings_key = QString("plugins.load.%1").arg(plugin_name);
-	return toolkit_settings.value(settings_key);
+	auto val = toolkit_settings.value(settings_key);
+	toolkit_settings.setType(settings_key, val.toBool());
+	return val;
 }
 
 void ToolkitApp::setPluginLoadSetting(QString plugin_name, bool load) {

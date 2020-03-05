@@ -58,6 +58,7 @@ QT5_WRAP_UI ( UI_SRC
 	ui/Timeline.ui
 	ui/ModelSelector.ui
 	ui/SceneGroupList.ui
+	ui/SettingsEditor.ui
 )
 
 #Sources that contain q objects
