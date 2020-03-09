@@ -7,6 +7,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QResizeEvent>
+#include <QIcon>
 
 #include "ui_SettingsEditor.h"
 
@@ -16,7 +17,15 @@ class SettingsEditor : public QWidget, public Ui::SettingsEditor {
 	Q_OBJECT
 	private:
 		ToolkitSettings* settings;
-		QList<QTreeWidgetItem*> settings_items;
+
+		void updateChildItems(QTreeWidgetItem *parent);
+		QTreeWidgetItem* createItem(const QString &text, QTreeWidgetItem* parent, int index);
+		QTreeWidgetItem* childAt(QTreeWidgetItem* parent, int index) const;
+		int findChild(QTreeWidgetItem* parent, const QString &text, int starti) const;
+		int childCount(QTreeWidgetItem* parent) const;
+
+		QIcon group_icon, key_icon;
+
 	public:
 		SettingsEditor(ToolkitSettings* settings);
 
@@ -38,6 +47,7 @@ class ToolkitSettings : public QObject{
 		void endGroup();
 
 		QStringList childKeys() { return settings.childKeys(); }
+		QStringList childGroups() { return settings.childGroups(); }
 
 	private:
 		QSettings settings;
