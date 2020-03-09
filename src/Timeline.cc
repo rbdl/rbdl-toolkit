@@ -17,6 +17,9 @@ ToolkitTimeline::ToolkitTimeline(QWidget *parent) : speed_factor(1.0),
 	TimelineScaleSpinBox->setValue(speed_factor);
 	TimelineVertSlider->setMaximum(slider_granularity);
 
+	//set play/pause shortcut
+	TimelinePlayPauseButton->setShortcut(QKeySequence::fromString(" "));
+
 	//setup interactions
 	connect(TimelineScaleSpinBox, SIGNAL(valueChanged(double)), this, SLOT(speedChanged(double)));
 	connect(TimelinePlayPauseButton, SIGNAL(clicked()), this, SLOT(togglePlaying()));
