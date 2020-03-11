@@ -30,6 +30,11 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	toolkit_menu->addAction("Settings", &toolkit_settings, "aeditSettings()");
 	this->setMenuBar(main_menu_bar);
 
+	//settings 
+	toolkit_settings.setType("toolkit.showWarnings", true);
+	connect(&toolkit_settings, &ToolkitSettings::settings_changed, 
+	        this, [=]() { this->showWarningDialog("Changed settings will get applied at the next restart of the application!"); });
+
 	//main view
 	main_display = new SceneWidget(this);
 	this->setCentralWidget(main_display);

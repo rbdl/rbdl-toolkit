@@ -44,6 +44,7 @@ void ToolkitSettings::endGroup() {
 void ToolkitSettings::editSettings() {
 	SettingsEditor *edit = new SettingsEditor(this);
 	edit->setWindowFlags(Qt::Dialog);
+	connect(edit, &SettingsEditor::settings_changed, this, [=]() { emit settings_changed(); });
 	edit->show();
 }
 
