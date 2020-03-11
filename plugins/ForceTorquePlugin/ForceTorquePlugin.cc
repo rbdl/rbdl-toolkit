@@ -90,6 +90,7 @@ void ForceTorquePlugin::getArrowSettings() {
 		//watch out for overflow -> will silently fail because char is uint8
 		force_color = QColor::fromRgba(val.toUInt());
 	}
+	parentApp->toolkit_settings.setType("force.color", force_color);
 
 	//torque color setting
 	val = parentApp->toolkit_settings.value("torque.color");
@@ -101,6 +102,7 @@ void ForceTorquePlugin::getArrowSettings() {
 		//watch out for overflow -> will silently fail because char is uint8
 		torque_color = QColor::fromRgba(val.toUInt());
 	}
+	parentApp->toolkit_settings.setType("torque.color", torque_color);
 
 	//arrow display size threshold
 	val = parentApp->toolkit_settings.value("arrow.display_threshold");
@@ -110,6 +112,7 @@ void ForceTorquePlugin::getArrowSettings() {
 	} else {
 		draw_threshold = val.toFloat();
 	}
+	parentApp->toolkit_settings.setType("arrow.display_threshold", draw_threshold);
 
 	val = parentApp->toolkit_settings.value("arrow.arrow_scale_factor");
 	if (val.isNull()) {
@@ -118,6 +121,7 @@ void ForceTorquePlugin::getArrowSettings() {
 	} else {
 		arrow_scale_factor = val.toFloat();
 	}
+	parentApp->toolkit_settings.setType("arrow.arrow_scale_factor", arrow_scale_factor);
 
 	val = parentApp->toolkit_settings.value("arrow.pos_at_tip");
 	if (val.isNull()) {
@@ -126,6 +130,7 @@ void ForceTorquePlugin::getArrowSettings() {
 	} else {
 		pos_at_tip = val.toBool();
 	}
+	parentApp->toolkit_settings.setType("arrow.pos_at_tip", pos_at_tip);
 
 	parentApp->toolkit_settings.endGroup();
 }
@@ -143,6 +148,7 @@ void ForceTorquePlugin::getCSVSettings() {
 		//watch out for overflow -> will silently fail because char is uint8
 		csv_seperator = val.toInt();
 	}
+	parentApp->toolkit_settings.setType("csv.seperator", (QChar)csv_seperator);
 
 	//trimming setting
 	val = parentApp->toolkit_settings.value("csv.trim");
@@ -152,6 +158,7 @@ void ForceTorquePlugin::getCSVSettings() {
 	} else {
 		csv_trim = val.toBool();
 	}
+	parentApp->toolkit_settings.setType("csv.trim", csv_trim);
 
 	parentApp->toolkit_settings.endGroup();
 }

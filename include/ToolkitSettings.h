@@ -30,6 +30,12 @@ class SettingsEditor : public QWidget, public Ui::SettingsEditor {
 		SettingsEditor(ToolkitSettings* settings);
 
 		void resizeEvent(QResizeEvent *event);
+
+	public slots:
+		void editSetting(QTreeWidgetItem *item, int column);
+
+	signals:
+		void settings_changed();
 };
 
 
@@ -42,6 +48,8 @@ class ToolkitSettings : public QObject{
 		QMetaType::Type type(const QString &key);
 		void setValue(const QString &key, const QVariant &value);
 		void setType(const QString &key, const QVariant infer_from_value);
+
+		QString group() { return settings.group(); }
 
 		void beginGroup(QString group);
 		void endGroup();

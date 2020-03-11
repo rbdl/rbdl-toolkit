@@ -1,7 +1,11 @@
 #include "ToolkitSettings.h"
 
 #include <QTreeWidget>
+#include <QColorDialog>
+#include <QInputDialog>
 #include <iostream>
+
+#include <variantdelegate.h>
 
 ToolkitSettings::ToolkitSettings() {
 }
@@ -38,7 +42,8 @@ void ToolkitSettings::endGroup() {
 }
 
 void ToolkitSettings::editSettings() {
-	SettingsEditor* edit = new SettingsEditor(this);
+	SettingsEditor *edit = new SettingsEditor(this);
+	edit->setWindowFlags(Qt::Dialog);
 	edit->show();
 }
 
@@ -46,12 +51,15 @@ SettingsEditor::SettingsEditor(ToolkitSettings* settings) : settings(settings), 
 	setupUi(this);
 
 	settings_tree->header()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+	settings_tree->header()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
 
 	group_icon.addPixmap(style()->standardPixmap(QStyle::SP_DirClosedIcon), QIcon::Normal, QIcon::Off);
 	group_icon.addPixmap(style()->standardPixmap(QStyle::SP_DirOpenIcon), QIcon::Normal, QIcon::On);
 	key_icon.addPixmap(style()->standardPixmap(QStyle::SP_FileIcon));
 
 	updateChildItems(nullptr);
+
+	connect(settings_tree, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(editSetting(QTreeWidgetItem*, int)));
 }
 
 void SettingsEditor::resizeEvent(QResizeEvent* event) {
@@ -70,7 +78,7 @@ QTreeWidgetItem* SettingsEditor::createItem(const QString &text, QTreeWidgetItem
 		item = new QTreeWidgetItem(settings_tree, after);
 
 	item->setText(0, text);
-	item->setFlags(item->flags() | Qt::ItemIsEditable);
+	item->setFlags(item->flags());
 	return item;
 }
 
@@ -127,7 +135,113 @@ void SettingsEditor::updateChildItems(QTreeWidgetItem *parent) {
 		} else {
 			child = childAt(parent, child_index);
 		}
+		child->setData(0, Qt::UserRole, settings->group());
 		child->setText(1, QMetaType::typeName(settings->type(key)));
-		child->setText(2, settings->value(key).toString());
+		child->setData(1, Qt::UserRole, QMetaType::typeName(settings->type(key)));
+		child->setText(2, VariantDelegate::displayText(settings->value(key), settings->type(key)));
+		child->setData(2, Qt::UserRole, settings->value(key));
+		if (settings->type(key) == QMetaType::QColor) {
+			QPixmap color_icon(10,10);
+			color_icon.fill(QColor::fromRgba(settings->value(key).toUInt()));
+			child->setIcon(2, color_icon);
+		}
+	}
+}
+
+void SettingsEditor::editSetting(QTreeWidgetItem* item, int column) {
+	QMetaType::Type type = (QMetaType::Type)QMetaType::type(item->data(1, Qt::UserRole).toString().toStdString().c_str());
+	QString group = item->data(0, Qt::UserRole).toString();
+
+	bool changed = false;
+
+	switch(type) {
+		case QMetaType::QColor: {
+			QColor current_color = QColor::fromRgba(item->data(2, Qt::UserRole).toUInt());
+			QColorDialog color_picker(current_color, this);
+			color_picker.setOption(QColorDialog::ShowAlphaChannel);
+			if (color_picker.exec()) {
+				changed = true;
+				QColor selected = color_picker.selectedColor();
+				if (group != "") 
+					settings->beginGroup(group);
+				settings->setValue(item->text(0), selected.rgba());
+				settings->setType(item->text(0), selected);
+				if (group != "") 
+					settings->endGroup();
+			}
+			break;
+		}
+		case QMetaType::Bool: {
+			bool current_state = item->data(2, Qt::UserRole).toBool();
+			QStringList states;
+			states << "false" << "true";
+			bool ok;
+			QString selection = QInputDialog::getItem(this, 
+			                                          tr("Select State"), 
+			                                          "Bool:", 
+			                                          states,
+			                                          current_state ? 1 : 0,
+			                                          false, &ok);
+			if (ok) {
+				bool state = (selection == "true") ? true : false;
+				if (state != current_state) {
+					changed = true;
+					if (group != "") 
+						settings->beginGroup(group);
+					settings->setValue(item->text(0), state);
+					if (group != "") 
+						settings->endGroup();
+				}
+			}
+			break;
+		}
+		case QMetaType::QChar: {
+		    QString current_char(QChar::fromLatin1((char) item->data(2, Qt::UserRole).toUInt()));
+			bool ok;
+			QString new_char = QInputDialog::getText(this, 
+			                                         tr("Choose Character"), 
+			                                         "Type char:", 
+			                                         QLineEdit::Normal,
+			                                         current_char,
+			                                         &ok);
+			if (ok && new_char.size() == 1) {
+				changed = true;
+				char s = new_char.toStdString().c_str()[0];
+				if (group != "") 
+					settings->beginGroup(group);
+				settings->setValue(item->text(0), s);
+				settings->setType(item->text(0), (QChar)s);
+				if (group != "") 
+					settings->endGroup();
+			}
+			break;
+		}
+		case QMetaType::Float: {
+			double current_val = item->data(2, Qt::UserRole).toDouble();
+			bool ok;
+			double new_val = QInputDialog::getDouble(this,
+			                                         tr("Choose Value"),
+			                                         tr("Value"),
+			                                         current_val,
+			                                         -2147483647,
+			                                         2147483647,
+			                                         5,
+			                                         &ok);
+			if (ok) {
+				changed = true;
+				if (group != "") 
+					settings->beginGroup(group);
+				settings->setValue(item->text(0), new_val);
+				if (group != "") 
+					settings->endGroup();
+			}
+		}
+		default:
+			break;
+	}
+
+	if (changed) {
+		updateChildItems(nullptr);
+		emit settings_changed();
 	}
 }

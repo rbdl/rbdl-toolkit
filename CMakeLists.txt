@@ -69,6 +69,7 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/Timeline.h
 	include/rbdl_wrapper.h
 	include/SceneGroupsWidget.h
+	include/variantdelegate.h
 	include/ToolkitSettings.h
 )
 
@@ -83,6 +84,7 @@ SET ( Toolkit_SRCS
 	src/render_util.cc
 	src/math_util.cc
 	src/rbdl_wrapper.cc
+	src/variantdelegate.cc
 	src/toolkit_errors.cc
 )
 
