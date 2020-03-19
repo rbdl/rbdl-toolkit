@@ -39,10 +39,6 @@ class RBDLModelWrapper : public QObject {
 	private:
 		QString model_file;
 
-		LuaTable model_luatable;
-		Matrix3_t axis_transform;
-		RigidBodyDynamics::Model* rbdl_model;
-
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
 		std::map<std::string, Qt3DCore::QTransform*> body_transform_map;
@@ -50,6 +46,11 @@ class RBDLModelWrapper : public QObject {
 		//all loaded extra data is supposed to be loaded as an extention to the model
 		std::map<std::string, WrapperExtention*> extentions;
 	public:
+		LuaTable model_luatable;
+
+		Matrix3_t axis_transform;
+		RigidBodyDynamics::Model* rbdl_model;
+
 		RBDLModelWrapper();
 
 		Qt3DCore::QEntity* getRenderObj() { return model_render_obj; }
@@ -58,6 +59,7 @@ class RBDLModelWrapper : public QObject {
 
 		//takes ownership of extention -> only delete via model not where it was created
 		void addExtention(WrapperExtention* extention);
+		void addVisual(std::string segment_name, Qt3DCore::QEntity *visual);
 		void deleteExtention(std::string name);
 		bool hasExtention(std::string name);
 

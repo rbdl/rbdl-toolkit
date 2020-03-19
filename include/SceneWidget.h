@@ -59,7 +59,7 @@ class SceneWidget : public QWidget {
 		Qt3DRender::QCamera *camera;
 		QHBoxLayout *display_container;
 
-		Qt3DRender::QRenderCapture* render_capture;
+		Qt3DRender::QRenderCapture *render_capture;
 
 		SceneGroupsWidget* render_selector;
 		std::vector<RenderGroupCheckBox*> render_select_check_boxes;
