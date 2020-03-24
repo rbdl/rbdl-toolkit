@@ -24,6 +24,8 @@ class MotionMarkerExtention : public WrapperExtention {
 
 		std::vector<Qt3DCore::QTransform*> marker_transforms;
 		std::vector<Qt3DCore::QEntity*> marker_entities;
+
+		void addModelMarkersToModel(RBDLModelWrapper* model);
 	public:
 		MotionMarkerExtention(QString group_name);
 

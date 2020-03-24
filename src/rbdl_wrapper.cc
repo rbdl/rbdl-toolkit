@@ -217,6 +217,8 @@ void RBDLModelWrapper::addVisual(std::string segment_name, Qt3DCore::QEntity *vi
 	} catch (std::exception &e){
 		return;
 	}
+	visual->setParent(segment_entity);
+	emit visual_added(visual);
 }
 
 void WrapperExtention::setModelParent(RBDLModelWrapper* model) {

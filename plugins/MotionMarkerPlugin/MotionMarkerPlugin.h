@@ -32,9 +32,16 @@ class MotionMarkerPlugin : public QObject, public OptionalInterface{
 		ToolkitApp* parentApp;
 		QAction* load_file_trigger;
 
+		Qt3DRender::QMesh marker_mesh;
+		QColor marker_color_model;
+		QColor marker_color;
+		float marker_size;
+
+		void loadMarkerSettings();
+
 	public slots:
 		void action_load_data();
-		void reload_files();
+		void addModelMarkersToModel(RBDLModelWrapper* model);
 
 };
 
