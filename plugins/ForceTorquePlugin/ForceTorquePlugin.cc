@@ -86,8 +86,6 @@ void ForceTorquePlugin::getArrowSettings() {
 		force_color = QColor::fromRgbF(1., 0., 0., 0.9);
 		parentApp->toolkit_settings.setValue("force.color", force_color.rgba());
 	} else {
-		//read as int because it is saved as one, otherwise it would not load correctly
-		//watch out for overflow -> will silently fail because char is uint8
 		force_color = QColor::fromRgba(val.toUInt());
 	}
 	parentApp->toolkit_settings.setType("force.color", force_color);
@@ -98,8 +96,6 @@ void ForceTorquePlugin::getArrowSettings() {
 		torque_color = QColor::fromRgbF(0., 1., 0., 0.9);
 		parentApp->toolkit_settings.setValue("torque.color", torque_color.rgba());
 	} else {
-		//read as int because it is saved as one, otherwise it would not load correctly
-		//watch out for overflow -> will silently fail because char is uint8
 		torque_color = QColor::fromRgba(val.toUInt());
 	}
 	parentApp->toolkit_settings.setType("torque.color", torque_color);
