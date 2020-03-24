@@ -65,6 +65,7 @@ SceneWidget::SceneWidget(QWidget *parent):
 
 	auto *camera_controller = new QOrbitCameraController(scene_root); 
 	camera_controller->setCamera(camera);
+	camera_controller->setZoomInLimit(0.05);
 
 	qt3d_view->setRootEntity(scene_root);
 
