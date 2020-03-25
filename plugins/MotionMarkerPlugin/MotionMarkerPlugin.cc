@@ -49,6 +49,8 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 	for (auto model : *all_models) {
 		addModelMarkersToModel(model);
 	}
+
+	connect(parentApp, SIGNAL(model_loaded(RBDLModelWrapper*)), this, SLOT(addModelMarkersToModel(RBDLModelWrapper*)));
 }
 
 void MotionMarkerPlugin::loadMarkerSettings() {

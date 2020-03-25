@@ -82,6 +82,7 @@ class ToolkitApp : public QMainWindow
 
 	signals:
 		void reload_files();
+		void model_loaded(RBDLModelWrapper* model);
 
 };
 

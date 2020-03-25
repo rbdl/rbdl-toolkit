@@ -199,10 +199,10 @@ void ToolkitApp::loadModel(const QString &model_file) {
 		                                       )
 		                             ));
 		loaded_models.push_back(model);
+		emit model_loaded(model);
 		main_display->addSceneObject(model_scene_obj);
 
 		connect(timeline, SIGNAL(timeChanged(float)), model, SLOT(model_update(float)));
-
 		connect(model, SIGNAL(visual_added(Qt3DCore::QEntity*)), this, SLOT(model_visual_update(Qt3DCore::QEntity*)));
 	}
 }
