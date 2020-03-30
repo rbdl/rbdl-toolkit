@@ -15,6 +15,8 @@
 #include <toolkit_errors.h>
 #include <rbdl_wrapper.h>
 
+#include <c3dfile.h>
+
 using namespace RigidBodyDynamics::Math;
 
 MotionMarkerPlugin::MotionMarkerPlugin() {
@@ -39,6 +41,31 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 	                               );
 	parentApp->addCmdOption(motion_marker_option, [this](QCommandLineParser& parser){
 		auto data_list = parser.values("motionmarker");
+		for (auto file : data_list) {
+			MotionMarkerExtention* ext; 
+			try {
+				ext = loadMotionMarkerFile(file);
+			} catch (RigidBodyDynamics::Errors::RBDLError& e){
+				ToolkitApp::showExceptionDialog(e);
+				delete ext;
+			}
+			if (parentApp->getLoadedModels()->size() != 0) {
+				RBDLModelWrapper* rbdl_model = nullptr;
+
+				if (parentApp->getLoadedModels()->size() == 1) {
+					rbdl_model = parentApp->getLoadedModels()->at(0);
+				} else {
+					rbdl_model = parentApp->selectModel(nullptr);
+				}
+
+				if (rbdl_model != nullptr) {
+					rbdl_model->addExtention(ext);
+					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+				} else {
+					delete ext;
+				}
+			}
+		}
 	});
 
 	marker_mesh.setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
@@ -120,7 +147,78 @@ void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *model) {
 }
 
 void MotionMarkerPlugin::action_load_data() {
+	if (parentApp != NULL) {
+		QFileDialog file_dialog (parentApp, "Select Mocap File");
+
+		file_dialog.setNameFilter(tr("Mocap File (*.c3d)"));
+		file_dialog.setFileMode(QFileDialog::ExistingFile);
+
+		MotionMarkerExtention* ext;
+		if (file_dialog.exec()) {
+			try {
+				ext = loadMotionMarkerFile(file_dialog.selectedFiles().at(0));
+			} catch (RigidBodyDynamics::Errors::RBDLError& e){
+				ToolkitApp::showExceptionDialog(e);
+				delete ext;
+			}
+			if (parentApp->getLoadedModels()->size() != 0) {
+				RBDLModelWrapper* rbdl_model = nullptr;
+
+				if (parentApp->getLoadedModels()->size() == 1) {
+					rbdl_model = parentApp->getLoadedModels()->at(0);
+				} else {
+					rbdl_model = parentApp->selectModel(nullptr);
+				}
+
+				if (rbdl_model != nullptr) {
+					rbdl_model->addExtention(ext);
+					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+				} else {
+					delete ext;
+				}
+			}
+		}	
+	} else {
+		//should never happen
+		throw RigidBodyDynamics::Errors::RBDLError("Marker plugin was not initialized correctly!");
+	}
 }
 
-void MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
+MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
+	C3DFile marker_file;
+	if(!marker_file.load(path.toStdString().c_str())) {
+		throw RBDLToolkitError("Error loading marker c3d file: " + path.toStdString());
+	}
+	//for (auto group : marker_file.group_infos) {
+	//	std::cout << group.name << ": " << group.description << std::endl;
+	//}
+
+	//for (auto param : marker_file.param_infos) {
+	//	std::cout << param.name << std::endl;
+	//}
+
+	unsigned int marker_count = marker_file.header.num_markers;
+	MotionMarkerExtention* extention = new MotionMarkerExtention(marker_count, marker_color, marker_size);
+
+	float frame_rate = 1. / marker_file.header.video_sampling_rate;
+	float current_frame_time = 0.;
+
+	int frame_count = marker_file.header.last_frame - marker_file.header.first_frame;
+
+	for (int i=0;i<frame_count;i++) {
+		Matrix3fd pos;
+		pos.resize(3, marker_count);
+		int j=0;
+		for (auto marker_label : marker_file.point_label ) {
+			FloatMarkerData marker_trajectories = marker_file.getMarkerTrajectories(marker_label.c_str());
+			pos(0,j) = marker_trajectories.x[i] * 1.0e-3;
+			pos(1,j) = marker_trajectories.y[i] * 1.0e-3;
+			pos(2,j) = marker_trajectories.z[i] * 1.0e-3;
+			j++;
+		}
+		extention->addMocapMarkerFrame(current_frame_time, pos);
+		current_frame_time += frame_rate;
+	}
+
+	return extention;
 }

@@ -56,14 +56,11 @@ void ArrowFieldModelExtention::update(float current_time) {
 		float end_time = arrow_times[time_index+1];
 		float time_fraction = (current_time - start_time) / (end_time - start_time);
 
-		Matrix3fd pos = arrow_positions[time_index] + time_fraction * 
+		pos_frame = arrow_positions[time_index] + time_fraction * 
 			(arrow_positions[time_index+1] - arrow_positions[time_index]);
 
-		Matrix3fd dir = arrow_directions[time_index] + time_fraction * 
+		dir_frame = arrow_directions[time_index] + time_fraction * 
 			(arrow_directions[time_index+1] - arrow_directions[time_index]);
-
-		pos_frame = pos;
-		dir_frame = dir;
 	}
 	for (int i=0; i<arrow_count;i++) {
 		QVector3D trans;

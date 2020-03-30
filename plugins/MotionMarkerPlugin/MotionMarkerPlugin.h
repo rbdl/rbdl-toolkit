@@ -26,7 +26,7 @@ class MotionMarkerPlugin : public QObject, public OptionalInterface{
 
 		void init(ToolkitApp* app);
 
-		void loadMotionMarkerFile(QString path);
+		MotionMarkerExtention* loadMotionMarkerFile(QString path);
 
 	private:
 		ToolkitApp* parentApp;

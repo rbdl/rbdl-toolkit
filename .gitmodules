@@ -1,3 +1,6 @@
 [submodule "plugins/RenderPlugin/vendor/QVideoWriter"]
 	path = plugins/RenderPlugin/vendor/QVideoWriter
 	url = https://github.com/ju6ge/QVideoWriter
+[submodule "plugins/MotionMarkerPlugin/c3dfile"]
+	path = plugins/MotionMarkerPlugin/c3dfile
+	url = https://github.com/ORB-HD/c3dfile
