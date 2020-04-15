@@ -16,7 +16,6 @@ class RBDLModelWrapper;
 
 /* This class provides an abstact base for adding data to a loaded model, such as (Animations, Forces, etc.).
  */
-
 class WrapperExtention {
 	protected:
 		RBDLModelWrapper* model_parent;
@@ -31,9 +30,9 @@ class WrapperExtention {
 		virtual void update(float current_time) = 0; 
 };
 
+
 /* This class provides a wrapper around rbdl models, in order to visualize them with Qt3D
  */
-
 class RBDLModelWrapper : public QObject {
 	Q_OBJECT
 	private:
@@ -44,6 +43,7 @@ class RBDLModelWrapper : public QObject {
 		std::map<std::string, Qt3DCore::QTransform*> body_transform_map;
 
 		//all loaded extra data is supposed to be loaded as an extention to the model
+		std::vector<std::string> extention_names;
 		std::map<std::string, WrapperExtention*> extentions;
 	public:
 		LuaTable model_luatable;
@@ -60,8 +60,10 @@ class RBDLModelWrapper : public QObject {
 		//takes ownership of extention -> only delete via model not where it was created
 		void addExtention(WrapperExtention* extention);
 		void addVisual(std::string segment_name, Qt3DCore::QEntity *visual);
-		void deleteExtention(std::string name);
+		//void deleteExtention(std::string name);
 		bool hasExtention(std::string name);
+		const std::vector<std::string>& loadedExtentions() { return extention_names; }
+		WrapperExtention* getExtention(std::string name);
 
 		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 		QString getFileName() { return QFileInfo(model_file).baseName(); }

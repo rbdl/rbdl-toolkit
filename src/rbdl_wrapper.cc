@@ -191,6 +191,7 @@ void RBDLModelWrapper::model_update(float current_time) {
 void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	std::string extention_name = extention->getExtentionName();
 	extentions[extention_name] = extention;
+	extention_names.push_back(extention_name);
 	extention->setModelParent(this);
 
 	Qt3DCore::QEntity* visual = extention->getVisual();
@@ -200,6 +201,15 @@ void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	}
 
 	emit new_extention_added();
+}
+
+WrapperExtention* RBDLModelWrapper::getExtention(std::string name) {
+	for ( auto loaded_extention : extention_names ) {
+		if (loaded_extention == name ) {
+			return extentions[name];
+		}
+	}
+	return nullptr;
 }
 
 int RBDLModelWrapper::getModelDof() {
