@@ -154,6 +154,12 @@ parts:
       - libxinerama1
       - libxkbcommon-x11-0
       - libxrandr2
+      - libassimp4
+      - libdouble-conversion1
+      - libgl1
+      - libglx0
+      - libminizip1
+      - libxcb-glx0
     after:
       - mesa
   rbdl:
