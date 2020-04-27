@@ -208,14 +208,22 @@ MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
 	for (int i=0;i<frame_count;i++) {
 		Matrix3fd pos;
 		pos.resize(3, marker_count);
-		int j=0;
+
+		//loop vars
+		bool first_frame_complete = false;
+		int j=0; //marker position in matrix
+
 		for (auto marker_label : marker_file.point_label ) {
 			FloatMarkerData marker_trajectories = marker_file.getMarkerTrajectories(marker_label.c_str());
 			pos(0,j) = marker_trajectories.x[i] * 1.0e-3;
 			pos(1,j) = marker_trajectories.y[i] * 1.0e-3;
 			pos(2,j) = marker_trajectories.z[i] * 1.0e-3;
+			if (!first_frame_complete) 
+				extention->setMarkerLabel(j, marker_label);
 			j++;
 		}
+		first_frame_complete = true;
+
 		extention->addMocapMarkerFrame(current_frame_time, pos);
 		current_frame_time += frame_rate;
 	}
