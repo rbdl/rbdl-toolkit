@@ -141,7 +141,7 @@ void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *model) {
 			marker_visual->addComponent(position);
 			marker_visual->addComponent(material);
 
-			model->addVisual(segment_name, marker_visual);
+			model->addStaticVisual(segment_name, marker_visual);
 		}
 	}
 }

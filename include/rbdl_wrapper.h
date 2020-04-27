@@ -59,7 +59,7 @@ class RBDLModelWrapper : public QObject {
 
 		//takes ownership of extention -> only delete via model not where it was created
 		void addExtention(WrapperExtention* extention);
-		void addVisual(std::string segment_name, Qt3DCore::QEntity *visual);
+		void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
 		//void deleteExtention(std::string name);
 		bool hasExtention(std::string name);
 		const std::vector<std::string>& loadedExtentions() { return extention_names; }

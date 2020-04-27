@@ -220,7 +220,7 @@ QString RBDLModelWrapper::getModelFile() {
 	return model_file;
 }
 
-void RBDLModelWrapper::addVisual(std::string segment_name, Qt3DCore::QEntity *visual) {
+void RBDLModelWrapper::addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual) {
 	Qt3DCore::QEntity* segment_entity;
 	try {
 		segment_entity = body_mesh_map.at(segment_name);
