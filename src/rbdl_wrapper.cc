@@ -63,6 +63,17 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	axis_transform(1, 2) = axis_up[1];
 	axis_transform(2, 2) = axis_up[2];
 
+	//measurement unit used by meshes
+	std::string mesh_unit = model_luatable["configuration"]["mesh_measurement_unit"].getDefault(std::string("m"));
+	if (mesh_unit == "cm") {
+			mesh_unit_scaling = 0.01;
+	} else if (mesh_unit == "mm") {
+			mesh_unit_scaling = 0.001;
+	// assume meters
+	} else {
+		mesh_unit_scaling = 1.;
+	}
+
 	unsigned int segments_cnt = model_luatable["frames"].length();
 
 	//create renderable entities for every segment of the model
@@ -80,7 +91,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
 
 			Vector3d visual_scale = model_luatable["frames"][i]["visuals"][j]["scale"].getDefault(Vector3d(1., 1., 1.));
-			visual_scale = axis_transform * visual_scale;
+			visual_scale = axis_transform * ( mesh_unit_scaling * visual_scale);
 			Vector3d visual_dimensions = model_luatable["frames"][i]["visuals"][j]["dimensions"].getDefault(Vector3d(1., 1., 1.));
 			visual_dimensions = axis_transform * visual_dimensions;
 

@@ -42,6 +42,7 @@ class RBDLModelWrapper : public QObject {
 		Qt3DCore::QEntity* model_render_obj;
 		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
 		std::map<std::string, Qt3DCore::QTransform*> body_transform_map;
+		float mesh_unit_scaling;
 
 		//all loaded extra data is supposed to be loaded as an extention to the model
 		std::map<std::string, WrapperExtention*> extentions;
