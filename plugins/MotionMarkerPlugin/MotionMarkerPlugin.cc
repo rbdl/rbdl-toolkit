@@ -117,33 +117,20 @@ void MotionMarkerPlugin::loadMarkerSettings() {
 }
 
 void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *model) {
+	ModelMarkerExtention* ext = new ModelMarkerExtention(marker_color_model, marker_size);
 	unsigned int segment_cnt = model->model_luatable["frames"].length();
 	for(int i=1; i<=segment_cnt; i++) {
 		std::string segment_name = model->model_luatable["frames"][i]["name"].get<std::string>();
 		std::vector<LuaKey> keys= model->model_luatable["frames"][i]["markers"].keys();
 
 		for (auto marker_name : keys) {
-			Qt3DCore::QEntity* marker_visual = new Qt3DCore::QEntity;
-			marker_visual->setProperty("Scene.ObjGroup", QVariant("Model Marker"));
-
 			Vector3d marker_position = model->model_luatable["frames"][i]["markers"][marker_name.string_value.c_str()].getDefault(Vector3d(0.,0.,0.));
 			marker_position = model->axis_transform * marker_position;
 
-			Qt3DExtras::QPhongAlphaMaterial* material = new Qt3DExtras::QPhongAlphaMaterial;
-			material->setAmbient(marker_color_model);
-			material->setAlpha((float)marker_color_model.alpha() / 255.);
-
-			Qt3DCore::QTransform* position = new Qt3DCore::QTransform;
-			position->setTranslation(QVector3D(marker_position[0], marker_position[1], marker_position[2]));
-			position->setScale(marker_size);
-
-			marker_visual->addComponent(&marker_mesh);
-			marker_visual->addComponent(position);
-			marker_visual->addComponent(material);
-
-			model->addStaticVisual(segment_name, marker_visual);
+			ext->addModelMarker(marker_name.string_value, segment_name, marker_position);
 		}
 	}
+	model->addExtention(ext);
 }
 
 void MotionMarkerPlugin::action_load_data() {
