@@ -15,44 +15,43 @@ CameraOperatorPlugin::CameraOperatorPlugin() {
 }
 
 CameraOperatorPlugin::~CameraOperatorPlugin() {
+	parentApp->deleteMenu(camera_menu);
 }
 
 void CameraOperatorPlugin::init(ToolkitApp* app) {
 	//save reference to parent ToolkitApp 
 	parentApp = app;
 
-	camera_menu.setTitle("Camera");
+	camera_menu = app->getMenu("Camera");
 
-	QAction* front_view = camera_menu.addAction("Front View");
+	QAction* front_view = camera_menu->addAction("Front View");
 	front_view->setShortcut(QKeySequence::fromString("1"));
 	connect(front_view, &QAction::triggered, [=]
 	       	{
 				setFrontView();
 	       	});
 
-	QAction* side_view = camera_menu.addAction("Side View");
+	QAction* side_view = camera_menu->addAction("Side View");
 	side_view->setShortcut(QKeySequence::fromString("2"));
 	connect(side_view, &QAction::triggered, [=]
 	       	{
 				setSideView();
 	       	});
 
-	QAction* top_view = camera_menu.addAction("Top View");
+	QAction* top_view = camera_menu->addAction("Top View");
 	top_view->setShortcut(QKeySequence::fromString("3"));
 	connect(top_view, &QAction::triggered, [=]
 	       	{
 				setTopView();
 	       	});
 
-	QAction* orthographic_toggle = camera_menu.addAction("Orthograpic View");
+	QAction* orthographic_toggle = camera_menu->addAction("Orthograpic View");
 	orthographic_toggle->setCheckable(true);
 	orthographic_toggle->setShortcut(QKeySequence::fromString("5"));
 	connect(orthographic_toggle, &QAction::changed, [=]
 	       	{
 		       	setOrthographicView(orthographic_toggle->isChecked());
 	       	});
-
-	parentApp->addMenu(&camera_menu);
 
 }
 

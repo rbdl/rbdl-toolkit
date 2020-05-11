@@ -31,16 +31,13 @@ class ToolkitApp : public QMainWindow
 		QCommandLineParser cmd_parser;
 
 		QMenuBar* main_menu_bar;
-		QMenu* toolkit_menu;
-		QMenu* file_menu;
-		QMenu* view_menu;
-		QMenu* plugin_menu;
 
 		std::vector<QDockWidget*> view_widgets;
 		std::vector<RBDLModelWrapper*> loaded_models;
 
 		std::vector<std::function<void(QCommandLineParser&)>> cmd_hooks;
 		std::map<QString, QPluginLoader*> toolkit_plugins;
+		std::map<std::string, QMenu*> toolkit_menu_list;
 
 		void initPlugins();
 		void setPluginUsage(QString plugin_name, bool state);
@@ -60,7 +57,8 @@ class ToolkitApp : public QMainWindow
 
 		void addFileAction(QAction* file_action);
 
-		void addMenu(QMenu* menu);
+		QMenu* getMenu(std::string menu_name);
+		void deleteMenu(QMenu* menu);
 
 		void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
 		void parseCmd(QApplication& app);

@@ -29,6 +29,8 @@ RenderPlugin::~RenderPlugin() {
 
 	if (render_video_dialog != nullptr) 
 		delete render_video_dialog;
+
+	parentApp->deleteMenu(render_menu);
 }
 
 void RenderPlugin::init(ToolkitApp* app) {
@@ -38,23 +40,21 @@ void RenderPlugin::init(ToolkitApp* app) {
 	render_imageseries_dialog= new RenderImageSeriesDialog(parentApp);
 	render_video_dialog = new RenderVideoDialog(parentApp);
 
-	render_menu.setTitle("Render");
+	render_menu = app->getMenu("Render");
 
-	render_image = render_menu.addAction("Render Image");
+	render_image = render_menu->addAction("Render Image");
 	connect(render_image, &QAction::triggered, this, &RenderPlugin::action_render_image);
 
-	render_image_series = render_menu.addAction("Render Image Series");
+	render_image_series = render_menu->addAction("Render Image Series");
 	connect(render_image_series, &QAction::triggered, this, &RenderPlugin::action_render_image_series);
 
-	render_video = render_menu.addAction("Render Video");
+	render_video = render_menu->addAction("Render Video");
 	connect(render_video, &QAction::triggered, this, &RenderPlugin::action_render_video);
 
 	float duration = parentApp->getToolkitTimeline()->getMaxTime();
 	timelineChange(duration);
 
 	connect(parentApp->getToolkitTimeline(), &ToolkitTimeline::maxTimeChanged, this, &RenderPlugin::timelineChange);
-
-	parentApp->addMenu(&render_menu);
 }
 
 void RenderPlugin::init_offscreen_render_surface(int width, int height) {
