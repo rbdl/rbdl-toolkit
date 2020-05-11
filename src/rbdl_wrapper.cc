@@ -203,6 +203,15 @@ void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	emit new_extention_added();
 }
 
+bool RBDLModelWrapper::hasExtention(std::string name) {
+	for ( auto loaded_extention : extention_names ) {
+		if (loaded_extention == name ) {
+			return true;
+		}
+	}
+	return false;
+}
+
 WrapperExtention* RBDLModelWrapper::getExtention(std::string name) {
 	for ( auto loaded_extention : extention_names ) {
 		if (loaded_extention == name ) {

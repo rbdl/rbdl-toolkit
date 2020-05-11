@@ -15,10 +15,10 @@ ModelSelectorDialog::ModelSelectorDialog(
 		filter_models = false;
 		checkBoxShowAll->setCheckState(Qt::Checked);
 		checkBoxShowAll->setDisabled(true);
-		update_model_list(0);
+		update_model_list(2);
 	} else {
 		filter_models = true;
-		update_model_list(2);
+		update_model_list(0);
 	}
 
 	ok = buttonBox->button(QDialogButtonBox::Ok);
@@ -43,9 +43,9 @@ void ModelSelectorDialog::model_selected() {
 
 void ModelSelectorDialog::update_model_list(int filter_enabled) {
 	if (filter_enabled == 2) {
-		filter_models = true;
-	} else {
 		filter_models = false;
+	} else {
+		filter_models = true;
 	}
 
 	if (list_items.size() > 0) {
