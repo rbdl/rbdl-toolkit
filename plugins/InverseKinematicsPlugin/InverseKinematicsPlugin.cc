@@ -79,7 +79,7 @@ void InverseKinematicsPlugin::run_ik() {
 	for (int i=0; i<markers_ext->getMarkerLabels().size(); i++) {
 		for(int j=0; j<mocap_ext->getMarkerLabels().size(); j++) {
 			if (markers_ext->getMarkerLabels()[i] == mocap_ext->getMarkerLabels()[j]) {
-				index_mapping[i] == j;
+				index_mapping[i] = j;
 				used_model_markers.push_back(i);
 				used_mocap_markers.push_back(j);
 			}
@@ -151,12 +151,11 @@ void InverseKinematicsPlugin::run_ik() {
 			       )
 			);
 		}
-		if (!InverseKinematics(*(model->rbdl_model), Qinit, body_ids, body_marker_pos, target_pos, Qres)) {
+		if (!InverseKinematics(*(model->rbdl_model), Qinit, body_ids, body_marker_pos, target_pos, Qres, 1.0e-12, 1.0e-4, 200)) {
 			std::cout << "Fit has bigger error than wanted!" << std::endl;
 		}
-		std::cout << Qres << std::endl;
 		ext->addAnimationFrame(times[frame_i], Qres);
-		Qinit = Qres;
+		//Qinit = Qres;
 	}
 
 	model->addExtention(ext);
