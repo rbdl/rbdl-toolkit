@@ -40,6 +40,7 @@ class MotionMarkerExtention : public WrapperExtention {
 
 		//Data Methods to access marker data
 		const std::vector<std::string>& getMarkerLabels() { return marker_names; }
+		const std::vector<float>& getMarkerTimes() { return marker_times; }
 		const std::vector<Matrix3fd>& getMarkerFrames() { return marker_positions; }
 };
 
