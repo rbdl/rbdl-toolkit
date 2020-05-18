@@ -217,6 +217,7 @@ void SettingsEditor::editSetting(QTreeWidgetItem* item, int column) {
 			}
 			break;
 		}
+		case QMetaType::Double:
 		case QMetaType::Float: {
 			double current_val = item->data(2, Qt::UserRole).toDouble();
 			bool ok;
@@ -226,7 +227,7 @@ void SettingsEditor::editSetting(QTreeWidgetItem* item, int column) {
 			                                         current_val,
 			                                         -2147483647,
 			                                         2147483647,
-			                                         5,
+			                                         9,
 			                                         &ok);
 			if (ok) {
 				changed = true;
@@ -236,6 +237,28 @@ void SettingsEditor::editSetting(QTreeWidgetItem* item, int column) {
 				if (group != "") 
 					settings->endGroup();
 			}
+			break;
+		}
+		case QMetaType::UInt: {
+			double current_val = item->data(2, Qt::UserRole).toUInt();
+			bool ok;
+			double new_val = QInputDialog::getInt(this,
+			                                         tr("Choose Value"),
+			                                         tr("Value"),
+			                                         current_val,
+			                                         -2147483647,
+			                                         2147483647,
+			                                         1,
+			                                         &ok);
+			if (ok) {
+				changed = true;
+				if (group != "") 
+					settings->beginGroup(group);
+				settings->setValue(item->text(0), new_val);
+				if (group != "") 
+					settings->endGroup();
+			}
+			break;
 		}
 		default:
 			break;
