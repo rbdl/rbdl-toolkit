@@ -27,8 +27,14 @@ class InverseKinematicsPlugin : public QObject, public OptionalInterface{
 	private:
 		ToolkitApp* parentApp;
 
+		double tolerance;
+		double lambda;
+		unsigned max_steps;
+
 		QMenu* compute_menu;
 		QAction calculate_animation;
+
+		void loadIKSettings();
 
 	public slots:
 		void run_ik();

@@ -15,7 +15,7 @@
 using namespace RigidBodyDynamics;
 using namespace RigidBodyDynamics::Math;
 
-InverseKinematicsPlugin::InverseKinematicsPlugin() {
+InverseKinematicsPlugin::InverseKinematicsPlugin(): tolerance(1.0e-8), lambda(0.05), max_steps(200) {
 	parentApp = NULL;
 }
 
@@ -30,7 +30,42 @@ void InverseKinematicsPlugin::init(ToolkitApp* app) {
 	calculate_animation.setText("Inverse Kinematics");
 	connect(&calculate_animation, &QAction::triggered, this, &InverseKinematicsPlugin::run_ik);
 
+	loadIKSettings();
+
 	compute_menu->addAction(&calculate_animation);
+}
+
+void InverseKinematicsPlugin::loadIKSettings() {
+	parentApp->toolkit_settings.beginGroup("InverseKinematicsOptions");
+
+	//tolerance
+	QVariant val = parentApp->toolkit_settings.value("IK.tolerance");
+	if (val.isNull()) {
+		parentApp->toolkit_settings.setValue("IK.tolerance", tolerance);
+	} else {
+		tolerance = val.toDouble();
+	}
+	parentApp->toolkit_settings.setType("IK.tolerance", tolerance);
+
+	//lambda
+	val = parentApp->toolkit_settings.value("IK.lambda");
+	if (val.isNull()) {
+		parentApp->toolkit_settings.setValue("IK.lambda", lambda);
+	} else {
+		lambda = val.toDouble();
+	}
+	parentApp->toolkit_settings.setType("IK.lambda", lambda);
+
+	//Max Steps
+	val = parentApp->toolkit_settings.value("IK.max_steps");
+	if (val.isNull()) {
+		parentApp->toolkit_settings.setValue("IK.max_steps", max_steps);
+	} else {
+		max_steps = val.toUInt();
+	}
+	parentApp->toolkit_settings.setType("IK.max_steps", max_steps);
+
+	parentApp->toolkit_settings.endGroup();
 }
 
 bool only_models_with_markers_and_mocap_data(RBDLModelWrapper* model) {
@@ -59,8 +94,22 @@ std::vector<unsigned> get_missing_indexes(unsigned size, const std::vector<unsig
 	return missing;
 }
 
+
 void InverseKinematicsPlugin::run_ik() {
-	RBDLModelWrapper* model = parentApp->selectModel(only_models_with_markers_and_mocap_data);
+	loadIKSettings();
+	RBDLModelWrapper* model; 
+
+	if (parentApp->getLoadedModels()->size() > 1) {
+		model = parentApp->selectModel(only_models_with_markers_and_mocap_data);
+	} else {
+		model = parentApp->getLoadedModels()->at(0);
+	}
+
+
+
+	if (model == nullptr) {
+		return;
+	}
 
 	if(!only_models_with_markers_and_mocap_data(model)) {
 		auto err = RBDLToolkitError("Model is Missing Mocap/Model Markers, so running IK is not possible due to missing data!");
@@ -128,8 +177,8 @@ void InverseKinematicsPlugin::run_ik() {
 	//IK
 	AnimationModelExtention* ext = new AnimationModelExtention();
 
-	VectorNd Qinit = VectorNd::Zero(model->rbdl_model->dof_count);
-	VectorNd Qres = VectorNd::Zero(model->rbdl_model->dof_count);
+	VectorNd Qinit(VectorNd::Zero(model->rbdl_model->dof_count));
+	VectorNd Qres(VectorNd::Zero(model->rbdl_model->dof_count));
 	auto times = mocap_ext->getMarkerTimes();
 
 	QProgressDialog pbar("Calculating Model Animation with IK", "Abort Computation", 0, times.size(), nullptr);
@@ -151,7 +200,7 @@ void InverseKinematicsPlugin::run_ik() {
 			       )
 			);
 		}
-		if (!InverseKinematics(*(model->rbdl_model), Qinit, body_ids, body_marker_pos, target_pos, Qres, 1.0e-12, 1.0e-4, 200)) {
+		if (!InverseKinematics(*(model->rbdl_model), Qinit, body_ids, body_marker_pos, target_pos, Qres, tolerance, lambda, max_steps)) {
 			std::cout << "Fit has bigger error than wanted!" << std::endl;
 		}
 		ext->addAnimationFrame(times[frame_i], Qres);
