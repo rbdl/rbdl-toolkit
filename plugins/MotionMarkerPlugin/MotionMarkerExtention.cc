@@ -23,6 +23,7 @@ MotionMarkerExtention::MotionMarkerExtention(unsigned int marker_count,
 	marker_plain_root  = new QEntity;
 	marker_plain_root->setProperty("Scene.ObjGroup", QVariant("Mocap Marker"));
 	max_time = 0.;
+	marker_names.resize(marker_count);
 
 	marker_mesh.setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
 }
@@ -98,3 +99,7 @@ void MotionMarkerExtention::addMocapMarkerFrame(float time, const Matrix3fd& mar
 	marker_positions.push_back(std::move(marker_pos));
 }
 
+void MotionMarkerExtention::setMarkerLabel(unsigned int pos, std::string& label) {
+	if (pos<marker_count) 
+		marker_names[pos] = label;
+}

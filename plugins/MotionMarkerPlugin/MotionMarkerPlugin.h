@@ -14,6 +14,7 @@
 #include "util.h"
 
 #include "MotionMarkerExtention.h"
+#include "ModelMarkerExtention.h"
 
 class MotionMarkerPlugin : public QObject, public OptionalInterface{
 	Q_OBJECT

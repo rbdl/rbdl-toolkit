@@ -17,13 +17,13 @@ std::string AnimationModelExtention::getExtentionName() {
 void AnimationModelExtention::update(float current_time) {
 	unsigned int time_index = 0;
 	for (; time_index < animation_times.size(); time_index++) {
-		if (time_index == animation_times.size()) break;
+		if (time_index == animation_times.size()-1) break;
 		if (animation_times[time_index] <= current_time && animation_times[time_index+1] > current_time) {
 			break;
 		}
 	}
-	if (time_index == animation_times.size()) {
-		model_parent->updateKinematics(animation_q_frames[time_index-1]);
+	if (time_index == animation_times.size()-1) {
+		model_parent->updateKinematics(animation_q_frames[time_index]);
 		return;
 	}
 

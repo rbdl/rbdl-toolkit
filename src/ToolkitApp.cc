@@ -20,14 +20,14 @@
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	//setup standard menu
 	main_menu_bar = new QMenuBar(NULL);
-	toolkit_menu = main_menu_bar->addMenu("Toolkit");
-	file_menu = toolkit_menu->addMenu("File");
-	view_menu = main_menu_bar->addMenu("Views");
-	plugin_menu = main_menu_bar->addMenu("Plugins");
+	toolkit_menu_list["Toolkit"] = main_menu_bar->addMenu("Toolkit");
+	toolkit_menu_list["File"] = toolkit_menu_list["Toolkit"]->addMenu("File");
+	toolkit_menu_list["View"] = main_menu_bar->addMenu("Views");
+	toolkit_menu_list["Plugin"] = main_menu_bar->addMenu("Plugins");
 
-	file_menu->addAction("Load Model", this, "aaction_load_model()");
-	toolkit_menu->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
-	toolkit_menu->addAction("Settings", &toolkit_settings, "aeditSettings()");
+	toolkit_menu_list["File"]->addAction("Load Model", this, "aaction_load_model()");
+	toolkit_menu_list["Toolkit"]->addAction("Reload Files", this, "aaction_reload_files()", QKeySequence::fromString("F5"));
+	toolkit_menu_list["Toolkit"]->addAction("Settings", &toolkit_settings, "aeditSettings()");
 	this->setMenuBar(main_menu_bar);
 
 	//settings 
@@ -236,7 +236,7 @@ void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea 
 	addDockWidget(area, dock);
 
 	view_widgets.push_back(dock);
-	view_menu->addAction(dock->toggleViewAction());
+	toolkit_menu_list["View"]->addAction(dock->toggleViewAction());
 }
 
 void ToolkitApp::deleteView(QString name) {
@@ -297,7 +297,7 @@ void ToolkitApp::initPlugins() {
 		//All other plugins will be toggled via the plugins menu
 		} else {
 			//create menu action to enable and disable plugins
-			QAction *plugin_action = plugin_menu->addAction(plugin_name); 
+			QAction *plugin_action = toolkit_menu_list["Plugin"]->addAction(plugin_name); 
 			plugin_action->setCheckable(true);
 
 			//connect to action via lambda function
@@ -341,7 +341,7 @@ void ToolkitApp::setPluginUsage(QString plugin_name, bool state) {
 }
 
 void ToolkitApp::addFileAction(QAction* action) {
-	file_menu->addAction(action);
+	toolkit_menu_list["File"]->addAction(action);
 }
 
 void ToolkitApp::parseCmd(QApplication& app) {
@@ -370,8 +370,26 @@ void ToolkitApp::addCmdOption(QCommandLineOption &option, std::function<void(QCo
 	cmd_hooks.push_back(option_logic);
 }
 
-void ToolkitApp::addMenu(QMenu* menu) {
-	main_menu_bar->addMenu(menu);
+QMenu* ToolkitApp::getMenu(std::string menu_name) {
+	QMenu* m;
+
+	if ( toolkit_menu_list.find(menu_name) == toolkit_menu_list.end() ) {
+		m = main_menu_bar->addMenu(QString(menu_name.c_str()));
+		toolkit_menu_list[menu_name] = m;
+	} else {
+		m = toolkit_menu_list[menu_name];
+	}
+	return m;
+}
+
+void ToolkitApp::deleteMenu(QMenu* menu) {
+	for (auto it=toolkit_menu_list.begin(); it!=toolkit_menu_list.end(); it++) {
+		if (it->second == menu) {
+			toolkit_menu_list.erase(it);
+			delete menu;
+			break;
+		}
+	}
 }
 
 void ToolkitApp::showWarningDialog(QString warning_msg) {

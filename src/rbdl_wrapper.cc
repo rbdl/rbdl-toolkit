@@ -191,6 +191,7 @@ void RBDLModelWrapper::model_update(float current_time) {
 void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	std::string extention_name = extention->getExtentionName();
 	extentions[extention_name] = extention;
+	extention_names.push_back(extention_name);
 	extention->setModelParent(this);
 
 	Qt3DCore::QEntity* visual = extention->getVisual();
@@ -202,6 +203,24 @@ void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
 	emit new_extention_added();
 }
 
+bool RBDLModelWrapper::hasExtention(std::string name) {
+	for ( auto loaded_extention : extention_names ) {
+		if (loaded_extention == name ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+WrapperExtention* RBDLModelWrapper::getExtention(std::string name) {
+	for ( auto loaded_extention : extention_names ) {
+		if (loaded_extention == name ) {
+			return extentions[name];
+		}
+	}
+	return nullptr;
+}
+
 int RBDLModelWrapper::getModelDof() {
 	return rbdl_model->dof_count;
 }
@@ -210,7 +229,7 @@ QString RBDLModelWrapper::getModelFile() {
 	return model_file;
 }
 
-void RBDLModelWrapper::addVisual(std::string segment_name, Qt3DCore::QEntity *visual) {
+void RBDLModelWrapper::addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual) {
 	Qt3DCore::QEntity* segment_entity;
 	try {
 		segment_entity = body_mesh_map.at(segment_name);

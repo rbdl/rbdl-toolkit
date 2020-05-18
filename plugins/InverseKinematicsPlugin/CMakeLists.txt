@@ -1,13 +1,11 @@
-PROJECT(MotionMarkerPlugin)
+PROJECT(InverseKinematicsPlugin)
 	
-SET(MotionMarkerPlugin_SRCS
-	MotionMarkerPlugin.cc
-	MotionMarkerExtention.cc
-	ModelMarkerExtention.cc
+SET(InverseKinematicsPlugin_SRCS
+	InverseKinematicsPlugin.cc
 )
 
-SET(MotionMarkerPlugin_MOC_HDRS
-	MotionMarkerPlugin.h
+SET(InverseKinematicsPlugin_MOC_HDRS
+	InverseKinematicsPlugin.h
 	include/toolkit_interfaces.h
 )
 
@@ -17,10 +15,11 @@ INCLUDE_DIRECTORIES (${QT_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR}/include)
-INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR}/c3dfile/src)
 INCLUDE_DIRECTORIES (${RBDL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${BOOST_INCLUDE_DIR})
+INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/plugins/MotionMarkerPlugin)
+INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/plugins/AnimationPlugin)
 
 ADD_DEFINITIONS (${QT_DEFINITIONS})
 ADD_DEFINITIONS (-DQT_PLUGIN)
@@ -29,9 +28,9 @@ ADD_DEFINITIONS (-DQT_SHARED)
 
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-ADD_LIBRARY (motionmarkerplugin SHARED ${MotionMarkerPlugin_SRCS})
+ADD_LIBRARY (IKplugin SHARED ${InverseKinematicsPlugin_SRCS})
 
-TARGET_LINK_LIBRARIES (motionmarkerplugin 
+TARGET_LINK_LIBRARIES (IKplugin 
 	${QT_LIBRARIES} 
 	${QT_QTXML_LIBRARY} 
 	Qt5::Core
@@ -42,11 +41,7 @@ TARGET_LINK_LIBRARIES (motionmarkerplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
-	c3dfile
+	animationplugin
 )
 
-ADD_SUBDIRECTORY(
-	c3dfile
-)
-
-INSTALL( TARGETS motionmarkerplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})
+INSTALL( TARGETS IKplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

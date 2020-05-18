@@ -34,7 +34,7 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		~RenderPlugin();
 		void init(ToolkitApp* app);
 
-		QMenu render_menu;
+		QMenu* render_menu;
 
 	private:
 		ToolkitApp* parentApp;

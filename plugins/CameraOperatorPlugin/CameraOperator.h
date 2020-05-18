@@ -23,7 +23,7 @@ class CameraOperatorPlugin : public QObject, public CoreInterface {
 	private:
 		ToolkitApp* parentApp;
 
-		QMenu camera_menu;
+		QMenu* camera_menu;
 
 	public slots:
 		void setOrthographicView(bool state);
