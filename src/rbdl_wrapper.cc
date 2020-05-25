@@ -7,6 +7,7 @@
 #include <Qt3DRender/QMesh>
 #include <Qt3DRender/QAttribute>
 #include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
 
 #include "render_util.h"
 #include "util.h"
@@ -89,16 +90,17 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			//read visual parameters and transform to correct coordinates
 			QString visual_mesh_src = findFile(model_luatable["frames"][i]["visuals"][j]["src"].get<std::string>());
 			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
+			float visual_alpha = model_luatable["frames"][i]["visuals"][j]["alpha"].getDefault(1.);
 
 			Vector3d visual_scale = model_luatable["frames"][i]["visuals"][j]["scale"].getDefault(Vector3d(1., 1., 1.));
-			visual_scale = axis_transform * ( mesh_unit_scaling * visual_scale);
+			visual_scale = ( mesh_unit_scaling * visual_scale);
 			Vector3d visual_dimensions = model_luatable["frames"][i]["visuals"][j]["dimensions"].getDefault(Vector3d(1., 1., 1.));
-			visual_dimensions = axis_transform * visual_dimensions;
+			visual_dimensions = visual_dimensions;
 
 			Vector3d visual_translate = model_luatable["frames"][i]["visuals"][j]["translate"].getDefault(Vector3d(0., 0., 0.));
-			visual_translate = axis_transform * visual_translate; 
+			visual_translate = visual_translate; 
 			Vector3d visual_center = model_luatable["frames"][i]["visuals"][j]["mesh_center"].getDefault(Vector3d(0., 0., 0.));
-			visual_center = axis_transform * visual_center;
+			visual_center = visual_center;
 
 			Qt3DCore::QTransform* visual_transform = new Qt3DCore::QTransform;
 			visual_transform->setScale3D(QVector3D(visual_dimensions[0] * visual_scale[0], visual_dimensions[1] * visual_scale[1], visual_dimensions[2] * visual_scale[2]));
@@ -111,13 +113,16 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			//Calculate and set mesh transforms 
 			Qt3DCore::QTransform* mesh_transform = new Qt3DCore::QTransform;
 			auto rot_axis1 = Vector3d(1., 0., 0.);
-			auto rotation = QQuaternion::fromAxisAndAngle(QVector3D(rot_axis1[0], rot_axis1[1], rot_axis1[2]), 90.f);
+			auto rotation = QQuaternion::fromAxisAndAngle(QVector3D(rot_axis1[0], rot_axis1[1], rot_axis1[2]), 0.f);
+			//most meshes have a different default orientation in meshup -> which means to replicate this here we would need to
+			//rotate the mesh
+			//auto rotation = QQuaternion::fromAxisAndAngle(QVector3D(rot_axis1[0], rot_axis1[1], rot_axis1[2]), 90.f);
 			float angle;
 			Vector3d axis;
 			if(model_luatable["frames"][i]["visuals"][j]["rotate"].exists()) {
 				angle = model_luatable["frames"][i]["visuals"][j]["rotate"]["angle"].getDefault(0.f);
 				axis = model_luatable["frames"][i]["visuals"][j]["rotate"]["axis"].getDefault(Vector3d(1., 0., 0.));
-				axis = (axis_transform * axis).normalized();
+				axis = axis.normalized();
 				rotation = QQuaternion::fromAxisAndAngle(QVector3D(axis[0], axis[1], axis[2]), angle) * rotation;
 			}
 
@@ -129,8 +134,10 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 			mesh_transform->setRotation(rotation);
 			mesh_transform->setTranslation(translation);
 		
-			Qt3DExtras::QPhongMaterial* visual_material = new Qt3DExtras::QPhongMaterial;
-			visual_material->setAmbient(QColor::fromRgbF(visual_color[0], visual_color[1], visual_color[2], 1.));
+			Qt3DExtras::QDiffuseSpecularMaterial* visual_material = new Qt3DExtras::QDiffuseSpecularMaterial;
+			if (visual_alpha < 1.) 
+				visual_material->setAlphaBlendingEnabled(true);
+			visual_material->setAmbient(QColor::fromRgbF(visual_color[0], visual_color[1], visual_color[2], visual_alpha));
 
 			Qt3DRender::QMesh* visual_mesh = new Qt3DRender::QMesh;
 			visual_mesh->setSource(QUrl::fromLocalFile(visual_mesh_src));
@@ -145,7 +152,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 
 		unsigned int body_id = rbdl_model->GetBodyId(segment_name.c_str());
 		auto segment_spacial_transform = CalcBodyToBaseCoordinates(*rbdl_model, q, body_id, Vector3d(0., 0., 0.));
-		segment_spacial_transform = axis_transform * segment_spacial_transform;
+		segment_spacial_transform = segment_spacial_transform;
 		auto segment_rotation = Quaternion::fromMatrix(CalcBodyWorldOrientation(*rbdl_model, q, body_id));
 
 		Qt3DCore::QTransform* segment_transform = new Qt3DCore::QTransform;
@@ -257,6 +264,10 @@ void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
 
 Qt3DCore::QEntity* WrapperExtention::getVisual() {
 	return nullptr;
+}
+
+void WrapperExtention::exportData() {
+	return;
 }
 
 WrapperExtention::WrapperExtention() {

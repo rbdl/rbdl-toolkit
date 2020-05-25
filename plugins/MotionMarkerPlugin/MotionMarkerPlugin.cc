@@ -7,7 +7,7 @@
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
-#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DExtras>
 #include <Qt3DCore/QTransform>
 #include <Qt3DCore/QEntity>
 
@@ -49,7 +49,7 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 				ToolkitApp::showExceptionDialog(e);
 				delete ext;
 			}
-			if (parentApp->getLoadedModels()->size() != 0) {
+    		if (parentApp->getLoadedModels()->size() != 0) {
 				RBDLModelWrapper* rbdl_model = nullptr;
 
 				if (parentApp->getLoadedModels()->size() == 1) {
@@ -125,7 +125,7 @@ void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *model) {
 
 		for (auto marker_name : keys) {
 			Vector3d marker_position = model->model_luatable["frames"][i]["markers"][marker_name.string_value.c_str()].getDefault(Vector3d(0.,0.,0.));
-			marker_position = model->axis_transform * marker_position;
+			//marker_position = model->axis_transform * marker_position;
 
 			ext->addModelMarker(marker_name.string_value, segment_name, marker_position);
 		}

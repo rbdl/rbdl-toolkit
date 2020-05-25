@@ -25,9 +25,13 @@ class WrapperExtention {
 
 		void setModelParent(RBDLModelWrapper* model);
 
+		//needs to be implemented by every extention
 		virtual std::string getExtentionName() = 0;
-		virtual Qt3DCore::QEntity* getVisual();
 		virtual void update(float current_time) = 0; 
+
+		//optional implementetion, default does nothing
+		virtual Qt3DCore::QEntity* getVisual();
+		virtual void exportData();
 };
 
 
