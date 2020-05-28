@@ -71,14 +71,14 @@ void CameraOperatorPlugin::setTopView() {
 
 void CameraOperatorPlugin::setSideView() {
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-	camera->setPosition(QVector3D(0, 0, 5));
+	camera->setPosition(QVector3D(5, 0, 0));
 	camera->setViewCenter(QVector3D(0, 0, 0));
 	camera->setUpVector(QVector3D(0, 1, 0));
 }
 
 void CameraOperatorPlugin::setFrontView() {
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-	camera->setPosition(QVector3D(5, 0, 0));
+	camera->setPosition(QVector3D(0, 0, 5));
 	camera->setViewCenter(QVector3D(0, 0, 0));
 	camera->setUpVector(QVector3D(0, 1, 0));
 }
