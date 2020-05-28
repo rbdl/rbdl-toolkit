@@ -10,7 +10,7 @@
 #include <QFileInfo>
 #include <QLibrary>
 
-QString findFile(QString file) {
+QString findFile(QString file, bool absolute) {
 	//if empty no file to be found
 	if (file == "") {
 		throw RigidBodyDynamics::Errors::RBDLInvalidFileError("Cannot find file with no name!");
@@ -18,6 +18,8 @@ QString findFile(QString file) {
 
 	QFileInfo check_file(file);
 	if (check_file.exists()) {
+		if (absolute)
+			return check_file.absoluteFilePath();
 		return file;
 	}
 
@@ -26,6 +28,8 @@ QString findFile(QString file) {
 		QDir search_dir = QDir(paths.at(i));
 		QString file_path = search_dir.filePath(file);
 		if (QFileInfo(file_path).exists()) {
+			if (absolute)
+				return check_file.absoluteFilePath();
 			return file_path;
 		}
 	}
@@ -35,8 +39,8 @@ QString findFile(QString file) {
 	throw RigidBodyDynamics::Errors::RBDLInvalidFileError(errormsg.str());
 }
 
-QString findFile(std::string file) { 
-	return findFile(QString::fromStdString(file)); 
+QString findFile(std::string file, bool absolute) { 
+	return findFile(QString::fromStdString(file), absolute); 
 }
 
 QString findPlugin(QString plugin) {

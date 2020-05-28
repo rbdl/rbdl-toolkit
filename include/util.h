@@ -8,8 +8,8 @@
 #include <string>
 
 // returs an empty file on failure
-QString findFile(QString file);
-QString findFile(std::string file); 
+QString findFile(QString file, bool absolute=false);
+QString findFile(std::string file, bool absolute=false); 
 
 QString findPlugin(QString plugin);
 QStringList findAllPlugins();
