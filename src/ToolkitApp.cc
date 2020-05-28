@@ -167,6 +167,11 @@ void ToolkitApp::loadModel(const QString &model_file) {
 
 	Qt3DCore::QEntity* model_scene_obj;
 
+	//some logic to save current pwd and move to the dir where the model is loaded from
+	auto last_pwd = QDir::currentPath();
+	auto model_pwd = QFileInfo(model_file).absoluteDir().absolutePath();
+	QDir::setCurrent(model_pwd);
+
 	try {
 		model_scene_obj = model->loadFromFile(model_file);
 	} catch (RigidBodyDynamics::Errors::RBDLFileParseError& e) {
@@ -205,6 +210,9 @@ void ToolkitApp::loadModel(const QString &model_file) {
 		connect(timeline, SIGNAL(timeChanged(float)), model, SLOT(model_update(float)));
 		connect(model, SIGNAL(visual_added(Qt3DCore::QEntity*)), this, SLOT(model_visual_update(Qt3DCore::QEntity*)));
 	}
+
+	//return to original pwd
+	QDir::setCurrent(last_pwd);
 }
 
 void ToolkitApp::model_visual_update(Qt3DCore::QEntity* visual) {
