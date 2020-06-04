@@ -27,9 +27,10 @@ QString findFile(QString file, bool absolute) {
 	for (int i=0; i<paths.size(); i++) {
 		QDir search_dir = QDir(paths.at(i));
 		QString file_path = search_dir.filePath(file);
-		if (QFileInfo(file_path).exists()) {
+		auto info = QFileInfo(file_path);
+		if (info.exists()) {
 			if (absolute)
-				return check_file.absoluteFilePath();
+				return info.absoluteFilePath();
 			return file_path;
 		}
 	}

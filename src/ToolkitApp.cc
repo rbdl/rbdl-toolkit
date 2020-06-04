@@ -169,11 +169,12 @@ void ToolkitApp::loadModel(const QString &model_file) {
 
 	//some logic to save current pwd and move to the dir where the model is loaded from
 	auto last_pwd = QDir::currentPath();
-	auto model_pwd = QFileInfo(model_file).absoluteDir().absolutePath();
+	auto model_file_info = QFileInfo(model_file);
+	auto model_pwd = model_file_info.absoluteDir().absolutePath();
 	QDir::setCurrent(model_pwd);
 
 	try {
-		model_scene_obj = model->loadFromFile(model_file);
+		model_scene_obj = model->loadFromFile(model_file_info.fileName());
 	} catch (RigidBodyDynamics::Errors::RBDLFileParseError& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
