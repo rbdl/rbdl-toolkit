@@ -53,7 +53,6 @@ class RBDLModelWrapper : public QObject {
 	public:
 		LuaTable model_luatable;
 
-		Matrix3_t axis_transform;
 		RigidBodyDynamics::Model* rbdl_model;
 
 		RBDLModelWrapper();

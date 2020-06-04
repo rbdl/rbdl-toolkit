@@ -2,6 +2,7 @@
 #include "rbdl/rbdl_errors.h"
 
 #include <QFileInfo>
+#include <QMatrix4x4>
 
 #include <Qt3DCore/QTransform>
 #include <Qt3DRender/QMesh>
@@ -42,6 +43,8 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		delete model_render_obj;
 	}
 	model_render_obj = new Qt3DCore::QEntity();
+	auto model_obj = new Qt3DCore::QEntity(model_render_obj);
+
 
 	// load model lua extra to read parameters for rendering
 	model_luatable = LuaTable::fromFile(model_file.toStdString().c_str());
@@ -51,18 +54,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	Vector3d axis_front = model_luatable["configuration"]["axis_front"].getDefault(Vector3d(1., 0., 0.)); 
 	Vector3d axis_up = model_luatable["configuration"]["axis_up"].getDefault(Vector3d(0., 1., 0.));
 	Vector3d axis_right = model_luatable["configuration"]["axis_right"].getDefault(Vector3d(0., 0., 1.));
-
-	axis_transform(0, 0) = axis_front[0];
-	axis_transform(1, 0) = axis_front[1];
-	axis_transform(2, 0) = axis_front[2];
-
-	axis_transform(0, 1) = axis_right[0];
-	axis_transform(1, 1) = axis_right[1];
-	axis_transform(2, 1) = axis_right[2];
-
-	axis_transform(0, 2) = axis_up[0];
-	axis_transform(1, 2) = axis_up[1];
-	axis_transform(2, 2) = axis_up[2];
 
 	//measurement unit used by meshes
 	std::string mesh_unit = model_luatable["configuration"]["mesh_measurement_unit"].getDefault(std::string("m"));
@@ -107,7 +98,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 
 			Vector3d visual_center = model_luatable["frames"][i]["visuals"][j]["translate"].getDefault(Vector3d(0., 0., 0.));
 			mesh_transform->setTranslation(QVector3D(visual_center[0], visual_center[1], visual_center[2]));
-
 
 			//Material Properties
 			Vector3d visual_color = model_luatable["frames"][i]["visuals"][j]["color"].getDefault(Vector3d(1., 1., 1.));
@@ -164,12 +154,21 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	auto model_spacial_rotation = Quaternion::fromMatrix(CalcBodyWorldOrientation(*rbdl_model, q, 0));
 
 	//add a constant rotation for rotating object to fit opengl coordinates
-	auto rotation = QQuaternion::fromAxisAndAngle(QVector3D(1., 0., 0.), -0.f) * QQuaternion(model_spacial_rotation[3], model_spacial_rotation[0], model_spacial_rotation[1], model_spacial_rotation[2]);
+	auto rotation = QQuaternion(model_spacial_rotation[3], model_spacial_rotation[0], model_spacial_rotation[1], model_spacial_rotation[2]);
 
 	Qt3DCore::QTransform* model_transform = new Qt3DCore::QTransform;
 	model_transform->setRotation(rotation);
 	model_transform->setTranslation(QVector3D(model_spacial_transform[0], model_spacial_transform[1], model_spacial_transform[2]));
-	model_render_obj->addComponent(model_transform);
+	model_obj->addComponent(model_transform);
+
+	Qt3DCore::QTransform* world_axis_transform = new Qt3DCore::QTransform;
+	QMatrix4x4 m(axis_right[0], axis_right[1], axis_right[2], 0.,
+	             axis_up[0], axis_up[1], axis_up[2], 0.,
+	             axis_front[0], axis_front[1], axis_front[2], 0.,
+	             0., 0., 0., 1.
+	            );
+	world_axis_transform->setMatrix(m);
+	model_render_obj->addComponent(world_axis_transform);
 
 	return model_render_obj;
 }
