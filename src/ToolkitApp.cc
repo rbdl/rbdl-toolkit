@@ -22,6 +22,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	main_menu_bar = new QMenuBar(NULL);
 	toolkit_menu_list["Toolkit"] = main_menu_bar->addMenu("Toolkit");
 	toolkit_menu_list["File"] = toolkit_menu_list["Toolkit"]->addMenu("File");
+	toolkit_menu_list["Export"] = toolkit_menu_list["Toolkit"]->addMenu("Export");
 	toolkit_menu_list["View"] = main_menu_bar->addMenu("Views");
 	toolkit_menu_list["Plugin"] = main_menu_bar->addMenu("Plugins");
 

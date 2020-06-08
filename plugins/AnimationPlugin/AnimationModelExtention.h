@@ -25,6 +25,7 @@ class AnimationModelExtention : public WrapperExtention {
 		void addAnimationFrame(float time, RigidBodyDynamics::Math::VectorNd& Q);
 
 		//Data Mathods 
+		const std::vector<float>& getAnimationTimes() { return animation_times; }
 		const std::vector<RigidBodyDynamics::Math::VectorNd>& getAnimationFrames() { return animation_q_frames; }
 };
 

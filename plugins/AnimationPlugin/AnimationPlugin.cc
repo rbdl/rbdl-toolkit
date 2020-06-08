@@ -23,10 +23,14 @@ void AnimationPlugin::init(ToolkitApp* app) {
 	//save reference to parent ToolkitApp 
 	parentApp = app;
 
-	load_file_trigger = new QAction("Load Animation");
-	parentApp->addFileAction(load_file_trigger);
+	load_file_trigger.setText("Load Animation");
+	parentApp->addFileAction(&load_file_trigger);
 
-	connect(load_file_trigger, SIGNAL(triggered(bool)), this, SLOT(action_load_animation()));
+	export_animation_data.setText("Export Animation");
+	parentApp->getMenu("Export")->addAction(&export_animation_data);
+
+	connect(&load_file_trigger, SIGNAL(triggered(bool)), this, SLOT(action_load_animation()));
+	connect(&export_animation_data, SIGNAL(triggered(bool)), this, SLOT(action_export_animation()));
 
 	getCSVSettings();
 
@@ -119,13 +123,60 @@ void AnimationPlugin::action_load_animation() {
 			}
 		}	
 
-
 	} else {
 		throw RigidBodyDynamics::Errors::RBDLError("Animation plugin was not initialized correctly!");
 	}
 }
 
-void AnimationPlugin::reload_files() {
+bool only_models_with_animation_data(RBDLModelWrapper* model) {
+	if (model->hasExtention("Animation")) {
+		return true;
+	}
+	return false;
+}
+
+void AnimationPlugin::action_export_animation() {
+	getCSVSettings();
+	RBDLModelWrapper* model = nullptr;
+
+	if (parentApp->getLoadedModels()->size() > 1) {
+		model = parentApp->selectModel(only_models_with_animation_data);
+	} else {
+		model = parentApp->getLoadedModels()->at(0);
+	}
+	if (model == nullptr) {
+		return;
+	}
+	if(!only_models_with_animation_data(model)) {
+		auto err = RBDLToolkitError("Model is Missing Animation … Cannot export any data!");
+		ToolkitApp::showExceptionDialog(err);
+		return;
+	}
+
+	QFileDialog file_dialog (parentApp, "Select File for Animation Data");
+	file_dialog.setFileMode(QFileDialog::AnyFile);
+
+	if (file_dialog.exec()) {
+		QFile animation_file(file_dialog.selectedFiles()[0]);
+		if (!animation_file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			auto err = RBDLToolkitError("File is not writeable!");
+			ToolkitApp::showExceptionDialog(err);
+			return;
+		}
+		QTextStream out(&animation_file);
+
+		AnimationModelExtention* ext = (AnimationModelExtention*) model->getExtention("Animation");
+		auto times = ext->getAnimationTimes();
+		auto frames = ext->getAnimationFrames();
+		auto dof = ext->getDOF();
+		for(int i=0; i<times.size(); i++) {
+			out << times[i];
+			for (int j=0;j<dof;j++) {
+				out << csv_seperator << frames[i][j];
+			}
+			out << "\n";
+		}
+	}
 
 }
 
@@ -190,12 +241,9 @@ AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
 			}
 			float time = row_values[0];
 			RigidBodyDynamics::Math::VectorNd data(animation_dof);
-			//std::cout << time << " [ "; 
 			for ( int j = 0; j < animation_dof; j++) {
 				data[j] = row_values[j+1];
-				//std::cout << data[j] << ", ";
 			}
-			//std::cout << "]" << std::endl; 
 
 			//write read values to animation object
 			animation->addAnimationFrame(time, data);

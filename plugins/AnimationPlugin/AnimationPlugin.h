@@ -23,7 +23,8 @@ class AnimationPlugin : public QObject, public CoreInterface {
 		AnimationModelExtention* loadAnimationFile(QString path);
 	private:
 		ToolkitApp* parentApp;
-		QAction* load_file_trigger;
+		QAction load_file_trigger;
+		QAction export_animation_data;
 
 		char csv_seperator;
 		bool csv_trim;
@@ -35,8 +36,7 @@ class AnimationPlugin : public QObject, public CoreInterface {
 
 	public slots:
 		void action_load_animation();
-		void reload_files();
-
+		void action_export_animation();
 };
 
 #endif 

@@ -104,9 +104,6 @@ void InverseKinematicsPlugin::run_ik() {
 	} else {
 		model = parentApp->getLoadedModels()->at(0);
 	}
-
-
-
 	if (model == nullptr) {
 		return;
 	}
