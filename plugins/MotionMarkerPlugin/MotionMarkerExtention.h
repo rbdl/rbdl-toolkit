@@ -18,7 +18,7 @@ class MotionMarkerExtention : public WrapperExtention {
 		QColor marker_color;
 
 		Qt3DCore::QEntity* marker_plain_root;
-		Qt3DRender::QMesh marker_mesh;
+		Qt3DRender::QMesh* marker_mesh;
 
 		std::vector<float> marker_times;
 		std::vector<Matrix3fd> marker_positions;

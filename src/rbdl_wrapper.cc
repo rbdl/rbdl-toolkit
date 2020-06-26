@@ -23,6 +23,12 @@ RBDLModelWrapper::RBDLModelWrapper(){
 
 
 Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
+	for ( auto loaded_extention : extention_names ) {
+		delete extentions[loaded_extention];
+	}
+	extention_names.clear();
+	extentions.clear();
+
 	QFileInfo check_file(model_file);
 	// Is it really a file and no directory?
 	if (!check_file.exists() || !check_file.isFile()) {

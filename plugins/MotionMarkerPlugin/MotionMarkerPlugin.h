@@ -38,6 +38,7 @@ class MotionMarkerPlugin : public QObject, public OptionalInterface{
 	public slots:
 		void action_load_data();
 		void addModelMarkersToModel(RBDLModelWrapper* model);
+		void reload(RBDLModelWrapper* model);
 
 };
 

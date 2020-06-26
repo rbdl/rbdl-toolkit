@@ -89,6 +89,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	timeline = new ToolkitTimeline(this);
 	addView("Timeline", timeline, Qt::BottomDockWidgetArea, false);
 	connect(main_display, SIGNAL(frame_sync_signal(float)), timeline, SLOT(tick(float)));
+	connect(this, SIGNAL(reload_files()), timeline, SLOT(reset_timeline()));
 
 	//add standard scene objects
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
@@ -136,10 +137,12 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 }
 
 void ToolkitApp::action_reload_files() {
+	emit reload_files();
 	for (auto model : loaded_models) {
 		Qt3DCore::QEntity*  model_render_obj = model->getRenderObj();
 		main_display->removeSceneObject(model_render_obj);
 		model->reload();
+		emit reloaded_model(model);
 
 		model_render_obj = model->getRenderObj();
 		main_display->addSceneObject(model_render_obj);

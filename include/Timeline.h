@@ -33,6 +33,8 @@ class ToolkitTimeline : public QWidget, public Ui::Timeline {
 
 		void tick(float dt);
 
+		void reset_timeline();
+
 	signals:
 		//signal always sends absolute time so that all listeners can update accordingly
 		void timeChanged(float current_time);

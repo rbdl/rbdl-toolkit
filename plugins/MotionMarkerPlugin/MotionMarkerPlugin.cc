@@ -77,6 +77,7 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 	}
 
 	connect(parentApp, SIGNAL(model_loaded(RBDLModelWrapper*)), this, SLOT(addModelMarkersToModel(RBDLModelWrapper*)));
+	connect(parentApp, &ToolkitApp::reloaded_model, this, &MotionMarkerPlugin::reload);
 }
 
 void MotionMarkerPlugin::loadMarkerSettings() {
@@ -128,6 +129,10 @@ void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *model) {
 
 			ext->addModelMarker(marker_name.string_value, segment_name, marker_position);
 		}
+	}
+	if (ext->getMarkerLabels().size() == 0) {
+		delete ext;
+		return;
 	}
 	model->addExtention(ext);
 }
@@ -208,4 +213,8 @@ MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
 	}
 
 	return extention;
+}
+
+void MotionMarkerPlugin::reload(RBDLModelWrapper* model) {
+	addModelMarkersToModel(model);
 }

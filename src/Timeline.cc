@@ -95,3 +95,11 @@ void ToolkitTimeline::tick(float dt) {
 void ToolkitTimeline::speedChanged(double speed) {
 	speed_factor = speed;
 }
+
+void ToolkitTimeline::reset_timeline() {
+	max_time = 0.;
+	setCurrentTime(0.);
+	playing = false;
+
+	emit timeChanged(current_time);
+}

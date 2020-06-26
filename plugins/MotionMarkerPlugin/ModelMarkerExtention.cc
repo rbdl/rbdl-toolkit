@@ -17,7 +17,8 @@ ModelMarkerExtention::ModelMarkerExtention(QColor marker_color, float marker_siz
 	marker_size(marker_size), 
 	WrapperExtention()
 {
-	marker_mesh.setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
+	marker_mesh = new QMesh; 
+	marker_mesh->setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
 }
 
 std::string ModelMarkerExtention::getExtentionName() {
@@ -45,7 +46,7 @@ QEntity* ModelMarkerExtention::getVisual() {
 			position->setTranslation(QVector3D(marker_positions[i][0], marker_positions[i][1], marker_positions[i][2]));
 			position->setScale(marker_size);
 
-			marker_visual->addComponent(&marker_mesh);
+			marker_visual->addComponent(marker_mesh);
 			marker_visual->addComponent(position);
 			marker_visual->addComponent(material);
 

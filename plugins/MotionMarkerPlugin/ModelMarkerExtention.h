@@ -17,7 +17,7 @@ class ModelMarkerExtention : public WrapperExtention {
 		float marker_size; 
 		QColor marker_color;
 
-		Qt3DRender::QMesh marker_mesh;
+		Qt3DRender::QMesh* marker_mesh;
 
 		std::vector<std::string> marker_names;
 		std::vector<std::string> marker_segments;

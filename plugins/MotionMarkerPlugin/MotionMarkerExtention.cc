@@ -25,7 +25,8 @@ MotionMarkerExtention::MotionMarkerExtention(unsigned int marker_count,
 	max_time = 0.;
 	marker_names.resize(marker_count);
 
-	marker_mesh.setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
+	marker_mesh = new QMesh; 
+	marker_mesh->setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
 }
 
 std::string MotionMarkerExtention::getExtentionName() {
@@ -83,7 +84,7 @@ QEntity* MotionMarkerExtention::getVisual() {
 		position->setTranslation(QVector3D(marker_positions[0](0,i), marker_positions[0](1,i), marker_positions[0](2,i)));
 		position->setScale(marker_size);
 
-		m_entity->addComponent(&marker_mesh);
+		m_entity->addComponent(marker_mesh);
 		m_entity->addComponent(position);
 		m_entity->addComponent(material);
 	}
