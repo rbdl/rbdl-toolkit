@@ -68,7 +68,6 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 		}
 	});
 
-	marker_mesh.setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
 	loadMarkerSettings();
 
 	//display model markers of all loaded models
@@ -176,13 +175,6 @@ MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
 	if(!marker_file.load(path.toStdString().c_str())) {
 		throw RBDLToolkitError("Error loading marker c3d file: " + path.toStdString());
 	}
-	//for (auto group : marker_file.group_infos) {
-	//	std::cout << group.name << ": " << group.description << std::endl;
-	//}
-
-	//for (auto param : marker_file.param_infos) {
-	//	std::cout << param.name << std::endl;
-	//}
 
 	unsigned int marker_count = marker_file.header.num_markers;
 	MotionMarkerExtention* extention = new MotionMarkerExtention(marker_count, marker_color, marker_size);

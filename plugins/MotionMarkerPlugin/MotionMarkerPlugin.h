@@ -6,10 +6,6 @@
 
 #include <vector>
 
-#include <Qt3DCore>
-#include <Qt3DExtras>
-#include <Qt3DRender/QMesh>
-
 #include "toolkit_interfaces.h"
 #include "util.h"
 
@@ -33,7 +29,6 @@ class MotionMarkerPlugin : public QObject, public OptionalInterface{
 		ToolkitApp* parentApp;
 		QAction* load_file_trigger;
 
-		Qt3DRender::QMesh marker_mesh;
 		QColor marker_color_model;
 		QColor marker_color;
 		float marker_size;
