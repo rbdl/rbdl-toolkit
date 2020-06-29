@@ -34,18 +34,12 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 	getCSVSettings();
 	getArrowSettings();
 
-	QString force_arrow_src;
 	if (pos_at_tip) {
-		force_arrow_src = findFile(QString("force_arrow_tip.obj"));
+		force_arrow_src = findFile(QString("force_arrow_tip.obj"), true);
 	} else {
-		force_arrow_src = findFile(QString("force_arrow.obj"));
+		force_arrow_src = findFile(QString("force_arrow.obj"), true);
 	}
-	force_arrow_mesh = new Qt3DRender::QMesh;
-	force_arrow_mesh->setSource(QUrl::fromLocalFile(force_arrow_src));
-
-	QString torque_arrow_src = findFile(QString("torque_arrow.obj"));
-	torque_arrow_mesh = new Qt3DRender::QMesh;
-	torque_arrow_mesh->setSource(QUrl::fromLocalFile(torque_arrow_src));
+	torque_arrow_src = findFile(QString("torque_arrow.obj"), true);
 
 	QCommandLineOption force_torque_option( QStringList() << "ft" << "forcetorque",
 	                                 "Load Force/Torque files <file>", 
@@ -56,8 +50,9 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 
 		for (int i=0; i<data_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
-				ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color, draw_threshold, arrow_scale_factor);
-				ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+				ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
+				ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+				auto file = data_list[i];
 
 				try {
 					this->loadForceTorqueFile(data_list[i], force_field, torque_field);
@@ -70,11 +65,14 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
 				model->addExtention(force_field);
 				model->addExtention(torque_field);
+				model_file_map[model] = file;
 			} else {
 				std::cout << QString("Force/Torque file %1 can not be mapped to a model ... Ignoring!").arg(data_list[i]).toStdString() << std::endl;
 			}
 		}
 	});
+
+	connect(parentApp, &ToolkitApp::reloaded_model, this, &ForceTorquePlugin::reload);
 }
 void ForceTorquePlugin::getArrowSettings() {
 	parentApp->toolkit_settings.beginGroup("RenderOptions");
@@ -160,16 +158,14 @@ void ForceTorquePlugin::getCSVSettings() {
 }
 
 void ForceTorquePlugin::action_load_data() {
-	ArrowFieldModelExtention *field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color);
-
 	if (parentApp != NULL) {
 		QFileDialog file_dialog (parentApp, "Select Force/Torque Data File");
 
 		file_dialog.setNameFilter(tr("Force/Torque File (*.csv *.ff)"));
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
-		ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_mesh, "Forces", force_color, draw_threshold, arrow_scale_factor);
-		ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_mesh, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+		ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
+		ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
 
 		if (file_dialog.exec()) {
 			try {
@@ -195,6 +191,7 @@ void ForceTorquePlugin::action_load_data() {
 					delete force_field;
 					delete torque_field;
 				}
+				model_file_map[rbdl_model] = file_dialog.selectedFiles().at(0);
 			}
 		}	
 	} else {
@@ -203,8 +200,16 @@ void ForceTorquePlugin::action_load_data() {
 	}
 }
 
-void ForceTorquePlugin::reload_files() {
-
+void ForceTorquePlugin::reload(RBDLModelWrapper* model) {
+	for (auto it = model_file_map.begin(); it != model_file_map.end(); it++) {
+		if ( it->first == model ) {
+			ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
+			ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+			loadForceTorqueFile(it->second, force_field, torque_field);
+			model->addExtention(force_field);
+			model->addExtention(torque_field);
+		}
+	}
 }
 
 void ForceTorquePlugin::loadForceTorqueFile(QString path, ArrowFieldModelExtention* force_field, ArrowFieldModelExtention *torque_field) {

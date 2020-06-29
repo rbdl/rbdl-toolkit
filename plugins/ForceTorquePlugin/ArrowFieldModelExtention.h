@@ -32,7 +32,7 @@ class ArrowFieldModelExtention : public WrapperExtention {
 		std::vector<Qt3DCore::QEntity*> arrow_entities;
 
 	public:
-		ArrowFieldModelExtention(Qt3DRender::QMesh* arrow_mesh, 
+		ArrowFieldModelExtention(QString arrow_mesh_path, 
 		                         QString group_name,
 		                         QColor arrow_color,
 		                         float draw_threshold = 0.001,

@@ -41,29 +41,25 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 	                               );
 	parentApp->addCmdOption(motion_marker_option, [this](QCommandLineParser& parser){
 		auto data_list = parser.values("motionmarker");
-		for (auto file : data_list) {
-			MotionMarkerExtention* ext; 
-			try {
-				ext = loadMotionMarkerFile(file);
-			} catch (RigidBodyDynamics::Errors::RBDLError& e){
-				ToolkitApp::showExceptionDialog(e);
-				delete ext;
-			}
-    		if (parentApp->getLoadedModels()->size() != 0) {
-				RBDLModelWrapper* rbdl_model = nullptr;
+		for (int i=0; i<data_list.size(); i++) {
+			if (i < parentApp->getLoadedModels()->size() ) {
+				MotionMarkerExtention* ext = nullptr; 
+				auto file = data_list[i];
 
-				if (parentApp->getLoadedModels()->size() == 1) {
-					rbdl_model = parentApp->getLoadedModels()->at(0);
-				} else {
-					rbdl_model = parentApp->selectModel(nullptr);
+				try {
+					ext = loadMotionMarkerFile(file);
+				} catch (RigidBodyDynamics::Errors::RBDLError& e){
+					ToolkitApp::showExceptionDialog(e);
+					if (ext != nullptr) 
+						delete ext;
 				}
 
-				if (rbdl_model != nullptr) {
-					rbdl_model->addExtention(ext);
-					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
-				} else {
-					delete ext;
-				}
+				RBDLModelWrapper* rbdl_model = parentApp->getLoadedModels()->at(i);
+				rbdl_model->addExtention(ext);
+				model_file_map[rbdl_model] = file;
+				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+			} else {
+				std::cout << QString("Mocap file %1 can not be mapped to a model ... Ignoring!").arg(data_list[i]).toStdString() << std::endl;
 			}
 		}
 	});
@@ -163,6 +159,7 @@ void MotionMarkerPlugin::action_load_data() {
 
 				if (rbdl_model != nullptr) {
 					rbdl_model->addExtention(ext);
+					model_file_map[rbdl_model] = file_dialog.selectedFiles().at(0);
 					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 				} else {
 					delete ext;
@@ -217,4 +214,12 @@ MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
 
 void MotionMarkerPlugin::reload(RBDLModelWrapper* model) {
 	addModelMarkersToModel(model);
+
+	for (auto it = model_file_map.begin(); it != model_file_map.end(); it++) {
+		if ( it->first == model ) {
+			auto ext = loadMotionMarkerFile(it->second);
+			model->addExtention(ext);
+			parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
+		}
+	}
 }

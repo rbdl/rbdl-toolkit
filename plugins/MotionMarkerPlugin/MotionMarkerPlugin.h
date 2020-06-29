@@ -35,6 +35,7 @@ class MotionMarkerPlugin : public QObject, public OptionalInterface{
 
 		void loadMarkerSettings();
 
+		std::map<RBDLModelWrapper*, QString> model_file_map;
 	public slots:
 		void action_load_data();
 		void addModelMarkersToModel(RBDLModelWrapper* model);

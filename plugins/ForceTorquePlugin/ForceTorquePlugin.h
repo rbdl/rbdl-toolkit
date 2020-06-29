@@ -32,8 +32,10 @@ class ForceTorquePlugin : public QObject, public CoreInterface{
 		ToolkitApp* parentApp;
 		QAction* load_file_trigger;
 
-		Qt3DRender::QMesh* force_arrow_mesh;
-		Qt3DRender::QMesh* torque_arrow_mesh;
+		std::map<RBDLModelWrapper*, QString> model_file_map;
+
+		QString force_arrow_src;
+		QString torque_arrow_src;
 
 		float draw_threshold;
 		float arrow_scale_factor;
@@ -50,7 +52,7 @@ class ForceTorquePlugin : public QObject, public CoreInterface{
 
 	public slots:
 		void action_load_data();
-		void reload_files();
+		void reload(RBDLModelWrapper* model);
 
 };
 

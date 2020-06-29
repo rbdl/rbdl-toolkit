@@ -29,14 +29,12 @@ class AnimationPlugin : public QObject, public CoreInterface {
 		char csv_seperator;
 		bool csv_trim;
 
-		std::vector<AnimationModelExtention*> loaded_animations;
-
-
 		void getCSVSettings();
-
+		std::map<RBDLModelWrapper*, QString> model_file_map;
 	public slots:
 		void action_load_animation();
 		void action_export_animation();
+		void reload(RBDLModelWrapper* model);
 };
 
 #endif 

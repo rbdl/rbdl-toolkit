@@ -12,12 +12,11 @@ using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
 ArrowFieldModelExtention::ArrowFieldModelExtention(
-	Qt3DRender::QMesh *arrow_mesh, 
+	QString arrow_mesh_path, 
 	QString group_name,
 	QColor arrow_color,
 	float draw_threshold,
 	float arrow_scale_factor ) : 
-		arrow_mesh(arrow_mesh),
 		max_time(0.),
 		arrow_count(0),
 		arrow_color(arrow_color),
@@ -26,6 +25,9 @@ ArrowFieldModelExtention::ArrowFieldModelExtention(
 		arrow_scale_factor(arrow_scale_factor),
 		WrapperExtention()
 {
+	arrow_mesh = new QMesh; 
+	arrow_mesh->setSource(QUrl::fromLocalFile(arrow_mesh_path));
+
 	arrow_field_root = new QEntity;
 	arrow_field_root->setProperty("Scene.ObjGroup", QVariant(group_name));
 }
