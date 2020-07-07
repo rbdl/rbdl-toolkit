@@ -57,7 +57,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 		//load models
 		auto model_list = parser.values("model");
 		for ( auto m : model_list ) {
-			this->loadModel(findFile(m));
+			this->loadModel(findFile(m, true));
 		}
 	});
 	addCmdOption(plugin_option, [this](QCommandLineParser& parser) {
@@ -141,9 +141,12 @@ void ToolkitApp::action_reload_files() {
 	for (auto model : loaded_models) {
 		Qt3DCore::QEntity*  model_render_obj = model->getRenderObj();
 		main_display->removeSceneObject(model_render_obj);
-		model->reload();
+		try {
+			model->reload();
+		} catch ( RigidBodyDynamics::Errors::RBDLError& err) {
+			showExceptionDialog(err);
+		}
 		emit reloaded_model(model);
-
 		model_render_obj = model->getRenderObj();
 		main_display->addSceneObject(model_render_obj);
 	}
@@ -171,14 +174,10 @@ void ToolkitApp::loadModel(const QString &model_file) {
 
 	Qt3DCore::QEntity* model_scene_obj;
 
-	//some logic to save current pwd and move to the dir where the model is loaded from
-	auto last_pwd = QDir::currentPath();
 	auto model_file_info = QFileInfo(model_file);
-	auto model_pwd = model_file_info.absoluteDir().absolutePath();
-	QDir::setCurrent(model_pwd);
 
 	try {
-		model_scene_obj = model->loadFromFile(model_file_info.fileName());
+		model_scene_obj = model->loadFromFile(model_file_info.absoluteFilePath());
 	} catch (RigidBodyDynamics::Errors::RBDLFileParseError& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
@@ -216,8 +215,6 @@ void ToolkitApp::loadModel(const QString &model_file) {
 		connect(model, SIGNAL(visual_added(Qt3DCore::QEntity*)), this, SLOT(model_visual_update(Qt3DCore::QEntity*)));
 	}
 
-	//return to original pwd
-	QDir::setCurrent(last_pwd);
 }
 
 void ToolkitApp::model_visual_update(Qt3DCore::QEntity* visual) {

@@ -2,6 +2,7 @@
 #include "rbdl/rbdl_errors.h"
 
 #include <QFileInfo>
+#include <QDir>
 #include <QMatrix4x4>
 
 #include <Qt3DCore/QTransform>
@@ -35,6 +36,13 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 		throw Errors::RBDLInvalidFileError("The file you tried to load does not exists!");
 	}
 
+	// some logic to save current pwd and move to the dir where the model is loaded from
+	// needed so that lua model scripts with relative dependencies work correctly!
+	auto last_pwd = QDir::currentPath();
+	auto model_file_info = QFileInfo(model_file);
+	auto model_pwd = model_file_info.absoluteDir().absolutePath();
+	QDir::setCurrent(model_pwd);
+
 	this->model_file = model_file;
 	if (rbdl_model != NULL) {
 		delete rbdl_model;
@@ -42,19 +50,23 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	rbdl_model = new RigidBodyDynamics::Model();
 
 	//loading model into rbdl to check its validity, may throw error
-	RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false);
-
+	try {
+		RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false);
+		//load model lua extra to read parameters for rendering
+		model_luatable = LuaTable::fromFile(model_file.toStdString().c_str());
+		//std::cout << model_luatable.serialize() << std::endl;
+	} catch (Errors::RBDLError& err) {
+		// return to original pwd
+		QDir::setCurrent(last_pwd);
+		// send error up the stack 
+		throw err;
+	}
 	auto q = VectorNd::Zero(rbdl_model->q_size);
 	if (model_render_obj != NULL) {
 		delete model_render_obj;
 	}
 	model_render_obj = new Qt3DCore::QEntity();
 	auto model_obj = new Qt3DCore::QEntity(model_render_obj);
-
-
-	// load model lua extra to read parameters for rendering
-	model_luatable = LuaTable::fromFile(model_file.toStdString().c_str());
-	//std::cout << model_luatable.serialize() << std::endl;
 
 	//read axes form model file
 	Vector3d axis_front = model_luatable["configuration"]["axis_front"].getDefault(Vector3d(1., 0., 0.)); 
@@ -175,6 +187,9 @@ Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
 	            );
 	world_axis_transform->setMatrix(m);
 	model_render_obj->addComponent(world_axis_transform);
+
+	//return to original pwd
+	QDir::setCurrent(last_pwd);
 
 	return model_render_obj;
 }
