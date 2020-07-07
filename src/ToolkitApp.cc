@@ -115,7 +115,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 }
 
 void ToolkitApp::action_reload_files() {
-	emit reload_files();
+	emit reload();
 	for (auto model : loaded_models) {
 		Qt3DCore::QEntity*  model_render_obj = model->getRenderObj();
 		main_display->removeSceneObject(model_render_obj);

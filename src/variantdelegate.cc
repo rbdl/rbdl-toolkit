@@ -53,6 +53,7 @@
 #include <QDateTime>
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
+#include <QVector3D>
 
 VariantDelegate::VariantDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
@@ -269,6 +270,7 @@ bool VariantDelegate::isSupportedType(QVariant::Type type)
     case QVariant::Time:
     case QVariant::UInt:
     case QVariant::ULongLong:
+	case QMetaType::QVector3D:
         return true;
     default:
         return false;
@@ -324,6 +326,10 @@ QString VariantDelegate::displayText(const QVariant &value, QMetaType::Type type
         return value.toStringList().join(',');
     case QMetaType::QTime:
         return value.toTime().toString(Qt::ISODate);
+    case QMetaType::QVector3D: {
+			QVector3D vec = value.value<QVector3D>();
+			return QString("<%1,%2,%3>").arg(vec.x()).arg(vec.y()).arg(vec.z());
+	    }
     default:
         break;
     }

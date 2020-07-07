@@ -53,6 +53,76 @@ void CameraOperatorPlugin::init(ToolkitApp* app) {
 		       	setOrthographicView(orthographic_toggle->isChecked());
 	       	});
 
+	QAction* reset_camera = camera_menu->addAction("Reset Camera");
+	connect(reset_camera, &QAction::triggered, [=] {
+		Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
+		camera->setPosition(camera_pos);
+		camera->setViewCenter(camera_poi);
+		camera->setUpVector(QVector3D(0, 1, 0));
+	});
+
+	QAction* save_camera = camera_menu->addAction("Save Camera");
+	connect(reset_camera, &QAction::triggered, [=] {
+		Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
+		camera_pos = camera->position();
+		camera_poi = camera->viewCenter();
+
+		parentApp->toolkit_settings.beginGroup("CameraOptions");
+		parentApp->toolkit_settings.setValue("Camera.position", camera_pos);
+		parentApp->toolkit_settings.setValue("Camera.view_center", camera_poi);
+		parentApp->toolkit_settings.endGroup();
+	});
+
+	loadCameraSettings();
+
+	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
+	camera->setPosition(camera_pos);
+	camera->setViewCenter(camera_poi);
+}
+
+void CameraOperatorPlugin::loadCameraSettings() {
+	parentApp->toolkit_settings.beginGroup("CameraOptions");
+
+	// default distance
+	QVariant val = parentApp->toolkit_settings.value("Camera.default_distance");
+	if (val.isNull()) {
+		parentApp->toolkit_settings.setValue("Camera.default_distance", default_distance);
+	} else {
+		default_distance = val.toDouble();
+	}
+	parentApp->toolkit_settings.setType("Camera.default_distance", default_distance);
+
+	// camera reset enabled
+	val = parentApp->toolkit_settings.value("Camera.reset_enabled");
+	if (val.isNull()) {
+		parentApp->toolkit_settings.setValue("Camera.reset_enabled", camera_reset_enabled);
+	} else {
+		camera_reset_enabled = val.toBool();
+	}
+	parentApp->toolkit_settings.setType("Camera.reset_enabled", camera_reset_enabled);
+
+	// camera positon
+	val = parentApp->toolkit_settings.value("Camera.position");
+	if (val.isNull()) {
+		camera_pos = parentApp->getSceneObj()->getCameraObj()->position();
+		parentApp->toolkit_settings.setValue("Camera.position", camera_pos);
+	} else {
+		camera_pos = val.value<QVector3D>();
+	}
+	parentApp->toolkit_settings.setType("Camera.position", camera_pos);
+
+	// camera view center
+	val = parentApp->toolkit_settings.value("Camera.view_center");
+	if (val.isNull()) {
+		camera_poi = parentApp->getSceneObj()->getCameraObj()->viewCenter();
+		parentApp->toolkit_settings.setValue("Camera.view_center", camera_poi);
+	} else {
+		camera_poi = val.value<QVector3D>();
+	}
+	parentApp->toolkit_settings.setType("Camera.view_center", camera_poi);
+
+
+	parentApp->toolkit_settings.endGroup();
 }
 
 void CameraOperatorPlugin::setOrthographicView(bool state) {
@@ -67,6 +137,7 @@ void CameraOperatorPlugin::setTopView() {
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
 	camera->setPosition(QVector3D(0, 5, 0));
 	camera->setViewCenter(QVector3D(0, 0, 0));
+	camera->setUpVector(QVector3D(0, 1, 0));
 }
 
 void CameraOperatorPlugin::setSideView() {

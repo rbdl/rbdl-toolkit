@@ -80,7 +80,7 @@ class ToolkitApp : public QMainWindow
 		void loadModel(const QString &model_file); 
 
 	signals:
-		void reload_files();
+		void reload();
 		void reloaded_model(RBDLModelWrapper* model);
 		void model_loaded(RBDLModelWrapper* model);
 
