@@ -53,35 +53,13 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	                                 "Load additional plugins <plugin name/path>", 
 	                                 "plugin"
 	                               );
+	cmd_parser.addOption(plugin_option);
+
 	addCmdOption(model_option, [this](QCommandLineParser& parser) {
 		//load models
 		auto model_list = parser.values("model");
 		for ( auto m : model_list ) {
 			this->loadModel(findFile(m, true));
-		}
-	});
-	addCmdOption(plugin_option, [this](QCommandLineParser& parser) {
-		//load models
-		auto plugin_list = parser.values("plugin");
-		for ( auto p : plugin_list) {
-			try {
-				QString plugin_path = findPlugin(p);
-				QPluginLoader* loader = new QPluginLoader(plugin_path);
-				QString plugin_iid = loader->metaData().value("IID").toString();
-				QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
-
-				//check if plugin was already loaded
-				if (toolkit_plugins.find(plugin_name) == toolkit_plugins.end()) {
-					toolkit_plugins[plugin_name] = loader;
-				} else {
-					//plugin with same name was already found so skip this duplicate
-					delete loader;
-					continue;
-				}
-			} catch (RBDLToolkitError& e) {
-				showWarningDialog(e.what());
-				continue;
-			}
 		}
 	});
 
@@ -271,58 +249,62 @@ void ToolkitApp::setPluginLoadSetting(QString plugin_name, bool load) {
 	toolkit_settings.setValue(settings_key, load);
 }
 
+void ToolkitApp::addPlugin(QString plugin_path, bool enable) {
+	QPluginLoader* loader = new QPluginLoader(plugin_path);
+	QString plugin_iid = loader->metaData().value("IID").toString();
+	QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
+
+	//check if plugin was already loaded
+	if (toolkit_plugins.find(plugin_name) == toolkit_plugins.end()) {
+		toolkit_plugins[plugin_name] = loader;
+	} else {
+		//plugin with same name was already found so skip this duplicate
+		return;
+	}
+
+	//core plugins will be loaded directly if not disabled in settings
+	if (plugin_iid == CoreInterface_iid) {
+		if (getPluginLoadSetting(plugin_name).isNull()) {
+			//core plugins are loaded per default
+			setPluginLoadSetting(plugin_name, true);
+		} 
+		if ( getPluginLoadSetting(plugin_name).toBool() == true || enable) {
+			QObject* obj = loader->instance();
+			if (obj) {
+				CoreInterface* instance = qobject_cast<CoreInterface*>(obj); 
+				instance->init(this);
+			} else {
+				std::cout << "Loading core plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
+				std::cout << loader->errorString().toStdString() << std::endl;
+			}
+		}
+
+	//All other plugins will be toggled via the plugins menu
+	} else {
+		//create menu action to enable and disable plugins
+		QAction *plugin_action = toolkit_menu_list["Plugin"]->addAction(plugin_name); 
+		plugin_action->setCheckable(true);
+
+		//connect to action via lambda function
+		connect(plugin_action, &QAction::changed, [=] 
+		{ 
+			setPluginUsage(plugin_name, plugin_action->isChecked()); 
+		});
+
+		if (getPluginLoadSetting(plugin_name).isNull()) {
+			//optional plugins only get loaded if user enables them
+			setPluginLoadSetting(plugin_name, false);
+		} else if ( getPluginLoadSetting(plugin_name).toBool() == true || enable) {
+			plugin_action->setChecked(true);
+		}
+	}
+}
+
 void ToolkitApp::initPlugins() {
 	auto plugins = findAllPlugins();
 
 	foreach (const QString plugin_path, plugins) {
-		QPluginLoader* loader = new QPluginLoader(plugin_path);
-		QString plugin_iid = loader->metaData().value("IID").toString();
-		QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
-
-		//check if plugin was already loaded
-		if (toolkit_plugins.find(plugin_name) == toolkit_plugins.end()) {
-			toolkit_plugins[plugin_name] = loader;
-		} else {
-			//plugin with same name was already found so skip this duplicate
-			continue;
-		}
-
-		//core plugins will be loaded directly if not disabled in settings
-		if (plugin_iid == CoreInterface_iid) {
-			if (getPluginLoadSetting(plugin_name).isNull()) {
-				//core plugins are loaded per default
-				setPluginLoadSetting(plugin_name, true);
-			} 
-			if ( getPluginLoadSetting(plugin_name).toBool() == true) {
-				QObject* obj = loader->instance();
-				if (obj) {
-					CoreInterface* instance = qobject_cast<CoreInterface*>(obj); 
-					instance->init(this);
-				} else {
-					std::cout << "Loading core plugin " << loader->fileName().toStdString() <<" failed!" << std::endl;
-					std::cout << loader->errorString().toStdString() << std::endl;
-				}
-			}
-
-		//All other plugins will be toggled via the plugins menu
-		} else {
-			//create menu action to enable and disable plugins
-			QAction *plugin_action = toolkit_menu_list["Plugin"]->addAction(plugin_name); 
-			plugin_action->setCheckable(true);
-
-			//connect to action via lambda function
-			connect(plugin_action, &QAction::changed, [=] 
-			{ 
-				setPluginUsage(plugin_name, plugin_action->isChecked()); 
-			});
-
-			if (getPluginLoadSetting(plugin_name).isNull()) {
-				//optional plugins only get loaded if user enables them
-				setPluginLoadSetting(plugin_name, false);
-			} else if ( getPluginLoadSetting(plugin_name).toBool() == true) {
-				plugin_action->setChecked(true);
-			}
-		}
+		addPlugin(plugin_path);
 	}
 }
 
@@ -355,6 +337,20 @@ void ToolkitApp::addFileAction(QAction* action) {
 }
 
 void ToolkitApp::parseCmd(QApplication& app) {
+	cmd_parser.parse(app.arguments());
+
+	//load additional plugins here
+	auto plugin_list = cmd_parser.values("plugin");
+	for ( auto p : plugin_list) {
+		try {
+			QString plugin_path = findPlugin(p);
+			addPlugin(plugin_path, true);
+		} catch (RBDLToolkitError& e) {
+			showWarningDialog(e.what());
+			continue;
+		}
+	}
+
 	cmd_parser.process(app);
 
 	//execute all cmd hooks to do all actions specified by the options

@@ -40,6 +40,7 @@ class ToolkitApp : public QMainWindow
 		std::map<std::string, QMenu*> toolkit_menu_list;
 
 		void initPlugins();
+		void addPlugin(QString plugin_path, bool enable=false);
 		void setPluginUsage(QString plugin_name, bool state);
 		QVariant getPluginLoadSetting(QString plugin_name);
 		void setPluginLoadSetting(QString plugin_name, bool load);
