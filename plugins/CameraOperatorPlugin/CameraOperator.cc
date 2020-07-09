@@ -24,26 +24,18 @@ void CameraOperatorPlugin::init(ToolkitApp* app) {
 
 	camera_menu = app->getMenu("Camera");
 
+	// Camera direct actions
 	QAction* front_view = camera_menu->addAction("Front View");
 	front_view->setShortcut(QKeySequence::fromString("1"));
-	connect(front_view, &QAction::triggered, [=]
-	       	{
-				setFrontView();
-	       	});
+	connect(front_view, &QAction::triggered, this, &CameraOperatorPlugin::setFrontView);
 
 	QAction* side_view = camera_menu->addAction("Side View");
 	side_view->setShortcut(QKeySequence::fromString("2"));
-	connect(side_view, &QAction::triggered, [=]
-	       	{
-				setSideView();
-	       	});
+	connect(side_view, &QAction::triggered, this, &CameraOperatorPlugin::setSideView);
 
 	QAction* top_view = camera_menu->addAction("Top View");
 	top_view->setShortcut(QKeySequence::fromString("3"));
-	connect(top_view, &QAction::triggered, [=]
-	       	{
-				setTopView();
-	       	});
+	connect(top_view, &QAction::triggered, this, &CameraOperatorPlugin::setTopView);
 
 	QAction* orthographic_toggle = camera_menu->addAction("Orthograpic View");
 	orthographic_toggle->setCheckable(true);
@@ -54,26 +46,17 @@ void CameraOperatorPlugin::init(ToolkitApp* app) {
 	       	});
 
 	QAction* reset_camera = camera_menu->addAction("Reset Camera");
-	connect(reset_camera, &QAction::triggered, [=] {
-		Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-		camera->setPosition(camera_pos);
-		camera->setViewCenter(camera_poi);
-		camera->setUpVector(QVector3D(0, 1, 0));
-	});
+	connect(reset_camera, &QAction::triggered, this, &CameraOperatorPlugin::resetCamera);
 
 	QAction* save_camera = camera_menu->addAction("Save Camera");
-	connect(reset_camera, &QAction::triggered, [=] {
-		Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-		camera_pos = camera->position();
-		camera_poi = camera->viewCenter();
-
-		parentApp->toolkit_settings.beginGroup("CameraOptions");
-		parentApp->toolkit_settings.setValue("Camera.position", camera_pos);
-		parentApp->toolkit_settings.setValue("Camera.view_center", camera_poi);
-		parentApp->toolkit_settings.endGroup();
-	});
+	connect(save_camera, &QAction::triggered, this, &CameraOperatorPlugin::saveCamera);
 
 	loadCameraSettings();
+
+	//connect settings reload
+	connect(&parentApp->toolkit_settings, &ToolkitSettings::settings_changed, this, &CameraOperatorPlugin::reloadSettings);
+	//connet restet camrea
+	connect(parentApp, &ToolkitApp::reload, this, &CameraOperatorPlugin::reset);
 
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
 	camera->setPosition(camera_pos);
@@ -135,21 +118,49 @@ void CameraOperatorPlugin::setOrthographicView(bool state) {
 
 void CameraOperatorPlugin::setTopView() {
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-	camera->setPosition(QVector3D(0, 5, 0));
+	camera->setPosition(QVector3D(0, default_distance, 0));
 	camera->setViewCenter(QVector3D(0, 0, 0));
 	camera->setUpVector(QVector3D(0, 1, 0));
 }
 
 void CameraOperatorPlugin::setSideView() {
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-	camera->setPosition(QVector3D(5, 0, 0));
+	camera->setPosition(QVector3D(default_distance, 0, 0));
 	camera->setViewCenter(QVector3D(0, 0, 0));
 	camera->setUpVector(QVector3D(0, 1, 0));
 }
 
 void CameraOperatorPlugin::setFrontView() {
 	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
-	camera->setPosition(QVector3D(0, 0, 5));
+	camera->setPosition(QVector3D(0, 0, default_distance));
 	camera->setViewCenter(QVector3D(0, 0, 0));
 	camera->setUpVector(QVector3D(0, 1, 0));
+}
+
+void CameraOperatorPlugin::saveCamera() {
+	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
+	camera_pos = camera->position();
+	camera_poi = camera->viewCenter();
+
+	parentApp->toolkit_settings.beginGroup("CameraOptions");
+	parentApp->toolkit_settings.setValue("Camera.position", camera_pos);
+	parentApp->toolkit_settings.setValue("Camera.view_center", camera_poi);
+	parentApp->toolkit_settings.endGroup();
+}
+
+void CameraOperatorPlugin::resetCamera() {
+	Qt3DRender::QCamera* camera = parentApp->getSceneObj()->getCameraObj();
+	camera->setPosition(camera_pos);
+	camera->setViewCenter(camera_poi);
+	camera->setUpVector(QVector3D(0, 1, 0));
+}
+
+void CameraOperatorPlugin::reset() {
+	if (camera_reset_enabled) {
+		resetCamera();
+	}
+}
+
+void CameraOperatorPlugin::reloadSettings() {
+	loadCameraSettings();
 }

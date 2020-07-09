@@ -38,8 +38,11 @@ class CameraOperatorPlugin : public QObject, public CoreInterface {
 		void setTopView();
 		void setSideView();
 		void setFrontView();
+		void saveCamera();
+		void resetCamera();
 
-		void reload();
+		void reset();
+		void reloadSettings();
 
 };
 
