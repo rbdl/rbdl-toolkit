@@ -13,7 +13,7 @@ git clone --recursive https://github.com/ORB-HD/rbdl-toolkit
 
 ## Dependencies
 
-* RBDL with minimum version 3.0.0
+* RBDL with minimum version 3.0.0 with error handling [rbdl-orb](https://github.com/ORB-HD/rbdl-orb)
 * Eigen3
 * Qt5 version == 5.13.2
 * Qt3D and assimp for model loading

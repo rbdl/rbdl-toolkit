@@ -55,6 +55,7 @@
 #include <QRegularExpressionValidator>
 #include <QVector3D>
 
+
 VariantDelegate::VariantDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
 {

@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <variantdelegate.h>
+#include "VectorEditor.h"
 
 ToolkitSettings::ToolkitSettings() {
 }
@@ -258,6 +259,23 @@ void SettingsEditor::editSetting(QTreeWidgetItem* item, int column) {
 				if (group != "") 
 					settings->endGroup();
 			}
+			break;
+		}
+		case QMetaType::QVector3D: {
+			QVector3D current_val = item->data(2, Qt::UserRole).value<QVector3D>();
+
+			VectorEditDialog vec_edit(this, current_val);
+			int result = vec_edit.exec();
+			if (result == QDialog::Rejected)
+				break;
+
+			changed = true;
+			QVector3D new_val = vec_edit.getValue();
+			if (group != "") 
+				settings->beginGroup(group);
+			settings->setValue(item->text(0), new_val);
+			if (group != "") 
+				settings->endGroup();
 			break;
 		}
 		default:

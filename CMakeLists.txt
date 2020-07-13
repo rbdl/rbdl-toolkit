@@ -59,6 +59,7 @@ QT5_WRAP_UI ( UI_SRC
 	ui/ModelSelector.ui
 	ui/SceneGroupList.ui
 	ui/SettingsEditor.ui
+	ui/VectorEditor.ui
 )
 
 #Sources that contain q objects
@@ -67,6 +68,7 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/SceneWidget.h
 	include/ModelSelectorDialog.h
 	include/Timeline.h
+	include/VectorEditor.h
 	include/rbdl_wrapper.h
 	include/SceneGroupsWidget.h
 	include/variantdelegate.h
