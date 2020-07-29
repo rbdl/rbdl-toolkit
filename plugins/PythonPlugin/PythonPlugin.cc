@@ -1,9 +1,11 @@
 #include "PythonPlugin.h"
 #include <iostream>
 
-
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
 
 
 PythonPlugin::PythonPlugin() {
@@ -26,9 +28,9 @@ void PythonPlugin::init(ToolkitApp* app) {
 		// implement cmd function here
 	});
 
-	
-
-	//std::cout << "PythonPlugin loaded" << std::endl;
+	Py_Initialize();
+	PyRun_SimpleString("print('Hello World from Python')");
+	Py_Finalize();
 }
 
 
