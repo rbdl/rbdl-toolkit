@@ -31,10 +31,10 @@ class SettingsEditor : public QWidget, public Ui::SettingsEditor {
 
 		void resizeEvent(QResizeEvent *event);
 
-	public slots:
+	public Q_SLOTS:
 		void editSetting(QTreeWidgetItem *item, int column);
 
-	signals:
+	Q_SIGNALS:
 		void settings_changed();
 };
 
@@ -62,10 +62,10 @@ class ToolkitSettings : public QObject{
 
 		std::map<QString, QMetaType::Type> value_type_map;
 
-	signals:
+	Q_SIGNALS:
 		void settings_changed();
 
-	public slots:
+	public Q_SLOTS:
 		void editSettings();
 };
 

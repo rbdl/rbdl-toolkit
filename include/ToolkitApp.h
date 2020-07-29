@@ -71,7 +71,7 @@ class ToolkitApp : public QMainWindow
 		ToolkitTimeline* getToolkitTimeline() { return timeline; }
 		SceneWidget* getSceneObj() { return main_display; }
 
-	public slots:
+	public Q_SLOTS:
 		void action_reload_files();
 		void action_load_model();
 
@@ -79,7 +79,7 @@ class ToolkitApp : public QMainWindow
 
 		void loadModel(const QString &model_file); 
 
-	signals:
+	Q_SIGNALS:
 		void reload();
 		void reloaded_model(RBDLModelWrapper* model);
 		void model_loaded(RBDLModelWrapper* model);

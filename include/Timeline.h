@@ -23,7 +23,7 @@ class ToolkitTimeline : public QWidget, public Ui::Timeline {
 		void setCurrentTime(float current_time, bool stop_playing=false);
 		void reset();
 
-	public slots:
+	public Q_SLOTS:
 		void speedChanged(double speed);
 		void togglePlaying();
 
@@ -35,7 +35,7 @@ class ToolkitTimeline : public QWidget, public Ui::Timeline {
 
 		void reset_timeline();
 
-	signals:
+	Q_SIGNALS:
 		//signal always sends absolute time so that all listeners can update accordingly
 		void timeChanged(float current_time);
 		void maxTimeChanged(float max_time);

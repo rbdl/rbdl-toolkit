@@ -78,10 +78,10 @@ class RBDLModelWrapper : public QObject {
 
 		QString getModelFile();
 
-	public slots:
+	public Q_SLOTS:
 		void model_update(float current_time);
 
-	signals:
+	Q_SIGNALS:
 		void new_extention_added();
 		void visual_added(Qt3DCore::QEntity* visual);
 

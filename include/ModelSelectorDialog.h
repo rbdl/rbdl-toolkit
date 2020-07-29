@@ -35,7 +35,7 @@ class ModelSelectorDialog : public QDialog, public Ui::ModelSelector {
 		RBDLModelWrapper* getSelectetModel();
 		std::vector<ModelListItem*> list_items;
 
-	public slots:
+	public Q_SLOTS:
 		void update_model_list(int filter_enabled);
 		void model_selected();
 };

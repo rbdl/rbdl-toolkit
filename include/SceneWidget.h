@@ -35,11 +35,11 @@ class RenderGroupCheckBox : public QCheckBox {
 		RenderGroupCheckBox(QString obj_group_name):QCheckBox(obj_group_name) {
 			connect(this, SIGNAL(stateChanged(int)), this, SLOT(changeIntercept(int)));
 		}
-	public slots:
+	public Q_SLOTS:
 		void changeIntercept(int state) {
-			emit renderGroupStateChanged(this->text(), (bool)state);
+			Q_EMIT renderGroupStateChanged(this->text(), (bool)state);
 		}
-	signals:
+	Q_SIGNALS:
 		void stateChanged(bool);
 		void renderGroupStateChanged(QString name, bool state);
 
@@ -97,7 +97,7 @@ class SceneWidget : public QWidget {
 	protected:
 		void resizeEvent(QResizeEvent *event);
 
-	public slots:
+	public Q_SLOTS:
 		void toggle_render_obj_group(QString group_name, bool status);
 		void frame_action_repeater(float dt);
 		void update_orthographic_scale();
@@ -105,7 +105,7 @@ class SceneWidget : public QWidget {
 		void setClearColor(QColor color);
 		void setDefaultClearColor(QColor color);
 
-	signals:
+	Q_SIGNALS:
 		void frame_sync_signal(float dt);
 };
 

@@ -20,12 +20,6 @@ class PythonPlugin : public QObject, public OptionalInterface {
 	private:
 		ToolkitApp* parentApp;
 		
-		
-		
-	public slots:
-		
-		
-
 };
 
 #endif 
