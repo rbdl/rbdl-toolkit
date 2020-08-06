@@ -67,7 +67,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	timeline = new ToolkitTimeline(this);
 	addView("Timeline", timeline, Qt::BottomDockWidgetArea, false);
 	connect(main_display, SIGNAL(frame_sync_signal(float)), timeline, SLOT(tick(float)));
-	connect(this, SIGNAL(reload_files()), timeline, SLOT(reset_timeline()));
+	connect(this, SIGNAL(reload()), timeline, SLOT(reset_timeline()));
 
 	//add standard scene objects
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
