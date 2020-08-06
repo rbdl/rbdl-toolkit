@@ -10,9 +10,12 @@
 
 PythonPlugin::PythonPlugin() {
 	parentApp = NULL;
+
+	Py_Initialize();
 }
 
 PythonPlugin::~PythonPlugin() {
+	Py_Finalize();
 }
 
 void PythonPlugin::init(ToolkitApp* app) {
@@ -28,9 +31,7 @@ void PythonPlugin::init(ToolkitApp* app) {
 		// implement cmd function here
 	});
 
-	Py_Initialize();
 	PyRun_SimpleString("print('Hello World from Python')");
-	Py_Finalize();
 }
 
 
