@@ -41,6 +41,7 @@ TARGET_LINK_LIBRARIES (IKplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 	animationplugin
 )
 

@@ -75,13 +75,12 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/ToolkitSettings.h
 )
 
-SET ( Toolkit_SRCS
+SET ( ToolkitLib_SRCS
 	src/ToolkitApp.cc
 	src/Timeline.cc
 	src/ToolkitSettings.cc
 	src/SceneWidget.cc
 	src/ModelSelectorDialog.cc
-	src/main.cc
 	src/util.cc
 	src/render_util.cc
 	src/math_util.cc
@@ -90,17 +89,21 @@ SET ( Toolkit_SRCS
 	src/toolkit_errors.cc
 )
 
+SET ( Toolkit_SRCS
+	src/main.cc
+)
+
 ADD_SUBDIRECTORY (
 	plugins
 )
 
-ADD_EXECUTABLE ( rbdl-toolkit
-	${Toolkit_SRCS}
+ADD_LIBRARY ( toolkitlib
+	${ToolkitLib_SRCS}
 	${MOC_SRCS}
 	${UI_SRC}
 )
 
-TARGET_LINK_LIBRARIES ( rbdl-toolkit
+TARGET_LINK_LIBRARIES ( toolkitlib
 	${QT_LIBRARIES}
 	Qt5::Core
 	Qt5::Gui
@@ -111,6 +114,14 @@ TARGET_LINK_LIBRARIES ( rbdl-toolkit
 	Qt5::3DInput
 	${RBDL_LIBRARY}
 	${RBDL_LUAMODEL_LIBRARY}
+)
+
+ADD_EXECUTABLE ( rbdl-toolkit
+	${Toolkit_SRCS}
+)
+
+TARGET_LINK_LIBRARIES ( rbdl-toolkit
+	toolkitlib
 )
 
 INSTALL ( TARGETS rbdl-toolkit RUNTIME DESTINATION bin )

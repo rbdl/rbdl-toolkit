@@ -34,6 +34,7 @@ TARGET_LINK_LIBRARIES (cameraoperatorplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 )
 
 INSTALL( TARGETS cameraoperatorplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	

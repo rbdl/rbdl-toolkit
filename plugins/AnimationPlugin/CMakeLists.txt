@@ -38,6 +38,7 @@ TARGET_LINK_LIBRARIES (animationplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 )
 
 INSTALL( TARGETS animationplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	

@@ -42,6 +42,7 @@ TARGET_LINK_LIBRARIES (motionmarkerplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 	c3dfile
 )
 
