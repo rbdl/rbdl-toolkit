@@ -1,4 +1,4 @@
-#include "ModelMarkerExtention.h"
+#include "ModelMarkerExtension.h"
 #include "toolkit_errors.h"
 #include "util.h"
 
@@ -12,25 +12,25 @@ using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
-ModelMarkerExtention::ModelMarkerExtention(QColor marker_color, float marker_size) : 
+ModelMarkerExtension::ModelMarkerExtension(QColor marker_color, float marker_size) : 
 	marker_color(marker_color), 
 	marker_size(marker_size), 
-	WrapperExtention()
+	WrapperExtension()
 {
 	marker_mesh = new QMesh; 
 	marker_mesh->setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
 }
 
-std::string ModelMarkerExtention::getExtentionName() {
+std::string ModelMarkerExtension::getExtensionName() {
 	return "ModelMarker";
 }
 
-void ModelMarkerExtention::update(float current_time) {
+void ModelMarkerExtension::update(float current_time) {
 	//This extention only adds static objects to the model, no in sync updates needed
 	return;
 }
 
-QEntity* ModelMarkerExtention::getVisual() {
+QEntity* ModelMarkerExtension::getVisual() {
 	if (model_parent != nullptr) {
 		for (int i=0;i<marker_names.size();i++) {
 			marker_visuals.push_back(new QEntity);
@@ -57,7 +57,7 @@ QEntity* ModelMarkerExtention::getVisual() {
 	return nullptr;
 }
 
-void ModelMarkerExtention::addModelMarker(const std::string& label, const std::string& segment_name, const Vector3d& position) {
+void ModelMarkerExtension::addModelMarker(const std::string& label, const std::string& segment_name, const Vector3d& position) {
 	marker_names.push_back(label);
 	marker_segments.push_back(segment_name);
 	marker_positions.push_back(position);

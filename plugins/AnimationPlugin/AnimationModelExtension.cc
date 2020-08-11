@@ -1,20 +1,20 @@
-#include "AnimationModelExtention.h"
+#include "AnimationModelExtension.h"
 
 #include "rbdl/rbdl_errors.h"
 
 #include "math_util.h"
 
-AnimationModelExtention::AnimationModelExtention() : dof(0),
+AnimationModelExtension::AnimationModelExtension() : dof(0),
                                                      max_time(0.),
-                                                     WrapperExtention() 
+                                                     WrapperExtension() 
 {
 }
 
-std::string AnimationModelExtention::getExtentionName() {
+std::string AnimationModelExtension::getExtensionName() {
 	return "Animation";
 }
 
-void AnimationModelExtention::update(float current_time) {
+void AnimationModelExtension::update(float current_time) {
 	unsigned int time_index = 0;
 	for (; time_index < animation_times.size(); time_index++) {
 		if (time_index == animation_times.size()-1) break;
@@ -41,15 +41,15 @@ void AnimationModelExtention::update(float current_time) {
 	model_parent->updateKinematics(interpolated_q);
 }
 
-int AnimationModelExtention::getDOF() {
+int AnimationModelExtension::getDOF() {
 	return dof;
 }
 
-float AnimationModelExtention::getMaxTime() {
+float AnimationModelExtension::getMaxTime() {
 	return max_time;
 }
 
-void AnimationModelExtention::addAnimationFrame(float time, RigidBodyDynamics::Math::VectorNd& Q) {
+void AnimationModelExtension::addAnimationFrame(float time, RigidBodyDynamics::Math::VectorNd& Q) {
 	//if first entry then update dof
 	if (dof == 0 && Q.size() != 0) {
 		dof = Q.size();

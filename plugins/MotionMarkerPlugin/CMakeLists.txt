@@ -2,8 +2,8 @@ PROJECT(MotionMarkerPlugin)
 	
 SET(MotionMarkerPlugin_SRCS
 	MotionMarkerPlugin.cc
-	MotionMarkerExtention.cc
-	ModelMarkerExtention.cc
+	MotionMarkerExtension.cc
+	ModelMarkerExtension.cc
 )
 
 SET(MotionMarkerPlugin_MOC_HDRS

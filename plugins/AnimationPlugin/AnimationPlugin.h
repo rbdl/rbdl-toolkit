@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "toolkit_interfaces.h"
-#include "AnimationModelExtention.h"
+#include "AnimationModelExtension.h"
 
 class AnimationPlugin : public QObject, public CoreInterface {
 	Q_OBJECT
@@ -20,7 +20,7 @@ class AnimationPlugin : public QObject, public CoreInterface {
 
 		void init(ToolkitApp* app);
 
-		AnimationModelExtention* loadAnimationFile(QString path);
+		AnimationModelExtension* loadAnimationFile(QString path);
 	private:
 		ToolkitApp* parentApp;
 		QAction load_file_trigger;

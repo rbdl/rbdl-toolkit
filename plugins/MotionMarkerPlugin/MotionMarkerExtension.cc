@@ -1,4 +1,4 @@
-#include "MotionMarkerExtention.h"
+#include "MotionMarkerExtension.h"
 #include "toolkit_errors.h"
 #include "util.h"
 
@@ -12,13 +12,13 @@ using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
-MotionMarkerExtention::MotionMarkerExtention(unsigned int marker_count,
+MotionMarkerExtension::MotionMarkerExtension(unsigned int marker_count,
                                              QColor marker_color,
                                              float marker_size) : 
 	marker_count(marker_count), 
 	marker_color(marker_color), 
 	marker_size(marker_size), 
-	WrapperExtention()
+	WrapperExtension()
 {
 	marker_plain_root  = new QEntity;
 	marker_plain_root->setProperty("Scene.ObjGroup", QVariant("Mocap Marker"));
@@ -29,11 +29,11 @@ MotionMarkerExtention::MotionMarkerExtention(unsigned int marker_count,
 	marker_mesh->setSource(QUrl::fromLocalFile(findFile(QString("unit_sphere_medres.obj"))));
 }
 
-std::string MotionMarkerExtention::getExtentionName() {
+std::string MotionMarkerExtension::getExtensionName() {
 	return "MocapMarker";
 }
 
-void MotionMarkerExtention::update(float current_time) {
+void MotionMarkerExtension::update(float current_time) {
 	if (marker_count == 0)
 		return;
 
@@ -66,7 +66,7 @@ void MotionMarkerExtention::update(float current_time) {
 	}
 }
 
-QEntity* MotionMarkerExtention::getVisual() {
+QEntity* MotionMarkerExtension::getVisual() {
 	if (marker_count == 0) 
 		return nullptr;
 	marker_entities.clear();
@@ -92,7 +92,7 @@ QEntity* MotionMarkerExtention::getVisual() {
 	return marker_plain_root;
 }
 
-void MotionMarkerExtention::addMocapMarkerFrame(float time, const Matrix3fd& marker_pos) {
+void MotionMarkerExtension::addMocapMarkerFrame(float time, const Matrix3fd& marker_pos) {
 	if (time > max_time) 
 		max_time = time;
 
@@ -100,7 +100,7 @@ void MotionMarkerExtention::addMocapMarkerFrame(float time, const Matrix3fd& mar
 	marker_positions.push_back(std::move(marker_pos));
 }
 
-void MotionMarkerExtention::setMarkerLabel(unsigned int pos, std::string& label) {
+void MotionMarkerExtension::setMarkerLabel(unsigned int pos, std::string& label) {
 	if (pos<marker_count) 
 		marker_names[pos] = label;
 }

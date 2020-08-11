@@ -12,7 +12,7 @@ using namespace RigidBodyDynamics::Math;
 
 typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3fd;
 
-class ModelMarkerExtention : public WrapperExtention {
+class ModelMarkerExtension : public WrapperExtension {
 	private:
 		float marker_size; 
 		QColor marker_color;
@@ -25,11 +25,11 @@ class ModelMarkerExtention : public WrapperExtention {
 
 		std::vector<Qt3DCore::QEntity*> marker_visuals;
 	public:
-		ModelMarkerExtention(QColor marker_color, float marker_size);
+		ModelMarkerExtension(QColor marker_color, float marker_size);
 
 		void addModelMarker(const std::string& label, const std::string& segment_name, const Vector3d& position);
 
-		std::string getExtentionName();
+		std::string getExtensionName();
 		void update(float current_time);
 		Qt3DCore::QEntity* getVisual();
 

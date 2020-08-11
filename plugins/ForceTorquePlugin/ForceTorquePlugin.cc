@@ -50,8 +50,8 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 
 		for (int i=0; i<data_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
-				ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
-				ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+				ArrowFieldModelExtension *force_field = new ArrowFieldModelExtension(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
+				ArrowFieldModelExtension *torque_field = new ArrowFieldModelExtension(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
 				auto file = data_list[i];
 
 				try {
@@ -63,8 +63,8 @@ void ForceTorquePlugin::init(ToolkitApp* app) {
 					continue;
 				}
 				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
-				model->addExtention(force_field);
-				model->addExtention(torque_field);
+				model->addExtension(force_field);
+				model->addExtension(torque_field);
 				model_file_map[model] = file;
 			} else {
 				std::cout << QString("Force/Torque file %1 can not be mapped to a model ... Ignoring!").arg(data_list[i]).toStdString() << std::endl;
@@ -164,8 +164,8 @@ void ForceTorquePlugin::action_load_data() {
 		file_dialog.setNameFilter(tr("Force/Torque File (*.csv *.ff)"));
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
-		ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
-		ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+		ArrowFieldModelExtension *force_field = new ArrowFieldModelExtension(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
+		ArrowFieldModelExtension *torque_field = new ArrowFieldModelExtension(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
 
 		if (file_dialog.exec()) {
 			try {
@@ -185,8 +185,8 @@ void ForceTorquePlugin::action_load_data() {
 				}
 
 				if (rbdl_model != nullptr) {
-					rbdl_model->addExtention(force_field);
-					rbdl_model->addExtention(torque_field);
+					rbdl_model->addExtension(force_field);
+					rbdl_model->addExtension(torque_field);
 				} else {
 					delete force_field;
 					delete torque_field;
@@ -203,16 +203,16 @@ void ForceTorquePlugin::action_load_data() {
 void ForceTorquePlugin::reload(RBDLModelWrapper* model) {
 	for (auto it = model_file_map.begin(); it != model_file_map.end(); it++) {
 		if ( it->first == model ) {
-			ArrowFieldModelExtention *force_field = new ArrowFieldModelExtention(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
-			ArrowFieldModelExtention *torque_field = new ArrowFieldModelExtention(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
+			ArrowFieldModelExtension *force_field = new ArrowFieldModelExtension(force_arrow_src, "Forces", force_color, draw_threshold, arrow_scale_factor);
+			ArrowFieldModelExtension *torque_field = new ArrowFieldModelExtension(torque_arrow_src, "Torques", torque_color, draw_threshold, arrow_scale_factor);
 			loadForceTorqueFile(it->second, force_field, torque_field);
-			model->addExtention(force_field);
-			model->addExtention(torque_field);
+			model->addExtension(force_field);
+			model->addExtension(torque_field);
 		}
 	}
 }
 
-void ForceTorquePlugin::loadForceTorqueFile(QString path, ArrowFieldModelExtention* force_field, ArrowFieldModelExtention *torque_field) {
+void ForceTorquePlugin::loadForceTorqueFile(QString path, ArrowFieldModelExtension* force_field, ArrowFieldModelExtension *torque_field) {
 	std::setlocale(LC_NUMERIC, "en_US.UTF-8");
 
 	std::vector<std::string> names;

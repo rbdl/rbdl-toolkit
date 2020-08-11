@@ -24,11 +24,11 @@ RBDLModelWrapper::RBDLModelWrapper(){
 
 
 Qt3DCore::QEntity* RBDLModelWrapper::loadFromFile(QString model_file) {
-	for ( auto loaded_extention : extention_names ) {
-		delete extentions[loaded_extention];
+	for ( auto loaded_extension : extension_names ) {
+		delete extensions[loaded_extension];
 	}
-	extention_names.clear();
-	extentions.clear();
+	extension_names.clear();
+	extensions.clear();
 
 	QFileInfo check_file(model_file);
 	// Is it really a file and no directory?
@@ -213,40 +213,40 @@ void RBDLModelWrapper::reload() {
 }
 
 void RBDLModelWrapper::model_update(float current_time) {
-	for (auto it = extentions.begin(); it != extentions.end(); it++) {
-		WrapperExtention* extention = it->second;
-		extention->update(current_time);
+	for (auto it = extensions.begin(); it != extensions.end(); it++) {
+		WrapperExtension* extension = it->second;
+		extension->update(current_time);
 	}
 }
 
-void RBDLModelWrapper::addExtention(WrapperExtention* extention) {
-	std::string extention_name = extention->getExtentionName();
-	extentions[extention_name] = extention;
-	extention_names.push_back(extention_name);
-	extention->setModelParent(this);
+void RBDLModelWrapper::addExtension(WrapperExtension* extension) {
+	std::string extension_name = extension->getExtensionName();
+	extensions[extension_name] = extension;
+	extension_names.push_back(extension_name);
+	extension->setModelParent(this);
 
-	Qt3DCore::QEntity* visual = extention->getVisual();
+	Qt3DCore::QEntity* visual = extension->getVisual();
 	if (visual != nullptr) {
 		visual->setParent(model_render_obj);
 		emit visual_added(visual);
 	}
 
-	emit new_extention_added();
+	emit new_extension_added();
 }
 
-bool RBDLModelWrapper::hasExtention(std::string name) {
-	for ( auto loaded_extention : extention_names ) {
-		if (loaded_extention == name ) {
+bool RBDLModelWrapper::hasExtension(std::string name) {
+	for ( auto loaded_extension : extension_names ) {
+		if (loaded_extension == name ) {
 			return true;
 		}
 	}
 	return false;
 }
 
-WrapperExtention* RBDLModelWrapper::getExtention(std::string name) {
-	for ( auto loaded_extention : extention_names ) {
-		if (loaded_extention == name ) {
-			return extentions[name];
+WrapperExtension* RBDLModelWrapper::getExtension(std::string name) {
+	for ( auto loaded_extension : extension_names ) {
+		if (loaded_extension == name ) {
+			return extensions[name];
 		}
 	}
 	return nullptr;
@@ -271,19 +271,19 @@ void RBDLModelWrapper::addStaticVisual(std::string segment_name, Qt3DCore::QEnti
 	emit visual_added(visual);
 }
 
-void WrapperExtention::setModelParent(RBDLModelWrapper* model) {
+void WrapperExtension::setModelParent(RBDLModelWrapper* model) {
 	model_parent = model;
 }
 
-Qt3DCore::QEntity* WrapperExtention::getVisual() {
+Qt3DCore::QEntity* WrapperExtension::getVisual() {
 	return nullptr;
 }
 
-void WrapperExtention::exportData() {
+void WrapperExtension::exportData() {
 	return;
 }
 
-WrapperExtention::WrapperExtention() {
+WrapperExtension::WrapperExtension() {
 	model_parent = NULL;
 }
 

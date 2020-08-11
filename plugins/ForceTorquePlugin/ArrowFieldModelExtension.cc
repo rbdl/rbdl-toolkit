@@ -1,4 +1,4 @@
-#include "ArrowFieldModelExtention.h"
+#include "ArrowFieldModelExtension.h"
 #include "toolkit_errors.h"
 
 #include <iostream>
@@ -11,7 +11,7 @@ using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
-ArrowFieldModelExtention::ArrowFieldModelExtention(
+ArrowFieldModelExtension::ArrowFieldModelExtension(
 	QString arrow_mesh_path, 
 	QString group_name,
 	QColor arrow_color,
@@ -23,7 +23,7 @@ ArrowFieldModelExtention::ArrowFieldModelExtention(
 		group_name(group_name),
 		draw_threshold(draw_threshold),
 		arrow_scale_factor(arrow_scale_factor),
-		WrapperExtention()
+		WrapperExtension()
 {
 	arrow_mesh = new QMesh; 
 	arrow_mesh->setSource(QUrl::fromLocalFile(arrow_mesh_path));
@@ -32,11 +32,11 @@ ArrowFieldModelExtention::ArrowFieldModelExtention(
 	arrow_field_root->setProperty("Scene.ObjGroup", QVariant(group_name));
 }
 
-std::string ArrowFieldModelExtention::getExtentionName() {
+std::string ArrowFieldModelExtension::getExtensionName() {
 	return group_name.toStdString();
 }
 
-void ArrowFieldModelExtention::update(float current_time) {
+void ArrowFieldModelExtension::update(float current_time) {
 	if (arrow_positions.size() == 0 || arrow_count == 0)
 		return;
 
@@ -88,7 +88,7 @@ void ArrowFieldModelExtention::update(float current_time) {
 	}
 }
 
-QEntity* ArrowFieldModelExtention::getVisual() {
+QEntity* ArrowFieldModelExtension::getVisual() {
 	if (arrow_positions.size() == 0 || arrow_count == 0)
 		return nullptr;
 
@@ -116,7 +116,7 @@ QEntity* ArrowFieldModelExtention::getVisual() {
 }
 
 
-void ArrowFieldModelExtention::addArrowFieldFrame(float time, const Matrix3fd& pos, const Matrix3fd& dir) {
+void ArrowFieldModelExtension::addArrowFieldFrame(float time, const Matrix3fd& pos, const Matrix3fd& dir) {
 	if (arrow_count == 0) {
 		arrow_count = pos.size() / 3;
 	}

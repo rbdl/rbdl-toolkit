@@ -9,8 +9,8 @@
 #include "toolkit_interfaces.h"
 #include "util.h"
 
-#include "MotionMarkerExtention.h"
-#include "ModelMarkerExtention.h"
+#include "MotionMarkerExtension.h"
+#include "ModelMarkerExtension.h"
 
 class MotionMarkerPlugin : public QObject, public OptionalInterface{
 	Q_OBJECT
@@ -23,7 +23,7 @@ class MotionMarkerPlugin : public QObject, public OptionalInterface{
 
 		void init(ToolkitApp* app);
 
-		MotionMarkerExtention* loadMotionMarkerFile(QString path);
+		MotionMarkerExtension* loadMotionMarkerFile(QString path);
 
 	private:
 		ToolkitApp* parentApp;

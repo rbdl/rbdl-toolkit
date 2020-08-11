@@ -16,17 +16,17 @@ class RBDLModelWrapper;
 
 /* This class provides an abstact base for adding data to a loaded model, such as (Animations, Forces, etc.).
  */
-class WrapperExtention {
+class WrapperExtension {
 	protected:
 		RBDLModelWrapper* model_parent;
 
 	public:
-		WrapperExtention();
+		WrapperExtension();
 
 		void setModelParent(RBDLModelWrapper* model);
 
-		//needs to be implemented by every extention
-		virtual std::string getExtentionName() = 0;
+		//needs to be implemented by every extension
+		virtual std::string getExtensionName() = 0;
 		virtual void update(float current_time) = 0; 
 
 		//optional implementetion, default does nothing
@@ -47,9 +47,9 @@ class RBDLModelWrapper : public QObject {
 		std::map<std::string, Qt3DCore::QTransform*> body_transform_map;
 		float mesh_unit_scaling;
 
-		//all loaded extra data is supposed to be loaded as an extention to the model
-		std::vector<std::string> extention_names;
-		std::map<std::string, WrapperExtention*> extentions;
+		//all loaded extra data is supposed to be loaded as an extension to the model
+		std::vector<std::string> extension_names;
+		std::map<std::string, WrapperExtension*> extensions;
 	public:
 		LuaTable model_luatable;
 
@@ -61,13 +61,13 @@ class RBDLModelWrapper : public QObject {
 
 		Qt3DCore::QEntity* loadFromFile(QString model_file);
 
-		//takes ownership of extention -> only delete via model not where it was created
-		void addExtention(WrapperExtention* extention);
+		//takes ownership of extension -> only delete via model not where it was created
+		void addExtension(WrapperExtension* extension);
 		void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
-		//void deleteExtention(std::string name);
-		bool hasExtention(std::string name);
-		const std::vector<std::string>& loadedExtentions() { return extention_names; }
-		WrapperExtention* getExtention(std::string name);
+		//void deleteExtension(std::string name);
+		bool hasExtension(std::string name);
+		const std::vector<std::string>& loadedExtensions() { return extension_names; }
+		WrapperExtension* getExtension(std::string name);
 
 		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 		QString getFileName() { return QFileInfo(model_file).baseName(); }
@@ -82,7 +82,7 @@ class RBDLModelWrapper : public QObject {
 		void model_update(float current_time);
 
 	signals:
-		void new_extention_added();
+		void new_extension_added();
 		void visual_added(Qt3DCore::QEntity* visual);
 
 };

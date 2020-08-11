@@ -5,7 +5,7 @@
 
 #include <vector>
 
-class AnimationModelExtention : public WrapperExtention {
+class AnimationModelExtension : public WrapperExtension {
 	private:
 		int dof;
 		float max_time; 
@@ -14,9 +14,9 @@ class AnimationModelExtention : public WrapperExtention {
 		std::vector<RigidBodyDynamics::Math::VectorNd> animation_q_frames;
 
 	public:
-		AnimationModelExtention();
+		AnimationModelExtension();
 
-		std::string getExtentionName();
+		std::string getExtensionName();
 		void update(float current_time);
 
 		int getDOF();

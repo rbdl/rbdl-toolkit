@@ -10,7 +10,7 @@
 
 typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3fd;
 
-class MotionMarkerExtention : public WrapperExtention {
+class MotionMarkerExtension : public WrapperExtension {
 	private:
 		float max_time; 
 		unsigned int marker_count;
@@ -27,14 +27,14 @@ class MotionMarkerExtention : public WrapperExtention {
 		std::vector<Qt3DCore::QTransform*> marker_transforms;
 		std::vector<Qt3DCore::QEntity*> marker_entities;
 	public:
-		MotionMarkerExtention(unsigned int marker_count, QColor marker_color, float marker_size);
+		MotionMarkerExtension(unsigned int marker_count, QColor marker_color, float marker_size);
 		float getMaxTime() { return max_time; }
 
 		void addMocapMarkerFrame(float time, const Matrix3fd& marker_pos);
 
 		void setMarkerLabel(unsigned int marker_data_pos, std::string& label);
 
-		std::string getExtentionName();
+		std::string getExtensionName();
 		void update(float current_time);
 		Qt3DCore::QEntity* getVisual();
 

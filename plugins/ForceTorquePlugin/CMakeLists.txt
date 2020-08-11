@@ -2,7 +2,7 @@ PROJECT(ForceTorquePlugin)
 	
 SET(ForceTorquePlugin_SRCS
 	ForceTorquePlugin.cc
-	ArrowFieldModelExtention.cc
+	ArrowFieldModelExtension.cc
 )
 
 SET(ForceTorquePlugin_MOC_HDRS
