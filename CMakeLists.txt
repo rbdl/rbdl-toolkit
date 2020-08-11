@@ -97,7 +97,7 @@ ADD_SUBDIRECTORY (
 	plugins
 )
 
-ADD_LIBRARY ( toolkitlib
+ADD_LIBRARY ( toolkitlib SHARED
 	${ToolkitLib_SRCS}
 	${MOC_SRCS}
 	${UI_SRC}
