@@ -1,8 +1,15 @@
 RBDL - Toolkit
 ==============
 
-At this stage I have re implemented most of the functionality that meshup
-provides. You can now use it to visualize your results. 
+This application is intended to be used to visualize results and data of rigid body dynamics systems. 
+It is build on top of [RBDL](https://github.com/ORB-HD/rbdl-orb) and uses Qt3D as it's graphics backend.
+
+RBDL-Toolkit is designed to be extendable via plugins and to make developing plugins easy there is a
+[plugin template](https://github.com/ORB-HD/toolkit-plugin-template). There are also some 
+[wiki](https://github.com/ORB-HD/rbdl-toolkit/wiki) articles describing the architechture of the
+application.
+
+At this point RBDL-Toolkit only supports loading and displaying luamodels!
 
 # Build
 
