@@ -125,6 +125,7 @@ TARGET_LINK_LIBRARIES ( rbdl-toolkit
 )
 
 INSTALL ( TARGETS rbdl-toolkit RUNTIME DESTINATION bin )
+INSTALL ( TARGETS toolkitlib RUNTIME DESTINATION lib )
 
 FILE ( GLOB MESH_FILES meshes/*.obj )
 INSTALL ( FILES ${MESH_FILES} DESTINATION share/ORB/rbdl-toolkit/meshes )
