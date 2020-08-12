@@ -1,6 +1,6 @@
 name: rbdl-toolkit
 base: core18
-version: 'v0.9-beta'
+version: 'v1.0'
 architectures: [ 'x86' ]
 summary: Visualization Toolkit for RBDL models
 description: |

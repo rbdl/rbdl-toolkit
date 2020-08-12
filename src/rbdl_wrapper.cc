@@ -279,10 +279,6 @@ Qt3DCore::QEntity* WrapperExtension::getVisual() {
 	return nullptr;
 }
 
-void WrapperExtension::exportData() {
-	return;
-}
-
 WrapperExtension::WrapperExtension() {
 	model_parent = NULL;
 }

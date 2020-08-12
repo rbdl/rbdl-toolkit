@@ -31,7 +31,6 @@ class WrapperExtension {
 
 		//optional implementetion, default does nothing
 		virtual Qt3DCore::QEntity* getVisual();
-		virtual void exportData();
 };
 
 
