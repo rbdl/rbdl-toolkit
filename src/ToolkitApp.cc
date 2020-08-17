@@ -84,6 +84,14 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+	//find application path important for plugin loading if running as AppImage
+	auto app_dir = QDir(QCoreApplication::applicationDirPath());
+	if (app_dir.cd("../share/ORB/rbdl-toolkit")) {
+		std::cout << app_dir.absolutePath().toStdString() << std::endl;
+		paths.prepend(app_dir.absolutePath());
+	}
+
 	if (env.contains(PATH_VAR)) {
 		paths << env.value(PATH_VAR);
 	}
