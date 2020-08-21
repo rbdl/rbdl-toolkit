@@ -36,6 +36,7 @@ ADD_SUBDIRECTORY (
 	vendor/QVideoWriter/
 )
 
+INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
 
 QT5_WRAP_UI ( RenderPlugin_UI_SRC
 	ui/RenderImageDialog.ui	
