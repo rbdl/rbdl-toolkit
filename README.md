@@ -33,7 +33,7 @@ but are not guarranted. This is due to the Qt3D Api no being stable yet.
 Since our research group is mostly using Ubuntu here is a quick one line
 install command for all dependencies except RBDL.
 
-`sudo apt install qt5* qt3d* libeigen3-dev libassimp-dev`
+`sudo apt install qt5* qt3d* libeigen3-dev libassimp-dev mesa-common-dev libboost-dev`
 
 Ubuntu installs qt5.9 per default and rbdl-toolkit might work with the exception
 of the rendering plugin.  In order use the rendering plugin you will have to
