@@ -87,7 +87,15 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 
 	//find application path important for plugin loading if running as AppImage
 	auto app_dir = QDir(QCoreApplication::applicationDirPath());
+	bool found = false;
 	if (app_dir.cd("../share/ORB/rbdl-toolkit")) {
+		std::cout << app_dir.absolutePath().toStdString() << std::endl;
+		paths.prepend(app_dir.absolutePath());
+		found = true;
+	}
+
+	app_dir = QDir(QCoreApplication::applicationDirPath());
+	if ( !found && app_dir.cd("../local/share/ORB/rbdl-toolkit")) {
 		std::cout << app_dir.absolutePath().toStdString() << std::endl;
 		paths.prepend(app_dir.absolutePath());
 	}
