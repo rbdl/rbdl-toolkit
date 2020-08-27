@@ -18,7 +18,7 @@ if (( $? )); then
 fi
 
 # populate appdir with need libs
-linuxdeploy --appdir=rbdl-toolkit.AppDir -e rbdl-toolkit -i ../extra/rbdl-toolkit.png --create-desktop-file
+linuxdeploy --appdir=rbdl-toolkit.AppDir -e rbdl-toolkit --deploy-deps-only=rbdl-toolkit.AppDir/usr/local/share/ORB/rbdl-toolkit/plugins/librenderplugin.so -i ../extra/rbdl-toolkit.png --create-desktop-file
 
 if (( $? )); then
 	exit 1
