@@ -49,11 +49,13 @@ at version *5.13.2* other versions are not guaranteed to work, since Qt3D is
 at the moment subject to many changes!
 
 Afterwards build *rbdl-toolkit* with cmake and adding the CUSTOM_QT_PATH variable set to 
-your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]/lib. 
+your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]. If you compiled QT yourself just set this
+variable to the -prefix you used for the compile/install.
+
 For me that looked like this:
 
 ```code
-cmake -DCUSTOM_QT_PATH=~/Qt5.13/5.13.2/gcc_64/lib ..
+cmake -DCUSTOM_QT_PATH=~/Qt5.13/5.13.2/gcc_64 ..
 make
 ```
 
