@@ -13,7 +13,7 @@ At this point RBDL-Toolkit only supports loading and displaying luamodels!
 
 # How to get this software
 
-This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/tag/v1.0-appimage-beta). With this it should be possible to
+This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/tag/v1.0-appimage). With this it should be possible to
 get it running on most linux distributions by simply downling and executing it. It may even be possible to run this on Windows by using the Linux Subsystem, 
 though I have NOT tried this yet!
 
