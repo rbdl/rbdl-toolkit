@@ -55,6 +55,7 @@ ELSE( ${CMAKE_VERSION} VERSION_LESS 3.12.0 )
 ENDIF( ${CMAKE_VERSION} VERSION_LESS 3.12.0 )
 
 CONFIGURE_FILE(extra/mk_appimage.sh mk_appimage.sh)
+CONFIGURE_FILE(extra/mk_pluginbuilder.sh mk_pluginbuilder.sh)
 
 QT5_WRAP_UI ( UI_SRC
 	ui/Timeline.ui
