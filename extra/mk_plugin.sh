@@ -15,7 +15,7 @@ if [ "$#" -ne 1 ]; then
 	exit 1
 fi
 
-PLUGIN_SRC=$PWD/$1
+PLUGIN_SRC=$1
 PLUGIN_BUILD=.$PLUGIN_SRC-build
 TOOLKIT_BUILD=$MOUNT/build/toolkit_build
 TOOLKIT_SRC=$MOUNT/build/rbdl-toolkit
@@ -25,10 +25,11 @@ QT_PATH=$MOUNT/build/qt
 PATH=$MOUNT/usr/bin:$PATH
 
 # create plugin builddir
+rm -rf $PLUGIN_BUILD
 mkdir -p $PLUGIN_BUILD
 cd $PLUGIN_BUILD
 
 echo "Start Build"
-cmake -DCUSTOM_QT_PATH=$QT_PATH -DTOOLKIT_BUILD_PATH=$TOOLKIT_BUILD -DTOOLKIT_SOURCE_PATH=$TOOLKIT_SRC $PLUGIN_SRC
+cmake -DCUSTOM_QT_PATH=$QT_PATH -DTOOLKIT_BUILD_PATH=$TOOLKIT_BUILD -DTOOLKIT_SOURCE_PATH=$TOOLKIT_SRC ../$PLUGIN_SRC
 make -j 4
 cp *.so ..

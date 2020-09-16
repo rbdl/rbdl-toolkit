@@ -54,6 +54,9 @@ rsync -rlp $QT_PATH/ $BUILDFILESPATH/qt
 if (( $? )); then
 	exit 1
 fi
+#this is a hacky fix, but works for now
+sed -i "s/\/usr\/lib\/x86_64-linux-gnu\/libEGL.so/EGL/g" $BUILDFILESPATH/qt/lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake
+sed -i "s/\/usr\/lib\/x86_64-linux-gnu\/libGL.so/GL/g" $BUILDFILESPATH/qt/lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake
 
 mkdir -p $APPDIR/usr/bin
 cp $TOOLKIT_SRC/extra/mk_plugin.sh $APPDIR/usr/bin
