@@ -55,20 +55,31 @@ if (( $? )); then
 	exit 1
 fi
 
-linuxdeploy --appdir=$APPDIR -i ../extra/rbdl-toolkit.png
+mkdir -p $APPDIR/usr/bin
+cp $TOOLKIT_SRC/extra/mk_plugin.sh $APPDIR/usr/bin
 if (( $? )); then
 	exit 1
 fi
+
+echo "Deploy buildtools and icon"
+linuxdeploy --appdir=$APPDIR -i ../extra/rbdl-toolkit.png -e ${CMAKE_COMMAND} -e ${CMAKE_CPACK_COMMAND} -e ${CMAKE_CTEST_COMMAND} -e ${CMAKE_CXX_COMPILER} -e ${CMAKE_MAKE_PROGRAM} -d ../extra/buildplugin.desktop
+if (( $? )); then
+	exit 1
+fi
+
+#copy cmake root
+rsync -rp ${CMAKE_ROOT} $APPDIR/usr/share
+if (( $? )); then
+	exit 1
+fi
+
 
 ln -sf usr/share/icons/hicolor/256x256/apps/rbdl-toolkit.png $APPDIR
 if (( $? )); then
 	exit 1
 fi
 
-cp $TOOLKIT_SRC/extra/mk_plugin.sh $APPDIR/usr/bin
-if (( $? )); then
-	exit 1
-fi
 
-linuxdeploy --appdir=$APPDIR -o appimage -d ../extra/buildplugin.desktop
+#create AppImage
+appimagetool $APPDIR
 
