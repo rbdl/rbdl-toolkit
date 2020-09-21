@@ -110,10 +110,10 @@ void RenderPlugin::action_render_image() {
 	        {
 		         QImage rendered_image = capture_reply->image();
 	             rendered_image.save(filename);
-	             delete capture_reply;
 	             parentApp->getSceneObj()->setClearColor(standard_clear_color);
 	             parentApp->getSceneObj()->setOffscreenRender(nullptr);
 	             delete offscreen_render;
+	             capture_reply->deleteLater();
 		    });
 
 }
@@ -183,6 +183,7 @@ void RenderPlugin::handle_image_series_frame() {
 		QImage rendered_image = capture_reply->image().convertToFormat(QImage::Format_ARGB32);
 		QString save_path = QDir(file_loc).filePath(QString("image-series-%1.png").arg((int)current_frame, 6, 10, QLatin1Char('0')));
 		rendered_image.save(save_path);
+		capture_reply->deleteLater();
 
 		if (do_compositon) {
 			image_composer.drawImage(0, 0, rendered_image);
@@ -197,7 +198,6 @@ void RenderPlugin::handle_image_series_frame() {
 	        parentApp->getSceneObj()->setClearColor(standard_clear_color);
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
-			delete capture_reply;
 			return;
 		}
 
@@ -212,11 +212,9 @@ void RenderPlugin::handle_image_series_frame() {
 	        parentApp->getSceneObj()->setClearColor(standard_clear_color);
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
-			delete capture_reply;
 			return;
 		}
 
-		delete capture_reply;
 		if (!last_frame_captured) {
 			capture_reply = parentApp->getSceneObj()->requestFrameCapture();
 			connect(capture_reply, &QRenderCaptureReply::completed, this, &RenderPlugin::handle_image_series_frame);
@@ -270,6 +268,7 @@ void RenderPlugin::handle_video_frame() {
 		pbar->setValue(current_frame);
 		QImage rendered_image = capture_reply->image().convertToFormat(QImage::Format_ARGB32);
 		encoder->addFrame(rendered_image);
+		capture_reply->deleteLater();
 
 		if (last_frame_captured) {
 			for (int j=0;j<7;j++)
@@ -277,7 +276,6 @@ void RenderPlugin::handle_video_frame() {
 
 			encoder->finish();
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
-			delete capture_reply;
 			delete offscreen_render;
 			delete encoder;
 			return;
@@ -294,11 +292,9 @@ void RenderPlugin::handle_video_frame() {
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
 			delete offscreen_render;
 			delete encoder;
-			delete capture_reply;
 			return;
 		}
 
-		delete capture_reply;
 		if (!last_frame_captured) {
 			capture_reply = parentApp->getSceneObj()->requestFrameCapture();
 			connect(capture_reply, &QRenderCaptureReply::completed, this, &RenderPlugin::handle_video_frame);
