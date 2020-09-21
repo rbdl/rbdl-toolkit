@@ -29,7 +29,8 @@ SceneWidget::SceneWidget(QWidget *parent):
 	near(0.1f),
 	far(100.f),
 	render_capture(nullptr),
-	default_clear_color(QColor("black")) 
+	//use almost black, because just black is transparent at application start up 🙈
+	default_clear_color(QColor::fromRgbF(0.01, 0.01, 0.01, 1.)) 
 {
 	//set default surface format to be able to use the alpha channel from the start
 	QSurfaceFormat format = QSurfaceFormat::defaultFormat();
