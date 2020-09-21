@@ -143,7 +143,7 @@ void RenderPlugin::action_render_image_series() {
 		fps_mode = false;
 
 	if (fps_mode) {
-		frame_count = duration / (float)fps;
+		frame_count = fps * duration;
 	} else {
 		frame_count = fps;
 	}
