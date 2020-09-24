@@ -112,7 +112,7 @@ void RenderPlugin::action_render_image() {
 	             rendered_image.save(filename);
 	             parentApp->getSceneObj()->setClearColor(standard_clear_color);
 	             parentApp->getSceneObj()->setOffscreenRender(nullptr);
-	             delete offscreen_render;
+	             offscreen_render->deleteLater();
 	             capture_reply->deleteLater();
 		    });
 
@@ -197,7 +197,7 @@ void RenderPlugin::handle_image_series_frame() {
 			}
 	        parentApp->getSceneObj()->setClearColor(standard_clear_color);
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
-			delete offscreen_render;
+			offscreen_render->deleteLater();
 			return;
 		}
 
@@ -211,7 +211,7 @@ void RenderPlugin::handle_image_series_frame() {
 		if (pbar->wasCanceled()) {
 	        parentApp->getSceneObj()->setClearColor(standard_clear_color);
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
-			delete offscreen_render;
+			offscreen_render->deleteLater();
 			return;
 		}
 
@@ -276,7 +276,7 @@ void RenderPlugin::handle_video_frame() {
 
 			encoder->finish();
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
-			delete offscreen_render;
+			offscreen_render->deleteLater();
 			delete encoder;
 			return;
 		}
@@ -290,7 +290,7 @@ void RenderPlugin::handle_video_frame() {
 
 		if (pbar->wasCanceled()) {
 			parentApp->getSceneObj()->setOffscreenRender(nullptr);
-			delete offscreen_render;
+			offscreen_render->deleteLater();
 			delete encoder;
 			return;
 		}
