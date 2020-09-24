@@ -144,6 +144,10 @@ IF(BUILD_OSX_BUNDLE)
 		PROPERTIES
 		RESOURCE "extra/rbdl-toolkit.icns"
 	)
+	ADD_CUSTOM_TARGET(dmg
+		BYPRODUCTS rbdl-toolkit.dmg rbdl-toolkit.app
+		COMMAND ${CMAKE_CURRENT_BINARY_DIR}/mk_dmg.sh
+	)
 ELSE(BUILD_OSX_BUNDLE)
 	ADD_EXECUTABLE ( rbdl-toolkit
 		${Toolkit_SRCS}

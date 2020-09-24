@@ -73,7 +73,7 @@ void RenderPlugin::init_offscreen_render_surface(int width, int height) {
 }
 
 void RenderPlugin::check_image_size(QImage& img) {
-	if ( img.width() > current_width && img.height() > current_height ) {
+	if ( img.width() != current_width && img.height() != current_height ) {
 		img = img.scaled(current_width, current_height);
 	}
 }
