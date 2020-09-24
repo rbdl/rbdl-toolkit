@@ -59,6 +59,7 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		int current_frame;
 		unsigned frame_count;
 		float current_time;
+		unsigned current_width, current_height;
 		float timestep;
 		bool do_compositon;
 		bool render_transparent;
@@ -67,6 +68,7 @@ class RenderPlugin : public QObject, public OptionalInterface {
 		QVideoWriter* encoder;
 
 		void init_offscreen_render_surface(int width, int height);
+		void check_image_size(QImage& img);
 
 	public slots:
 		void action_render_image();
