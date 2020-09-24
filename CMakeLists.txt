@@ -58,8 +58,10 @@ ELSE( ${CMAKE_VERSION} VERSION_LESS 3.12.0 )
 	ADD_COMPILE_DEFINITIONS (TOOKIT_VERSION="${TOOLKIT_VERSION}" INSTALL_DIR="${CMAKE_INSTALL_PREFIX}/share/ORB/rbdl-toolkit")
 ENDIF( ${CMAKE_VERSION} VERSION_LESS 3.12.0 )
 
+IF(NOT APPLE)
 CONFIGURE_FILE(extra/mk_appimage.sh mk_appimage.sh)
 CONFIGURE_FILE(extra/mk_pluginbuilder.sh mk_pluginbuilder.sh)
+ENDIF(NOT APPLE)
 
 QT5_WRAP_UI ( UI_SRC
 	ui/Timeline.ui
@@ -124,17 +126,23 @@ TARGET_LINK_LIBRARIES ( toolkitlib
 )
 
 IF(BUILD_OSX_BUNDLE)
+	CONFIGURE_FILE(extra/mk_dmg.sh mk_dmg.sh)
 	SET( MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
 	SET( MACOSX_BUNDLE_GUI_IDENTIFIER orb.rbdl-toolkit)
 	SET( MACOSX_BUNDLE_INFO_STRING "RBDL-Toolkit Application for rigid body modeling")
-	SET( MACOSX_BUNDLE_ICON_FILE "rbdl-toolkit.png")
+	SET( MACOSX_BUNDLE_ICON_FILE "rbdl-toolkit.icns")
 	SET( MACOSX_BUNDLE_LONG_VERISO ${TOOLKIT_VERSION})
 	SET( MACOSX_BUNDLE_SHORT_VERISO ${TOOLKIT_VERSION})
 	SET( MACOSX_BUNDLE_BUNDLE_VERISO ${TOOLKIT_VERSION})
 	ADD_EXECUTABLE ( rbdl-toolkit
 		MACOSX_BUNDLE
 		${Toolkit_SRCS}
-		extra/rbdl-toolkit.png
+		extra/rbdl-toolkit.icns
+	)
+	SET_TARGET_PROPERTIES(
+		rbdl-toolkit
+		PROPERTIES
+		RESOURCE "extra/rbdl-toolkit.icns"
 	)
 ELSE(BUILD_OSX_BUNDLE)
 	ADD_EXECUTABLE ( rbdl-toolkit
