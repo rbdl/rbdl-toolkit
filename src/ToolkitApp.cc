@@ -163,15 +163,16 @@ std::vector<RBDLModelWrapper*>* ToolkitApp::getLoadedModels() {
 
 
 void ToolkitApp::loadModel(const QString &model_file) {
-	RBDLModelWrapper *model = new RBDLModelWrapper();
 	bool errors_happend = false;
 
 	Qt3DCore::QEntity* model_scene_obj;
 
 	auto model_file_info = QFileInfo(model_file);
+	RBDLModelWrapper *model;
 
 	try {
-		model_scene_obj = model->loadFromFile(model_file_info.absoluteFilePath());
+		model = RBDLModelWrapper::loadFromFile(model_file_info.absoluteFilePath());
+		model_scene_obj = model->getRenderObj();
 	} catch (RigidBodyDynamics::Errors::RBDLFileParseError& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
