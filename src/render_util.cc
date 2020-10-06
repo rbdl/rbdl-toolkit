@@ -10,7 +10,8 @@
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
-#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DRender/QMesh>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
 
 #include <cmath>
 
@@ -93,7 +94,7 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	Qt3DCore::QTransform* transform = new Qt3DCore::QTransform;
 	transform->setTranslation(QVector3D(0.0, 0.0, 0.0));
 
-	Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial;
+	Qt3DExtras::QDiffuseSpecularMaterial *material = new Qt3DExtras::QDiffuseSpecularMaterial;
 	material->setAmbient(line_color);
 
 	QEntity* floor = new QEntity;
@@ -105,5 +106,40 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	floor->setProperty("Scene.ObjGroup", QVariant("Grid"));
 
 	return floor;
+}
+
+Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
+                                    const QColor& mesh_color, 
+                                    const QVector3D& mesh_translation, 
+                                    const QQuaternion& mesh_rotation,
+                                    Qt3DCore::QEntity* parent) {
+	Qt3DCore::QEntity* mesh_entity;
+	if (parent == nullptr) {
+		mesh_entity = new Qt3DCore::QEntity();
+	} else {
+		mesh_entity = new Qt3DCore::QEntity(parent);
+	}
+
+	//Mesh Transforms 
+	Qt3DCore::QTransform* mesh_transform = new Qt3DCore::QTransform;
+	mesh_transform->setRotation(mesh_rotation);
+	mesh_transform->setTranslation(mesh_translation);
+
+	//Mesh Material
+	Qt3DExtras::QDiffuseSpecularMaterial* visual_material = new Qt3DExtras::QDiffuseSpecularMaterial;
+	if (mesh_color.alpha() < 0.7) 
+		visual_material->setAlphaBlendingEnabled(true);
+	visual_material->setAmbient(mesh_color);
+
+	//Mesh src
+	Qt3DRender::QMesh* visual_mesh = new Qt3DRender::QMesh;
+	visual_mesh->setSource(QUrl::fromLocalFile(mesh_file));
+
+	//Mesh Entity completed
+	mesh_entity->addComponent(visual_mesh);
+	mesh_entity->addComponent(mesh_transform);
+	mesh_entity->addComponent(visual_material);
+
+	return mesh_entity;
 }
 
