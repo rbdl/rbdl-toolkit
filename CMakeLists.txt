@@ -79,7 +79,6 @@ QT5_WRAP_CPP ( MOC_SRCS
 	include/Timeline.h
 	include/VectorEditor.h
 	include/rbdl_wrapper.h
-	include/luamodel_wrapper.h
 	include/SceneGroupsWidget.h
 	include/variantdelegate.h
 	include/ToolkitSettings.h
@@ -98,6 +97,7 @@ SET ( ToolkitLib_SRCS
 	src/variantdelegate.cc
 	src/toolkit_errors.cc
 	src/luamodel_wrapper.cc
+	src/urdfmodel_wrapper.cc
 )
 
 SET ( Toolkit_SRCS
