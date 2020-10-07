@@ -32,12 +32,13 @@ RBDLModelWrapper* RBDLModelWrapper::loadFromFile(QString model_file) {
 
 	// todo logic to detect model type and load with correct subclass
 	RBDLModelWrapper* model_wrapper;
+
 	if (check_file.suffix() == "lua") {
 		model_wrapper = new LuaModelWrapper();
 	} else {
 		throw Errors::RBDLInvalidFileError("The model file you tried to load is not supported!");
 	}
-	model_wrapper->load(model_file);
+	model_wrapper->load(check_file.absoluteFilePath());
 
 	return model_wrapper;
 }

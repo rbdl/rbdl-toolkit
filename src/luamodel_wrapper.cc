@@ -12,10 +12,9 @@ LuaModelWrapper::LuaModelWrapper() : RBDLModelWrapper() {
 }
 
 void LuaModelWrapper::load(QString model_file) {
-	auto model_file_info = QFileInfo(model_file);
-	this->model_file = model_file_info.absoluteFilePath();
-	rbdl_model = new RigidBodyDynamics::Model();
+	this->model_file = model_file;
 
+	auto model_file_info = QFileInfo(model_file);
 	// some logic to save current pwd and move to the dir where the model is loaded from
 	// needed so that lua model scripts with relative dependencies work correctly!
 	auto last_pwd = QDir::currentPath();
@@ -24,6 +23,7 @@ void LuaModelWrapper::load(QString model_file) {
 
 
 	//loading model into rbdl to check its validity, may throw error
+	rbdl_model = new RigidBodyDynamics::Model();
 	try {
 		RigidBodyDynamics::Addons::LuaModelReadFromFile(model_file.toStdString().c_str(), rbdl_model, false);
 		//load model lua extra to read parameters for rendering

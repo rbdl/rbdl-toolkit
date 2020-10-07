@@ -8,7 +8,7 @@
 
 #include "rbdl_wrapper.h"
 
-#define MODELTYPE_LUA "luamodel"
+#define MODELTYPE_LUA "lua_model"
 
 class LuaModelWrapper : public RBDLModelWrapper {
 	public:
