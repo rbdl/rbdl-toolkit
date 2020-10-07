@@ -12,17 +12,8 @@ LuaModelWrapper::LuaModelWrapper() : RBDLModelWrapper() {
 }
 
 void LuaModelWrapper::load(QString model_file) {
-	for ( auto loaded_extension : extension_names ) {
-		delete extensions[loaded_extension];
-	}
-	extension_names.clear();
-	extensions.clear();
-
 	auto model_file_info = QFileInfo(model_file);
 	this->model_file = model_file_info.absoluteFilePath();
-	if (rbdl_model != NULL) {
-		delete rbdl_model;
-	}
 	rbdl_model = new RigidBodyDynamics::Model();
 
 	// some logic to save current pwd and move to the dir where the model is loaded from
@@ -45,8 +36,11 @@ void LuaModelWrapper::load(QString model_file) {
 		throw err;
 	}
 
+	//load relevant information from modelfile
 	auto model_info = loadModelInfo();
 	auto segments_info = loadSegmentInfo();
+
+	//construct model from that info
 	build3DEntity(model_info, segments_info);
 
 	//return to original pwd

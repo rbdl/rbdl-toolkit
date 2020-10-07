@@ -13,7 +13,7 @@
 class LuaModelWrapper : public RBDLModelWrapper {
 	public:
 		LuaModelWrapper();
-		//LuaTable model_luatable;
+		LuaTable model_luatable;
 
 		void load(QString model_file);
 		ModelInfo loadModelInfo();

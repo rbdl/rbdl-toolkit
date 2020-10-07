@@ -64,7 +64,6 @@ Qt3DCore::QEntity* RBDLModelWrapper::getSegmentEntity(std::string segment_name, 
 		segment_transform->setRotation(QQuaternion(segment_rotation[3], segment_rotation[0], segment_rotation[1], segment_rotation[2]));
 
 		segment_render_node->addComponent(segment_transform);
-		segment_render_node->setParent(model_root);
 
 		body_segment_map[segment_name] = segment_render_node;
 		body_transform_map[segment_name] = segment_transform;
@@ -85,6 +84,7 @@ void RBDLModelWrapper::build3DEntity(ModelInfo& model_info, std::vector<SegmentV
 
 	for (auto vis_info : visuals_info) {
 		auto segment_render_node = getSegmentEntity(vis_info.segment_name, true);
+		segment_render_node->setParent(model_obj);
 		//Visual Entity 
 		Qt3DCore::QEntity* visual_entity = new Qt3DCore::QEntity(segment_render_node);
 
@@ -126,8 +126,25 @@ void RBDLModelWrapper::updateKinematics(RigidBodyDynamics::Math::VectorNd Q) {
 	}
 }
 
+void RBDLModelWrapper::clear() {
+	for ( auto loaded_extension : extension_names ) {
+		delete extensions[loaded_extension];
+	}
+	extension_names.clear();
+	extensions.clear();
+
+	body_segment_map.clear();
+	body_transform_map.clear();
+
+	if (rbdl_model != NULL) {
+		delete rbdl_model;
+	}
+	rbdl_model = NULL;
+}
+
 void RBDLModelWrapper::reload() {
-	this->loadFromFile(this->model_file);
+	this->clear();
+	this->load(this->model_file);
 }
 
 void RBDLModelWrapper::model_update(float current_time) {

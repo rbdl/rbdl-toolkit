@@ -70,10 +70,12 @@ class RBDLModelWrapper : public QObject {
 		std::map<std::string, WrapperExtension*> extensions;
 
 		RigidBodyDynamics::Math::VectorNd current_Q;
+
+		void clear();
+		virtual void load(QString model_file) = 0;
 	public:
 		static RBDLModelWrapper* loadFromFile(QString model_file);
 
-		LuaTable model_luatable;
 
 		RigidBodyDynamics::Model* rbdl_model;
 
@@ -98,8 +100,6 @@ class RBDLModelWrapper : public QObject {
 		bool hasExtension(std::string name);
 		const std::vector<std::string>& loadedExtensions() { return extension_names; }
 		WrapperExtension* getExtension(std::string name);
-
-		virtual void load(QString model_file) = 0;
 
 	public slots:
 		void model_update(float current_time);

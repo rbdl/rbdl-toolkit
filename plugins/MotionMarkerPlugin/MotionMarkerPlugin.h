@@ -8,6 +8,7 @@
 
 #include "toolkit_interfaces.h"
 #include "util.h"
+#include "luamodel_wrapper.h"
 
 #include "MotionMarkerExtension.h"
 #include "ModelMarkerExtension.h"
