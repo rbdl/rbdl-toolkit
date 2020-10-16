@@ -13,11 +13,9 @@ At this point RBDL-Toolkit only supports loading and displaying luamodels!
 
 # How to get this software
 
-This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/tag/v1.0-appimage). With this it should be possible to
-get it running on most linux distributions by simply downling and executing it. It may even be possible to run this on Windows by using the Linux Subsystem, 
-though I have NOT tried this yet!
+This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/tag/v1.0.1) for Linux and as an [DMG](https://github.com/ORB-HD/rbdl-toolkit/releases/tag/v1.0.1) for MACOS. It may even be possible to get this running on Windows by using the Linux Subsystem, and the AppImage. But I have not tried this yet.
 
-# Build
+# Building from Source
 
 Use cmake to build and install, make sure to recursively clone the repository.
 ```
@@ -110,4 +108,8 @@ converting model meshes from meshup to rbdl-toolkit.
 # Issues
 
 If you find bugs or have other questions please file a GitHub issue on this repository.
+
+# License
+
+This work is licensed with the EUPL v1.2.
 
