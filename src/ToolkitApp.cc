@@ -15,7 +15,7 @@
 #include <QCommandLineOption>
 #include <QProcessEnvironment>
 
-#define PATH_VAR "TOOLKIT_SEARCHDIR_PATH" 
+#define PATH_VAR "TOOLKIT_SEARCHDIR_PATH"
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	//setup standard menu
@@ -31,9 +31,9 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	toolkit_menu_list["Toolkit"]->addAction("Settings", &toolkit_settings, "aeditSettings()");
 	this->setMenuBar(main_menu_bar);
 
-	//settings 
+	//settings
 	toolkit_settings.setType("toolkit.showWarnings", true);
-	connect(&toolkit_settings, &ToolkitSettings::settings_changed, 
+	connect(&toolkit_settings, &ToolkitSettings::settings_changed,
 	        this, [=]() { this->showWarningDialog("Changed settings will get applied at the next restart of the application!"); });
 
 	//main view
@@ -46,11 +46,11 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	cmd_parser.addVersionOption();
 
 	QCommandLineOption model_option( QStringList() << "m" << "model",
-	                                 "Load lua model files <file>", 
+	                                 "Load lua model files <file>",
 	                                 "file"
 	                               );
 	QCommandLineOption plugin_option( QStringList() << "p" << "plugin",
-	                                 "Load additional plugins <plugin name/path>", 
+	                                 "Load additional plugins <plugin name/path>",
 	                                 "plugin"
 	                               );
 	cmd_parser.addOption(plugin_option);
@@ -81,7 +81,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 		QDir::addSearchPath("plugins", "./plugins");
 	#endif
 
-	
+
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 

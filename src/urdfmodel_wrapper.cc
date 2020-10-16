@@ -22,7 +22,8 @@ void UrdfModelWrapper::load(QString model_file) {
 	model_file_stream.seekg(0, std::ios::end);
 	model_xml_string.reserve(model_file_stream.tellg());
 	model_file_stream.seekg(0, std::ios::beg);
-	model_xml_string.assign((std::istreambuf_iterator<char>(model_file_stream)), std::istreambuf_iterator<char>());
+	model_xml_string.assign((std::istreambuf_iterator<char>(model_file_stream)),
+	                         std::istreambuf_iterator<char>());
 	model_file_stream.close();
 
 	if (!RigidBodyDynamics::Addons::URDFReadFromString(model_xml_string.c_str(), rbdl_model, false)) {

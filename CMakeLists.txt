@@ -106,6 +106,7 @@ SET ( Toolkit_SRCS
 
 ADD_SUBDIRECTORY (
 	plugins
+	vendor
 )
 
 ADD_LIBRARY ( toolkitlib SHARED
