@@ -50,7 +50,7 @@ ModelInfo UrdfModelWrapper::loadModelInfo() {
 std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 	std::vector<SegmentVisualInfo> info;
 
-	auto urdf_model = urdf::praseURDF(model_xml_string);
+	//auto urdf_model = urdf::praseURDF(model_xml_string);
 
 	return info;
 }

@@ -32,60 +32,40 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: Wim Meeussen, John Hsu */
+/* Author: Wim Meeussen */
 
 
-#include <urdf/urdfdom_headers/urdf_model/include/urdf_model/pose.h>
+#include <urdf_world/world.h>
+#include <urdf_model/model.h>
+#include <urdf_parser/urdf_parser.h>
 #include <fstream>
 #include <sstream>
-//#include <boost/lexical_cast.hpp>
+#include <boost/lexical_cast.hpp>
 #include <algorithm>
-
-#ifdef URDF_USE_CONSOLE_BRIDGE
+#include <tinyxml.h>
 #include <console_bridge/console.h>
-#else
-#include "urdf/boost_replacement/printf_console.h"
-#endif
-
-#include <tinyxml/tinyxml.h>
-#include <urdf/urdfdom_headers/urdf_exception/include/urdf_exception/exception.h>
-
 
 namespace urdf{
 
-bool parsePose(Pose &pose, TiXmlElement* xml)
+bool parseWorld(World &world, TiXmlElement* config)
 {
-  pose.clear();
-  if (xml)
-  {
-    const char* xyz_str = xml->Attribute("xyz");
-    if (xyz_str != NULL)
-    {
-      try {
-        pose.position.init(xyz_str);
-      }
-      catch (ParseError &e) {
-        logError(e.what());
-        return false;
-      }
-    }
 
-    const char* rpy_str = xml->Attribute("rpy");
-    if (rpy_str != NULL)
-    {
-      try {
-        pose.rotation.init(rpy_str);
-      }
-      catch (ParseError &e) {
-        logError(e.what());
-        return false;
-      }
-    }
-  }
+  // to be implemented
+
   return true;
 }
 
+bool exportWorld(World &world, TiXmlElement* xml)
+{
+  TiXmlElement * world_xml = new TiXmlElement("world");
+  world_xml->SetAttribute("name", world.name);
 
+  // to be implemented
+  // exportModels(*world.models, world_xml);
+
+  xml->LinkEndChild(world_xml);
+
+  return true;
 }
 
-
+}

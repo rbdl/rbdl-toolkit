@@ -35,7 +35,8 @@
 /* Author: Wim Meeussen */
 //#include <boost/algorithm/string.hpp>
 #include <vector>
-#include "urdf/urdfdom/urdf_parser/include/urdf_parser/urdf_parser.h"
+#include "urdf_parser/urdf_parser.h"
+
 #ifdef URDF_USE_CONSOLE_BRIDGE
 	#include <console_bridge/console.h>
 #else

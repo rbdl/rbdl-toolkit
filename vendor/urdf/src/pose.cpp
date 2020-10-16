@@ -32,46 +32,52 @@
 *  POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************/
 
-/* Author: John Hsu */
+/* Author: Wim Meeussen, John Hsu */
 
 
-#include <urdf/urdfdom_headers/urdf_model/include/urdf_model/twist.h>
+#include <urdf_model/pose.h>
 #include <fstream>
 #include <sstream>
-#include <boost/lexical_cast.hpp>
+//#include <boost/lexical_cast.hpp>
 #include <algorithm>
-#include <tinyxml.h>
+
+#ifdef URDF_USE_CONSOLE_BRIDGE
 #include <console_bridge/console.h>
+#else
+#include "urdf/boost_replacement/printf_console.h"
+#endif
+
+#include <tinyxml/tinyxml.h>
+#include <urdf_exception/exception.h>
+
 
 namespace urdf{
 
-bool parseTwist(Twist &twist, TiXmlElement* xml)
+bool parsePose(Pose &pose, TiXmlElement* xml)
 {
-  twist.clear();
+  pose.clear();
   if (xml)
   {
-    const char* linear_char = xml->Attribute("linear");
-    if (linear_char != NULL)
+    const char* xyz_str = xml->Attribute("xyz");
+    if (xyz_str != NULL)
     {
       try {
-        twist.linear.init(linear_char);
+        pose.position.init(xyz_str);
       }
       catch (ParseError &e) {
-        twist.linear.clear();
-        logError("Malformed linear string [%s]: %s", linear_char, e.what());
+        logError(e.what());
         return false;
       }
     }
 
-    const char* angular_char = xml->Attribute("angular");
-    if (angular_char != NULL)
+    const char* rpy_str = xml->Attribute("rpy");
+    if (rpy_str != NULL)
     {
       try {
-        twist.angular.init(angular_char);
+        pose.rotation.init(rpy_str);
       }
       catch (ParseError &e) {
-        twist.angular.clear();
-        logError("Malformed angular [%s]: %s", angular_char, e.what());
+        logError(e.what());
         return false;
       }
     }
@@ -79,7 +85,7 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
   return true;
 }
 
-}
 
+}
 
 
