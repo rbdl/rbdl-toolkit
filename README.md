@@ -109,3 +109,7 @@ converting model meshes from meshup to rbdl-toolkit.
 
 If you find bugs or have other questions please file a GitHub issue on this repository.
 
+# License
+
+This work is licensed with the EUPL v1.2.
+
