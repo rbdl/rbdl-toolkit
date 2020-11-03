@@ -1,4 +1,2 @@
-ADD_SUBDIRECTORY(
-  tinyxml
-  urdf
-)
+ADD_SUBDIRECTORY(tinyxml)
+ADD_SUBDIRECTORY(urdf)

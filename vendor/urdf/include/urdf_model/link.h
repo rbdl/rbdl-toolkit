@@ -41,13 +41,8 @@
 #include <vector>
 #include <map>
 
-
-#ifdef URDF_USE_BOOST
-	#include <boost/shared_ptr.hpp>
-	#include <boost/weak_ptr.hpp>
-#else
-	#include <urdf/boost_replacement/shared_ptr.h>
-#endif
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 
 #include "joint.h"
 #include "color.h"

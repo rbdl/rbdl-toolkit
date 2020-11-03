@@ -39,14 +39,11 @@
 
 #include <string>
 #include <vector>
-#ifdef URDF_USE_BOOST
-#include <boost/shared_ptr.hpp>
-#define my_shared_ptr my_shared_ptr
-#else
-#include <urdf/boost_replacement/shared_ptr.h>
-#endif
 
-#include <urdf/urdfdom_headers/urdf_model/include/urdf_model/pose.h>
+#include <boost/shared_ptr.hpp>
+#define my_shared_ptr boost::shared_ptr
+
+#include <urdf_model/pose.h>
 
 
 namespace urdf{

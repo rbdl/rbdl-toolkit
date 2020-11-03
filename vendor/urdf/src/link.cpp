@@ -44,11 +44,6 @@
 #include <algorithm>
 #include <tinyxml/tinyxml.h>
 
-#ifdef URDF_USE_CONSOLE_BRIDGE
-#include <console_bridge/console.h>
-#else
-#include "urdf/boost_replacement/printf_console.h"
-#endif
 
 namespace urdf{
 

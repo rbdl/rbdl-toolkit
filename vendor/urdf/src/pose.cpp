@@ -41,11 +41,6 @@
 //#include <boost/lexical_cast.hpp>
 #include <algorithm>
 
-#ifdef URDF_USE_CONSOLE_BRIDGE
-#include <console_bridge/console.h>
-#else
-#include "urdf/boost_replacement/printf_console.h"
-#endif
 
 #include <tinyxml/tinyxml.h>
 #include <urdf_exception/exception.h>

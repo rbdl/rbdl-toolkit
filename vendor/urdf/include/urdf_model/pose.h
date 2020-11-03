@@ -45,15 +45,10 @@
 #define M_PI 3.141592538
 #endif //M_PI
 
-#ifdef URDF_USE_BOOST
-	#include <boost/algorithm/string.hpp>
-	#include <boost/lexical_cast.hpp>
-#else
-	#include <urdf/boost_replacement/string_split.h>
-	#include <urdf/boost_replacement/lexical_cast.h>
-#endif //URDF_USE_BOOST
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
-#include <urdf/urdfdom_headers/urdf_exception/include/urdf_exception/exception.h>
+#include <urdf_exception/exception.h>
 #include <assert.h>
 
 namespace urdf{

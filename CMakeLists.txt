@@ -105,8 +105,11 @@ SET ( Toolkit_SRCS
 )
 
 ADD_SUBDIRECTORY (
-	plugins
-	vendor
+  plugins
+)
+
+ADD_SUBDIRECTORY (
+  vendor
 )
 
 ADD_LIBRARY ( toolkitlib SHARED
@@ -126,6 +129,7 @@ TARGET_LINK_LIBRARIES ( toolkitlib
 	Qt5::3DInput
 	${RBDL_LIBRARY}
 	${RBDL_LUAMODEL_LIBRARY}
+	${RBDL_URDFREADER_LIBRARY}
 )
 
 IF(BUILD_OSX_BUNDLE)

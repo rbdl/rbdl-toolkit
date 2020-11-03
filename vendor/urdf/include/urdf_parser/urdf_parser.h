@@ -49,7 +49,7 @@
 #endif //M_PI
 
 
-#include <urdf/urdfdom_headers/urdf_model/include/urdf_model/model.h>
+#include <urdf_model/model.h>
 
 
 

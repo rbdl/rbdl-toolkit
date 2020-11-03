@@ -1,7 +1,9 @@
 PROJECT(urdf)
 
+
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
+  ${CMAKE_SOURCE_DIR}/vendor/tinyxml/include
 )
 
 SET( URDF_SRCS
@@ -19,3 +21,7 @@ SET( URDF_SRCS
 ADD_LIBRARY( urdf STATIC
   ${URDF_SRCS}
 )
+
+TARGET_LINK_LIBRARIES( urdf
+  tinyxml
+ )
