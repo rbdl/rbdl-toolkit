@@ -218,10 +218,10 @@ public:
     this->child_link_name.clear();
     this->parent_link_name.clear();
     this->parent_to_joint_origin_transform.clear();
-    this->dynamics.reset(0);
-    this->limits.reset(0);
-    this->safety.reset(0);
-    this->calibration.reset(0);
+    this->dynamics.reset();
+    this->limits.reset();
+    this->safety.reset();
+    this->calibration.reset();
     this->type = UNKNOWN;
   };
 };

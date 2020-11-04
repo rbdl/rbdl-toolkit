@@ -85,7 +85,7 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
         material.color.init(c->Attribute("rgba"));
         has_rgb = true;
       }
-      catch (ParseError &e) {  
+      catch (URDFParseError &e) {
         material.color.clear();
         logError(std::string("Material [" + material.name + "] has malformed color rgba values: " + e.what()).c_str());
       }
@@ -145,7 +145,7 @@ bool parseBox(Box &b, TiXmlElement *c)
   {
     b.dim.init(c->Attribute("size"));
   }
-  catch (ParseError &e)
+  catch (URDFParseError &e)
   {
     b.dim.clear();
     logError(e.what());
@@ -211,7 +211,7 @@ bool parseMesh(Mesh &m, TiXmlElement *c)
     try {
       m.scale.init(c->Attribute("scale"));
     }
-    catch (ParseError &e) {
+    catch (URDFParseError &e) {
       m.scale.clear();
       logError("Mesh scale was specified, but could not be parsed: %s", e.what());
       return false;
@@ -456,7 +456,7 @@ bool parseLink(Link &link, TiXmlElement* config)
     }
     else
     {
-      vis.reset(0);
+      vis.reset();
       logError("Could not parse visual element for Link [%s]", link.name.c_str());
       return false;
     }
@@ -478,7 +478,7 @@ bool parseLink(Link &link, TiXmlElement* config)
     }
     else
     {
-      col.reset(0);
+      col.reset();
       logError("Could not parse collision element for Link [%s]",  link.name.c_str());
       return false;
     }

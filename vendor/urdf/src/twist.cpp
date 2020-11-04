@@ -41,7 +41,6 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <tinyxml.h>
-#include <console_bridge/console.h>
 
 namespace urdf{
 
@@ -56,7 +55,7 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
       try {
         twist.linear.init(linear_char);
       }
-      catch (ParseError &e) {
+      catch (URDFParseError &e) {
         twist.linear.clear();
         logError("Malformed linear string [%s]: %s", linear_char, e.what());
         return false;
@@ -69,7 +68,7 @@ bool parseTwist(Twist &twist, TiXmlElement* xml)
       try {
         twist.angular.init(angular_char);
       }
-      catch (ParseError &e) {
+      catch (URDFParseError &e) {
         twist.angular.clear();
         logError("Malformed angular [%s]: %s", angular_char, e.what());
         return false;

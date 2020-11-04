@@ -42,10 +42,10 @@
 namespace urdf
 {
 
-class ParseError: public std::runtime_error
+class URDFParseError: public std::runtime_error
 {
 public:
-  ParseError(const std::string &error_msg) : std::runtime_error(error_msg) {};
+  URDFParseError(const std::string &error_msg) : std::runtime_error(error_msg) {};
 };
 
 }

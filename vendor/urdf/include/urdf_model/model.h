@@ -54,7 +54,7 @@ public:
   {
     my_shared_ptr<const Link> ptr;
     if (this->links_.find(name) == this->links_.end())
-      ptr.reset(0);
+      ptr.reset();
     else
       ptr = this->links_.find(name)->second;
     return ptr;
@@ -64,7 +64,7 @@ public:
   {
     my_shared_ptr<const Joint> ptr;
     if (this->joints_.find(name) == this->joints_.end())
-      ptr.reset(0);
+      ptr.reset();
     else
       ptr = this->joints_.find(name)->second;
     return ptr;
@@ -88,7 +88,7 @@ public:
     this->links_.clear();
     this->joints_.clear();
     this->materials_.clear();
-    this->root_link_.reset(0);
+    this->root_link_.reset();
   };
   
   /// non-const getLink()
@@ -96,7 +96,7 @@ public:
   {
     my_shared_ptr<Link> ptr;
     if (this->links_.find(name) == this->links_.end())
-      ptr.reset(0);
+      ptr.reset();
     else
       ptr = this->links_.find(name)->second;
     link = ptr;
@@ -107,7 +107,7 @@ public:
   {
     my_shared_ptr<Material> ptr;
     if (this->materials_.find(name) == this->materials_.end())
-      ptr.reset(0);
+      ptr.reset();
     else
       ptr = this->materials_.find(name)->second;
     return ptr;
@@ -167,7 +167,7 @@ public:
   
   void initRoot(const std::map<std::string, std::string> &parent_link_tree)
   { 
-    this->root_link_.reset(0);
+    this->root_link_.reset();
     
     // find the links that have no parent in the tree
     for (std::map<std::string, my_shared_ptr<Link> >::const_iterator l=this->links_.begin(); l!=this->links_.end(); l++)  

@@ -41,7 +41,6 @@
 #include <boost/lexical_cast.hpp>
 #include <algorithm>
 #include <tinyxml.h>
-#include <console_bridge/console.h>
 
 namespace urdf{
 
@@ -98,7 +97,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
             joint_state->position.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
           }
           catch (boost::bad_lexical_cast &e) {
-            throw ParseError("position element ("+ pieces[i] +") is not a valid float");
+            throw URDFParseError("position element ("+ pieces[i] +") is not a valid float");
           }
         }
       }
@@ -117,7 +116,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
             joint_state->velocity.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
           }
           catch (boost::bad_lexical_cast &e) {
-            throw ParseError("velocity element ("+ pieces[i] +") is not a valid float");
+            throw URDFParseError("velocity element ("+ pieces[i] +") is not a valid float");
           }
         }
       }
@@ -136,7 +135,7 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
             joint_state->effort.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
           }
           catch (boost::bad_lexical_cast &e) {
-            throw ParseError("effort element ("+ pieces[i] +") is not a valid float");
+            throw URDFParseError("effort element ("+ pieces[i] +") is not a valid float");
           }
         }
       }

@@ -278,7 +278,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
   if (rising_position_str == NULL)
   {
     logDebug("urdfdom.joint_calibration: no rising, using default value");
-    jc.rising.reset(0);
+    jc.rising.reset();
   }
   else
   {
@@ -298,7 +298,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
   if (falling_position_str == NULL)
   {
     logDebug("urdfdom.joint_calibration: no falling, using default value");
-    jc.falling.reset(0);
+    jc.falling.reset();
   }
   else
   {
@@ -477,7 +477,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
         try {
           joint.axis.init(axis_xml->Attribute("xyz"));
         }
-        catch (ParseError &e) {
+        catch (URDFParseError &e) {
           joint.axis.clear();
           logError("Malformed axis element for joint [%s]: %s", joint.name.c_str(), e.what());
           return false;
@@ -494,7 +494,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     if (!parseJointLimits(*joint.limits, limit_xml))
     {
       logError("Could not parse limit element for joint [%s]", joint.name.c_str());
-      joint.limits.reset(0);
+      joint.limits.reset();
       return false;
     }
   }
@@ -517,7 +517,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     if (!parseJointSafety(*joint.safety, safety_xml))
     {
       logError("Could not parse safety element for joint [%s]", joint.name.c_str());
-      joint.safety.reset(0);
+      joint.safety.reset();
       return false;
     }
   }
@@ -530,7 +530,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     if (!parseJointCalibration(*joint.calibration, calibration_xml))
     {
       logError("Could not parse calibration element for joint  [%s]", joint.name.c_str());
-      joint.calibration.reset(0);
+      joint.calibration.reset();
       return false;
     }
   }
@@ -543,7 +543,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     if (!parseJointMimic(*joint.mimic, mimic_xml))
     {
       logError("Could not parse mimic element for joint  [%s]", joint.name.c_str());
-      joint.mimic.reset(0);
+      joint.mimic.reset();
       return false;
     }
   }
@@ -556,7 +556,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     if (!parseJointDynamics(*joint.dynamics, prop_xml))
     {
       logError("Could not parse joint_dynamics element for joint [%s]", joint.name.c_str());
-      joint.dynamics.reset(0);
+      joint.dynamics.reset();
       return false;
     }
   }

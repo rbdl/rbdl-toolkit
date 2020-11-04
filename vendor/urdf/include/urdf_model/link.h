@@ -161,8 +161,8 @@ public:
   {
     origin.clear();
     material_name.clear();
-    material.reset(0);
-    geometry.reset(0);
+    material.reset();
+    geometry.reset();
     name.clear();
   };
 
@@ -179,7 +179,7 @@ public:
   void clear()
   {
     origin.clear();
-    geometry.reset(0);
+    geometry.reset();
     name.clear();
   };
 
@@ -231,10 +231,10 @@ public:
   void clear()
   {
     this->name.clear();
-    this->inertial.reset(0);
-    this->visual.reset(0);
-    this->collision.reset(0);
-    this->parent_joint.reset(0);
+    this->inertial.reset();
+    this->visual.reset();
+    this->collision.reset();
+    this->parent_joint.reset();
     this->child_joints.clear();
     this->child_links.clear();
     this->collision_array.clear();
