@@ -75,9 +75,8 @@ public:
           xyz.push_back(boost::lexical_cast<double>(pieces[i].c_str()));
         }
         catch (boost::bad_lexical_cast &e)
-		{
-			assert(0);
-         // throw ParseError("Unable to parse component [" + pieces[i] + "] to a double (while parsing a vector value)");
+        {
+          throw URDFParseError("Unable to parse component [" + pieces[i] + "] to a double (while parsing a vector value)");
         }
       }
     }
@@ -86,8 +85,7 @@ public:
 	  
   if (xyz.size() != 3)
   {
-	  assert(0);
-	 // throw ParseError("Parser found " + boost::lexical_cast<std::string>(xyz.size())  + " elements but 3 expected while parsing vector [" + vector_str + "]");
+	  throw URDFParseError("Parser found " + boost::lexical_cast<std::string>(xyz.size())  + " elements but 3 expected while parsing vector [" + vector_str + "]");
   }
     this->x = xyz[0];
     this->y = xyz[1];

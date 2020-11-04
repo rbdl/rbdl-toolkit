@@ -12,7 +12,6 @@ SET( URDF_SRCS
   src/link.cpp
   src/model.cpp
   src/pose.cpp
-  src/twist.cpp
   src/urdf_model_state.cpp
   src/urdf_sensor.cpp
   src/world.cpp

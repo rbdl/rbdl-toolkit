@@ -40,8 +40,8 @@
 #include <string>
 #include <vector>
 #include <math.h>
-//#include <boost/algorithm/string.hpp>
-//#include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace urdf
 {

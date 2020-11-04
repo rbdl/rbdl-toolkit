@@ -239,8 +239,8 @@ public:
     this->child_links.clear();
     this->collision_array.clear();
     this->visual_array.clear();
-	this->m_link_index=-1;
-	this->parent_link_ = NULL;
+    this->m_link_index=-1;
+    this->parent_link_ = NULL;
   };
 
 private:

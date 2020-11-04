@@ -82,8 +82,8 @@ public:
   
   void clear()
   {
-	m_numLinks=0;
-	m_numJoints = 0;
+    m_numLinks=0;
+    m_numJoints = 0;
     name_.clear();
     this->links_.clear();
     this->joints_.clear();
@@ -123,29 +123,21 @@ public:
       
       if (parent_link_name.empty() || child_link_name.empty())
       {
-		  assert(0);
-
-      //  throw ParseError("Joint [" + joint->second->name + "] is missing a parent and/or child link specification.");
+        throw URDFParseError("Joint [" + joint->second->name + "] is missing a parent and/or child link specification.");
       }
       else
       {
         // find child and parent links
         my_shared_ptr<Link> child_link, parent_link;
         this->getLink(child_link_name, child_link);
-        if (!child_link)
-        {
-			printf("Error: child link [%s] of joint [%s] not found\n", child_link_name.c_str(),joint->first.c_str() );
-			assert(0);
-//          throw ParseError("child link [" + child_link_name + "] of joint [" + joint->first + "] not found");
+        if (!child_link) {
+          throw URDFParseError("child link [" + child_link_name + "] of joint [" + joint->first + "] not found");
         }
         this->getLink(parent_link_name, parent_link);
         if (!parent_link)
         {
-			assert(0);
-
-/*          throw ParseError("parent link [" + parent_link_name + "] of joint [" + joint->first + "] not found.  This is not valid according to the URDF spec. Every link you refer to from a joint needs to be explicitly defined in the robot description. To fix this problem you can either remove this joint [" + joint->first + "] from your urdf file, or add \"<link name=\"" + parent_link_name + "\" />\" to your urdf file.");
-  
- */}
+          throw URDFParseError("parent link [" + parent_link_name + "] of joint [" + joint->first + "] not found.  This is not valid according to the URDF spec. Every link you refer to from a joint needs to be explicitly defined in the robot description. To fix this problem you can either remove this joint [" + joint->first + "] from your urdf file, or add \"<link name=\"" + parent_link_name + "\" />\" to your urdf file.");
+        }
         
         //set parent link for child link
         child_link->setParent(parent_link);
@@ -183,15 +175,13 @@ public:
         // we already found a root link
         else
         {
-			assert(0);
-      //    throw ParseError("Two root links found: [" + this->root_link_->name + "] and [" + l->first + "]");
+          throw URDFParseError("Two root links found: [" + this->root_link_->name + "] and [" + l->first + "]");
         }
       }
     }
     if (!this->root_link_)
     {
-		assert(0);
-      //throw ParseError("No root link found. The robot xml is not a valid tree.");
+      throw URDFParseError("No root link found. The robot xml is not a valid tree.");
     }
   }
   

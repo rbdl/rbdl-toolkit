@@ -111,7 +111,7 @@ my_shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
   {
     my_shared_ptr<Link> link;
     link.reset(new Link);
-	model->m_numLinks++;
+    model->m_numLinks++;
 
     try {
       parseLink(*link, link_xml);
@@ -172,7 +172,7 @@ my_shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
   {
     my_shared_ptr<Joint> joint;
     joint.reset(new Joint);
-	model->m_numJoints++;
+    model->m_numJoints++;
 
     if (parseJoint(*joint, joint_xml))
     {
