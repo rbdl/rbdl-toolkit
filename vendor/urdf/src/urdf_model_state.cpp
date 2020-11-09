@@ -36,6 +36,7 @@
 
 
 #include <urdf_model_state/model_state.h>
+#include <urdf_model/model.h>
 #include <fstream>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
