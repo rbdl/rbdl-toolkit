@@ -220,7 +220,7 @@ public:
 
   mutable int m_link_index;
 
-  const Link* getParent() const
+  Link* getParent() const
   {return parent_link_;}
 
   void setParent(const my_shared_ptr<Link> &parent)
@@ -245,7 +245,7 @@ public:
 
 private:
 //  boost::weak_ptr<Link> parent_link_;
-	const Link* parent_link_;
+	Link* parent_link_;
 
 };
 
