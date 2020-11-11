@@ -12,6 +12,7 @@
 #include "util.h"
 #include "rbdl_wrapper.h"
 #include "luamodel_wrapper.h"
+#include "urdfmodel_wrapper.h"
 #include "rbdl/rbdl_errors.h"
 
 using namespace RigidBodyDynamics;
@@ -35,7 +36,9 @@ RBDLModelWrapper* RBDLModelWrapper::loadFromFile(QString model_file) {
 
 	if (check_file.suffix() == "lua") {
 		model_wrapper = new LuaModelWrapper();
-	} else {
+	} else if (check_file.suffix() == "urdf") {
+		model_wrapper = new UrdfModelWrapper();
+	}else {
 		throw Errors::RBDLInvalidFileError("The model file you tried to load is not supported!");
 	}
 	model_wrapper->load(check_file.absoluteFilePath());

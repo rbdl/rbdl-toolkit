@@ -149,7 +149,7 @@ void ToolkitApp::action_reload_files() {
 void ToolkitApp::action_load_model() {
 	QFileDialog file_dialog (this, "Select Model File");
 
-	file_dialog.setNameFilter(tr("MeshupModels (*lua)"));
+	file_dialog.setNameFilter(tr("MeshupModels (*lua, *urdf)"));
 	file_dialog.setFileMode(QFileDialog::ExistingFile);
 
 	if (file_dialog.exec()) {
@@ -188,7 +188,7 @@ void ToolkitApp::loadModel(const QString &model_file) {
 	} catch (std::exception& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
-		errorBox.setText(e.what());
+		errorBox.setText(QString("Could not load the model!\n%1").arg(e.what()));
 		errorBox.setStandardButtons(QMessageBox::Cancel);
 		errorBox.setDefaultButton(QMessageBox::Cancel);
 		errorBox.exec();
