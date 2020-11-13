@@ -15,6 +15,10 @@ void UrdfModelWrapper::load(QString model_file) {
 	this->model_file = model_file;
 	auto model_file_info = QFileInfo(model_file);
 
+	auto last_pwd = QDir::currentPath();
+	auto model_pwd = model_file_info.absoluteDir().absolutePath();
+	QDir::setCurrent(model_pwd);
+
 	//loading model into rbdl to check its validity, may throw error
 	rbdl_model = new RigidBodyDynamics::Model();
 	// use try catch after fixing rbdl addon urdf to use exceptions
@@ -42,6 +46,9 @@ void UrdfModelWrapper::load(QString model_file) {
 
 	//construct model from that info
 	build3DEntity(model_info, segments_info);
+
+	//return to original pwd
+	QDir::setCurrent(last_pwd);
 }
 
 ModelInfo UrdfModelWrapper::loadModelInfo() {
@@ -178,6 +185,9 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 				}
 			}
 			std::cout << mesh_file.toStdString() << std::endl;
+			QString msg;
+			QDebug(&msg) << visual_dimentions;
+			std::cout << msg.toStdString() << std::endl;
 			SegmentVisualInfo si = {
 			    segment_name,
 			    mesh_file,
