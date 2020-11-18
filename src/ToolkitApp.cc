@@ -311,7 +311,8 @@ void ToolkitApp::addPlugin(QString plugin_path, bool enable) {
 		if (getPluginLoadSetting(plugin_name).isNull()) {
 			//optional plugins only get loaded if user enables them
 			setPluginLoadSetting(plugin_name, false);
-		} else if ( getPluginLoadSetting(plugin_name).toBool() == true || enable) {
+		}
+		if ( getPluginLoadSetting(plugin_name).toBool() == true || enable) {
 			plugin_action->setChecked(true);
 		}
 	}
