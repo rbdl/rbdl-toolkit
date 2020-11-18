@@ -47,7 +47,7 @@ QString findFile(std::string file, bool absolute) {
 QString findPlugin(QString plugin) {
 	QFileInfo check_file(plugin);
 	if (check_file.exists()) {
-		return plugin;
+		return check_file.absoluteFilePath();
 	}
 
 	QString filename0 = QString("lib%1.so").arg(plugin);
