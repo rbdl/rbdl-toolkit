@@ -35,6 +35,8 @@ void UrdfModelWrapper::load(QString model_file) {
 	                         std::istreambuf_iterator<char>());
 	model_file_stream.close();
 
+	auto urdf_model = urdf::parseURDF(model_xml_string);
+
 	if (!RigidBodyDynamics::Addons::URDFReadFromString(model_xml_string.c_str(), rbdl_model, false)) {
 		throw RigidBodyDynamics::Errors::RBDLFileParseError("Error reading urdf file!");
 	}
@@ -138,7 +140,9 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 			auto visual = l->visual.get();
 
 			auto pos = visual->origin.position;
-			QVector3D mesh_translation = QVector3D(pos.x, pos.y, pos.z);
+			//QVector3D visual_center = QVector3D(pos.x, pos.y, pos.z);
+			QVector3D visual_center = QVector3D(0, 0, 0);
+			QVector3D mesh_translation = QVector3D(0, 0, 0);
 
 			auto rot = visual->origin.rotation;
 			QQuaternion mesh_rotation = QQuaternion(rot.x, rot.y, rot.z, rot.w);
@@ -151,7 +155,6 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 			}
 
 			QString mesh_file;
-			QVector3D visual_center = QVector3D(0, 0, 0);
 			QVector3D visual_dimentions;
 
 			switch (visual->geometry->type) {

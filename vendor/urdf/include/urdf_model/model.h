@@ -39,6 +39,7 @@
 
 #include <string>
 #include <map>
+#include <iostream>
 #include <stdarg.h>
 //#include <boost/function.hpp>
 #include <urdf_model/link.h>
