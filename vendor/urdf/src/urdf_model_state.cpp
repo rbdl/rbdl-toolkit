@@ -45,15 +45,15 @@
 
 namespace urdf{
 
-bool parseModelState(ModelState &ms, TiXmlElement* config)
+void parseModelState(ModelState &ms, TiXmlElement* config)
 {
   ms.clear();
 
   const char *name_char = config->Attribute("name");
   if (!name_char)
   {
-    logError("No name given for the model_state.");
-    return false;
+    std::string error_msg = "No name given for the model_state.";
+    throw URDFParseError(error_msg);
   }
   ms.name = std::string(name_char);
 
@@ -65,8 +65,10 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
       ms.time_stamp.set(sec);
     }
     catch (boost::bad_lexical_cast &e) {
-      logError("Parsing time stamp [%s] failed: %s", time_stamp_char, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing model state time stamp value (" << time_stamp_char
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
@@ -81,8 +83,8 @@ bool parseModelState(ModelState &ms, TiXmlElement* config)
       joint_state->joint = std::string(joint_char);
     else
     {
-      logError("No joint name given for the model_state.");
-      return false;
+      std::string error_msg = "No joint name given for the model_state.";
+      throw URDFParseError(error_msg);
     }
     
     // parse position

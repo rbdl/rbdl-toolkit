@@ -131,6 +131,8 @@ public:
   };
 };
 
+void parseMaterial(Material& m, TiXmlElement *xml, bool);
+
 class Inertial
 {
 public:
@@ -248,6 +250,8 @@ private:
 	Link* parent_link_;
 
 };
+
+void parseLink(Link& link, TiXmlElement *xml);
 
 
 

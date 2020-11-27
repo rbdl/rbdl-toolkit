@@ -48,33 +48,6 @@
 
 namespace urdf {
 
-static std::string messageLog;
-
-template<typename... Args>
-void logError(const char* msg="", Args... args)
-{
-  if (messageLog.empty()) {
-    messageLog.reserve(1000);
-  }
-
-  char buf[1024];
-  snprintf(buf, 1024, msg, args...);
-  messageLog.append(buf);
-  messageLog.append("\n");
-}
-
-template<typename... Args>
-void logDebug(const char* msg="", Args... args)
-{
-  logError(msg, args...);
-}
-
-template<typename... Args>
-void logInform(const char* msg="", Args... args)
-{
-  logError(msg, args...);
-}
-
 class ModelInterface
 {
 public:

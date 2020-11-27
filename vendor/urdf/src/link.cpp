@@ -37,6 +37,7 @@
 
 #include <urdf_parser/urdf_parser.h>
 #include <urdf_model/link.h>
+#include <urdf_model/pose.h>
 //#include <fstream>
 //#include <sstream>
 #include <boost/lexical_cast.hpp>
@@ -47,9 +48,8 @@
 
 namespace urdf{
 
-bool parsePose(Pose &pose, TiXmlElement* xml);
 
-bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_ok)
+void parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_ok)
 {
   bool has_rgb = false;
   bool has_filename = false;
@@ -58,8 +58,9 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
 
   if (!config->Attribute("name"))
   {
-    logError("Material must contain a name attribute");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error! Material without a name attribute detected!";
+    throw URDFParseError(error_msg.str());
   }
   
   material.name = config->Attribute("name");
@@ -86,8 +87,11 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
         has_rgb = true;
       }
       catch (URDFParseError &e) {
-        material.color.clear();
-        logError(std::string("Material [" + material.name + "] has malformed color rgba values: " + e.what()).c_str());
+        std::ostringstream error_msg;
+        error_msg << "Material [" << material.name
+                  << "] has malformed color rgba values: "
+                  << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
   }
@@ -95,24 +99,34 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
   if (!has_rgb && !has_filename) {
     if (!only_name_is_ok) // no need for an error if only name is ok
     {
-      if (!has_rgb) logError(std::string("Material ["+material.name+"] color has no rgba").c_str());
-      if (!has_filename) logError(std::string("Material ["+material.name+"] not defined in file").c_str());
+      std::ostringstream error_msg;
+      error_msg << "Material [" << material.name
+                << "] has neither a texture nor a color defined!";
+      throw URDFParseError(error_msg.str());
     }
-    return false;
   }
-  return true;
+}
+
+const char* getParentLinkName(TiXmlElement *c) {
+  TiXmlElement* e = c->Parent()->ToElement();
+  while(e->Value() != "link" && e->Parent()!=NULL) {
+    e = e->Parent()->ToElement();
+  }
+  return e->Attribute("name");
 }
 
 
-bool parseSphere(Sphere &s, TiXmlElement *c)
+void parseSphere(Sphere &s, TiXmlElement *c)
 {
   s.clear();
 
   s.type = Geometry::SPHERE;
   if (!c->Attribute("radius"))
   {
-    logError("Sphere shape must have a radius attribute");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': Sphere shape must have a radius attribute";
+    throw URDFParseError(error_msg.str());
   }
 
   try
@@ -121,25 +135,25 @@ bool parseSphere(Sphere &s, TiXmlElement *c)
   }
   catch (boost::bad_lexical_cast &e)
   {
-   // std::stringstream stm;
-   // stm << "radius [" << c->Attribute("radius") << "] is not a valid float: " << e.what();
-   // logError(stm.str().c_str());
-      logError("radius issue");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': sphere radius [" << c->Attribute("radius")
+              << "] is not a valid float: " << e.what() << "!";
+    throw URDFParseError(error_msg.str());
   }
-  
-  return true;
 }
 
-bool parseBox(Box &b, TiXmlElement *c)
+void parseBox(Box &b, TiXmlElement *c)
 {
   b.clear();
   
   b.type = Geometry::BOX;
   if (!c->Attribute("size"))
   {
-    logError("Box shape has no size attribute");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': Sphere shape must have a size attribute";
+    throw URDFParseError(error_msg.str());
   }
   try
   {
@@ -147,14 +161,15 @@ bool parseBox(Box &b, TiXmlElement *c)
   }
   catch (URDFParseError &e)
   {
-    b.dim.clear();
-    logError(e.what());
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': box size [" << c->Attribute("size")
+              << "] is not a valid: " << e.what() << "!";
+    throw URDFParseError(error_msg.str());
   }
-  return true;
 }
 
-bool parseCylinder(Cylinder &y, TiXmlElement *c)
+void parseCylinder(Cylinder &y, TiXmlElement *c)
 {
   y.clear();
 
@@ -162,8 +177,10 @@ bool parseCylinder(Cylinder &y, TiXmlElement *c)
   if (!c->Attribute("length") ||
       !c->Attribute("radius"))
   {
-    logError("Cylinder shape must have both length and radius attributes");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': Cylinder shape must have both length and radius attributes!";
+    throw URDFParseError(error_msg.str());
   }
 
   try
@@ -172,11 +189,11 @@ bool parseCylinder(Cylinder &y, TiXmlElement *c)
   }
   catch (boost::bad_lexical_cast &e)
   {
-  //  std::stringstream stm;
-   // stm << "length [" << c->Attribute("length") << "] is not a valid float";
-    //logError(stm.str().c_str());
-      logError("length");
-      return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': cylinder length [" << c->Attribute("length")
+              << "] is not a valid float: " << e.what() << "!";
+    throw URDFParseError(error_msg.str());
   }
 
   try
@@ -185,24 +202,25 @@ bool parseCylinder(Cylinder &y, TiXmlElement *c)
   }
   catch (boost::bad_lexical_cast &e)
   {
- //   std::stringstream stm;
-   // stm << "radius [" << c->Attribute("radius") << "] is not a valid float";
-    //logError(stm.str().c_str());
-      logError("radius");
-      return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "': cylinder radius [" << c->Attribute("radius")
+              << "] is not a valid float: " << e.what() << "!";
+    throw URDFParseError(error_msg.str());
   }
-  return true;
 }
 
 
-bool parseMesh(Mesh &m, TiXmlElement *c)
+void parseMesh(Mesh &m, TiXmlElement *c)
 {
   m.clear();
 
   m.type = Geometry::MESH;
   if (!c->Attribute("filename")) {
-    logError("Mesh must contain a filename attribute");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(c)
+              << "Mesh must contain a filename attribute!";
+    throw URDFParseError(error_msg.str());
   }
 
   m.filename = c->Attribute("filename");
@@ -212,16 +230,18 @@ bool parseMesh(Mesh &m, TiXmlElement *c)
       m.scale.init(c->Attribute("scale"));
     }
     catch (URDFParseError &e) {
-      m.scale.clear();
-      logError("Mesh scale was specified, but could not be parsed: %s", e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing link '" << getParentLinkName(c)
+                << "': mesh scale [" << c->Attribute("scale")
+                << "] is not a valid: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
   else
   {
+    // if not defined use unit scaling
     m.scale.x = m.scale.y = m.scale.z = 1;
   }
-  return true;
 }
 
 my_shared_ptr<Geometry> parseGeometry(TiXmlElement *g)
@@ -232,8 +252,10 @@ my_shared_ptr<Geometry> parseGeometry(TiXmlElement *g)
   TiXmlElement *shape = g->FirstChildElement();
   if (!shape)
   {
-    logError("Geometry tag contains no child element.");
-    return geom;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(g)
+              << "' geometry does not contain any shape information!";
+    throw URDFParseError(error_msg.str());
   }
 
   const std::string type_name = shape->ValueTStr().c_str();
@@ -241,40 +263,42 @@ my_shared_ptr<Geometry> parseGeometry(TiXmlElement *g)
   {
     Sphere *s = new Sphere();
     geom.reset(s);
-    if (parseSphere(*s, shape))
-      return geom;
+    parseSphere(*s, shape);
+    return geom;
   }
   else if (type_name == "box")
   {
     Box *b = new Box();
     geom.reset(b);
-    if (parseBox(*b, shape))
-      return geom;
+    parseBox(*b, shape);
+    return geom;
   }
   else if (type_name == "cylinder")
   {
     Cylinder *c = new Cylinder();
     geom.reset(c);
-    if (parseCylinder(*c, shape))
-      return geom;
+    parseCylinder(*c, shape);
+    return geom;
   }
   else if (type_name == "mesh")
   {
     Mesh *m = new Mesh();
     geom.reset(m);
-    if (parseMesh(*m, shape))
-      return geom;    
+    parseMesh(*m, shape);
+    return geom;
   }
   else
   {
-    logError("Unknown geometry type '%s'", type_name.c_str());
-    return geom;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(g)
+              << "' unknown shape type '" << type_name << "'!";
+    throw URDFParseError(error_msg.str());
   }
   
   return my_shared_ptr<Geometry>();
 }
 
-bool parseInertial(Inertial &i, TiXmlElement *config)
+void parseInertial(Inertial &i, TiXmlElement *config)
 {
   i.clear();
 
@@ -282,20 +306,24 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
   TiXmlElement *o = config->FirstChildElement("origin");
   if (o)
   {
-    if (!parsePose(i.origin, o))
-      return false;
+    parsePose(i.origin, o);
   }
 
   TiXmlElement *mass_xml = config->FirstChildElement("mass");
   if (!mass_xml)
   {
-    logError("Inertial element must have a mass element");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(config)
+              << "' inertial element must have a <mass> element!";
+    throw URDFParseError(error_msg.str());
   }
+
   if (!mass_xml->Attribute("value"))
   {
-    logError("Inertial: mass element must have value attribute");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(config)
+              << "' <mass> element must have a value attribute!";
+    throw URDFParseError(error_msg.str());
   }
 
   try
@@ -304,26 +332,29 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
   }
   catch (boost::bad_lexical_cast &e)
   {
-  //  std::stringstream stm;
-   // stm << "Inertial: mass [" << mass_xml->Attribute("value")
-    //    << "] is not a float";
-    //logError(stm.str().c_str());
-      logError("Inertial mass issue");
-      return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(config)
+              << "': inertial mass [" << mass_xml->Attribute("value")
+              << "] is not a valid double: " << e.what() << "!";
+    throw URDFParseError(error_msg.str());
   }
 
   TiXmlElement *inertia_xml = config->FirstChildElement("inertia");
   if (!inertia_xml)
   {
-    logError("Inertial element must have inertia element");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(config)
+              << "' inertial element must have a <inertia> element!";
+    throw URDFParseError(error_msg.str());
   }
   if (!(inertia_xml->Attribute("ixx") && inertia_xml->Attribute("ixy") && inertia_xml->Attribute("ixz") &&
         inertia_xml->Attribute("iyy") && inertia_xml->Attribute("iyz") &&
         inertia_xml->Attribute("izz")))
   {
-    logError("Inertial: inertia element must have ixx,ixy,ixz,iyy,iyz,izz attributes");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(config)
+              << "' <inertia> element must have ixx,ixy,ixz,iyy,iyz,izz attributes!";
+    throw URDFParseError(error_msg.str());
   }
   try
   {
@@ -336,39 +367,43 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
   }
   catch (boost::bad_lexical_cast &e)
   {
-   /* std::stringstream stm;
-    stm << "Inertial: one of the inertia elements is not a valid double:"
-        << " ixx [" << inertia_xml->Attribute("ixx") << "]"
-        << " ixy [" << inertia_xml->Attribute("ixy") << "]"
-        << " ixz [" << inertia_xml->Attribute("ixz") << "]"
-        << " iyy [" << inertia_xml->Attribute("iyy") << "]"
-        << " iyz [" << inertia_xml->Attribute("iyz") << "]"
-        << " izz [" << inertia_xml->Attribute("izz") << "]";
-    logError(stm.str().c_str());
-    */
-      logError("Inertia error");
-      
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing link '" << getParentLinkName(config)
+              << "Inertial: one of the inertia elements is not a valid double:"
+              << " ixx [" << inertia_xml->Attribute("ixx") << "]"
+              << " ixy [" << inertia_xml->Attribute("ixy") << "]"
+              << " ixz [" << inertia_xml->Attribute("ixz") << "]"
+              << " iyy [" << inertia_xml->Attribute("iyy") << "]"
+              << " iyz [" << inertia_xml->Attribute("iyz") << "]"
+              << " izz [" << inertia_xml->Attribute("izz") << "]\n\n"
+              << e.what();
+    throw URDFParseError(error_msg.str());
   }
-  return true;
 }
 
-bool parseVisual(Visual &vis, TiXmlElement *config)
+void parseVisual(Visual &vis, TiXmlElement *config)
 {
   vis.clear();
 
   // Origin
   TiXmlElement *o = config->FirstChildElement("origin");
   if (o) {
-    if (!parsePose(vis.origin, o))
-      return false;
+    try {
+      parsePose(vis.origin, o);
+    } catch (URDFParseError& e) {
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing link '" << getParentLinkName(config)
+                << "': visual origin is not a valid: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
+    }
+  } else {
+    // no origin specified assuming (0, 0, 0)
+    vis.origin.clear();
   }
 
   // Geometry
   TiXmlElement *geom = config->FirstChildElement("geometry");
   vis.geometry = parseGeometry(geom);
-  if (!vis.geometry)
-    return false;
 
   const char *name_char = config->Attribute("name");
   if (name_char)
@@ -379,47 +414,47 @@ bool parseVisual(Visual &vis, TiXmlElement *config)
   if (mat) {
     // get material name
     if (!mat->Attribute("name")) {
-      logError("Visual material must contain a name attribute");
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing link '" << getParentLinkName(config)
+                << "': visual material must contain a name attribute!";
+      throw URDFParseError(error_msg.str());
     }
     vis.material_name = mat->Attribute("name");
     
     // try to parse material element in place
     vis.material.reset(new Material());
-    if (!parseMaterial(*vis.material, mat, true))
-    {
-      logDebug("urdfdom: material has only name, actual material definition may be in the model");
-    }
+    parseMaterial(*vis.material, mat, true);
   }
-  
-  return true;
 }
 
-bool parseCollision(Collision &col, TiXmlElement* config)
+void parseCollision(Collision &col, TiXmlElement* config)
 {  
   col.clear();
 
   // Origin
   TiXmlElement *o = config->FirstChildElement("origin");
   if (o) {
-    if (!parsePose(col.origin, o))
-      return false;
+    try {
+      parsePose(col.origin, o);
+    } catch (URDFParseError& e) {
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing link '" << getParentLinkName(config)
+                << "': collision origin is not a valid: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
+    }
   }
   
   // Geometry
   TiXmlElement *geom = config->FirstChildElement("geometry");
   col.geometry = parseGeometry(geom);
-  if (!col.geometry)
-    return false;
 
   const char *name_char = config->Attribute("name");
   if (name_char)
     col.name = name_char;
 
-  return true;
 }
 
-bool parseLink(Link &link, TiXmlElement* config)
+void parseLink(Link &link, TiXmlElement* config)
 {
   
   link.clear();
@@ -427,8 +462,9 @@ bool parseLink(Link &link, TiXmlElement* config)
   const char *name_char = config->Attribute("name");
   if (!name_char)
   {
-    logError("No name given for the link.");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error! Link without a name attribute detected!";
+    throw URDFParseError(error_msg.str());
   }
   link.name = std::string(name_char);
 
@@ -437,11 +473,7 @@ bool parseLink(Link &link, TiXmlElement* config)
   if (i)
   {
     link.inertial.reset(new Inertial());
-    if (!parseInertial(*link.inertial, i))
-    {
-      logError("Could not parse inertial element for Link [%s]", link.name.c_str());
-      return false;
-    }
+    parseInertial(*link.inertial, i);
   }
 
   // Multiple Visuals (optional)
@@ -450,16 +482,8 @@ bool parseLink(Link &link, TiXmlElement* config)
 
     my_shared_ptr<Visual> vis;
     vis.reset(new Visual());
-    if (parseVisual(*vis, vis_xml))
-    {
-      link.visual_array.push_back(vis);
-    }
-    else
-    {
-      vis.reset();
-      logError("Could not parse visual element for Link [%s]", link.name.c_str());
-      return false;
-    }
+    parseVisual(*vis, vis_xml);
+    link.visual_array.push_back(vis);
   }
 
   // Visual (optional)
@@ -472,24 +496,14 @@ bool parseLink(Link &link, TiXmlElement* config)
   {
     my_shared_ptr<Collision> col;
     col.reset(new Collision());
-    if (parseCollision(*col, col_xml))
-    {      
-      link.collision_array.push_back(col);
-    }
-    else
-    {
-      col.reset();
-      logError("Could not parse collision element for Link [%s]",  link.name.c_str());
-      return false;
-    }
+    parseCollision(*col, col_xml);
+    link.collision_array.push_back(col);
   }
   
   // Collision (optional)  
   // Assign the first collision to the .collision ptr, if it exists
   if (!link.collision_array.empty())
     link.collision = link.collision_array[0];
-  return true;
-
 }
 
 }

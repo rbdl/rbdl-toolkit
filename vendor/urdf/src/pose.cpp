@@ -49,7 +49,7 @@
 
 namespace urdf{
 
-bool parsePose(Pose &pose, TiXmlElement* xml)
+void parsePose(Pose &pose, TiXmlElement* xml)
 {
   pose.clear();
   if (xml)
@@ -57,28 +57,15 @@ bool parsePose(Pose &pose, TiXmlElement* xml)
     const char* xyz_str = xml->Attribute("xyz");
     if (xyz_str != NULL)
     {
-      try {
-        pose.position.init(xyz_str);
-      }
-      catch (URDFParseError &e) {
-        logError(e.what());
-        return false;
-      }
+      pose.position.init(xyz_str);
     }
 
     const char* rpy_str = xml->Attribute("rpy");
     if (rpy_str != NULL)
     {
-      try {
-        pose.rotation.init(rpy_str);
-      }
-      catch (URDFParseError &e) {
-        logError(e.what());
-        return false;
-      }
+      pose.rotation.init(rpy_str);
     }
   }
-  return true;
 }
 
 

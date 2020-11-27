@@ -45,9 +45,8 @@
 
 namespace urdf{
 
-bool parsePose(Pose &pose, TiXmlElement* xml);
 
-bool parseCamera(Camera &camera, TiXmlElement* config)
+void parseCamera(Camera &camera, TiXmlElement* config)
 {
   camera.clear();
   camera.type = VisualSensor::CAMERA;
@@ -64,14 +63,16 @@ bool parseCamera(Camera &camera, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Camera image width [%s] is not a valid int: %s", width_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing camera width attribute value (" << width_char
+                  << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
     else
     {
-      logError("Camera sensor needs an image width attribute");
-      return false;
+      std::string error_msg = "Camera sensor needs an image width attribute";
+      throw URDFParseError(error_msg);
     }
 
     const char* height_char = image->Attribute("height");
@@ -83,14 +84,16 @@ bool parseCamera(Camera &camera, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Camera image height [%s] is not a valid int: %s", height_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing camera height attribute value (" << height_char
+                  << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
     else
     {
-      logError("Camera sensor needs an image height attribute");
-      return false;
+      std::string error_msg = "Camera sensor needs an image height attribute";
+      throw URDFParseError(error_msg);
     }
 
     const char* format_char = image->Attribute("format");
@@ -98,9 +101,9 @@ bool parseCamera(Camera &camera, TiXmlElement* config)
       camera.format = std::string(format_char);
     else
     {
-      logError("Camera sensor needs an image format attribute");
-      return false;
-    }    
+      std::string error_msg = "Camera sensor needs an image format attribute";
+      throw URDFParseError(error_msg);
+    }
 
     const char* hfov_char = image->Attribute("hfov");
     if (hfov_char)
@@ -111,14 +114,16 @@ bool parseCamera(Camera &camera, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Camera image hfov [%s] is not a valid float: %s", hfov_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing camera hfov attribute value (" << hfov_char
+                  << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
     else
     {
-      logError("Camera sensor needs an image hfov attribute");
-      return false;
+      std::string error_msg = "Camera sensor needs an image hfov attribute";
+      throw URDFParseError(error_msg);
     }
 
     const char* near_char = image->Attribute("near");
@@ -130,14 +135,16 @@ bool parseCamera(Camera &camera, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Camera image near [%s] is not a valid float: %s", near_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing camera near attribute value (" << near_char
+                  << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
     else
     {
-      logError("Camera sensor needs an image near attribute");
-      return false;
+      std::string error_msg = "Camera sensor needs an image near attribute";
+      throw URDFParseError(error_msg);
     }
 
     const char* far_char = image->Attribute("far");
@@ -149,26 +156,27 @@ bool parseCamera(Camera &camera, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Camera image far [%s] is not a valid float: %s", far_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing camera far attribute value (" << far_char
+                  << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
     else
     {
-      logError("Camera sensor needs an image far attribute");
-      return false;
+      std::string error_msg = "Camera sensor needs an image far attribute";
+      throw URDFParseError(error_msg);
     }
     
   }
   else
   {
-    logError("Camera sensor has no <image> element");
-    return false;
+    std::string error_msg = "Camera sensor has no <image> element!";
+    throw URDFParseError(error_msg);
   }
-  return true;
 }
 
-bool parseRay(Ray &ray, TiXmlElement* config)
+void parseRay(Ray &ray, TiXmlElement* config)
 {
   ray.clear();
   ray.type = VisualSensor::RAY;
@@ -185,8 +193,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray horizontal samples [%s] is not a valid float: %s", samples_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray horizontal samples attribute value ("
+                  << samples_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
 
@@ -199,8 +209,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray horizontal resolution [%s] is not a valid float: %s", resolution_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray horizontal resolution attribute value ("
+                  << resolution_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }   
     
@@ -213,8 +225,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray horizontal min_angle [%s] is not a valid float: %s", min_angle_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray horizontal min_angle attribute value ("
+                  << min_angle_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
 
@@ -227,8 +241,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray horizontal max_angle [%s] is not a valid float: %s", max_angle_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray horizontal max_angle attribute value ("
+                  << max_angle_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
   }
@@ -245,8 +261,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray vertical samples [%s] is not a valid float: %s", samples_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray vertical samples attribute value ("
+                  << samples_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
 
@@ -259,8 +277,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray vertical resolution [%s] is not a valid float: %s", resolution_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray vertical resolution attribute value ("
+                  << resolution_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }   
     
@@ -273,8 +293,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray vertical min_angle [%s] is not a valid float: %s", min_angle_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray vertical min_angle attribute value ("
+                  << min_angle_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
 
@@ -287,8 +309,10 @@ bool parseRay(Ray &ray, TiXmlElement* config)
       }
       catch (boost::bad_lexical_cast &e)
       {
-        logError("Ray vertical max_angle [%s] is not a valid float: %s", max_angle_char, e.what());
-        return false;
+        std::ostringstream error_msg;
+        error_msg << "Error while parsing ray vertical max_angle attribute value ("
+                  << max_angle_char << ") is not a float: " << e.what() << "!";
+        throw URDFParseError(error_msg.str());
       }
     }
   }
@@ -305,34 +329,28 @@ boost::shared_ptr<VisualSensor> parseVisualSensor(TiXmlElement *g)
     Camera *camera = new Camera();
     visual_sensor.reset(camera);
     sensor_xml = g->FirstChildElement("camera");
-    if (!parseCamera(*camera, sensor_xml))
-      visual_sensor.reset();
+    parseCamera(*camera, sensor_xml);
   }
   else if (g->FirstChildElement("ray"))
   {
     Ray *ray = new Ray();
     visual_sensor.reset(ray);
     sensor_xml = g->FirstChildElement("ray");
-    if (!parseRay(*ray, sensor_xml))
-      visual_sensor.reset();
-  }
-  else
-  {
-    logError("No know sensor types [camera|ray] defined in <sensor> block");
+    parseRay(*ray, sensor_xml);
   }
   return visual_sensor;
 }
 
 
-bool parseSensor(Sensor &sensor, TiXmlElement* config)
+void parseSensor(Sensor &sensor, TiXmlElement* config)
 {
   sensor.clear();
 
   const char *name_char = config->Attribute("name");
   if (!name_char)
   {
-    logError("No name given for the sensor.");
-    return false;
+    std::string error_msg = "No name given for the sensor.";
+    throw URDFParseError(error_msg);
   }
   sensor.name = std::string(name_char);
 
@@ -340,8 +358,8 @@ bool parseSensor(Sensor &sensor, TiXmlElement* config)
   const char *parent_link_name_char = config->Attribute("parent_link_name");
   if (!parent_link_name_char)
   {
-    logError("No parent_link_name given for the sensor.");
-    return false;
+    std::string error_msg = "No parent_link_name given for the sensor.";
+    throw URDFParseError(error_msg);
   }
   sensor.parent_link_name = std::string(parent_link_name_char);
 
@@ -349,15 +367,12 @@ bool parseSensor(Sensor &sensor, TiXmlElement* config)
   TiXmlElement *o = config->FirstChildElement("origin");
   if (o)
   {
-    if (!parsePose(sensor.origin, o))
-      return false;
+    parsePose(sensor.origin, o);
   }
 
   // parse sensor
   sensor.sensor = parseVisualSensor(config);
-  return true;
 }
-
 
 }
 

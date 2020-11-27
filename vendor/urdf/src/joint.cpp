@@ -46,16 +46,19 @@
 
 namespace urdf{
 
-bool parsePose(Pose &pose, TiXmlElement* xml);
+const char* getJointName(TiXmlElement* xml) {
+  // this should always be set since we check for the joint name in parseJoint already
+  return ((TiXmlElement*)xml->Parent())->Attribute("name");
+}
 
-bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
+void parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
 {
   jd.clear();
 
   // Get joint damping
   const char* damping_str = config->Attribute("damping");
   if (damping_str == NULL){
-    logDebug("urdfdom.joint_dynamics: no damping, defaults to 0");
+    //urdfdom.joint_dynamics: no damping, defaults to 0
     jd.damping = 0;
   }
   else
@@ -66,15 +69,18 @@ bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("damping value (%s) is not a float: %s",damping_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "': dynamics damping value (" << damping_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
   // Get joint friction
   const char* friction_str = config->Attribute("friction");
   if (friction_str == NULL){
-    logDebug("urdfdom.joint_dynamics: no friction, defaults to 0");
+    //urdfdom.joint_dynamics: no friction, defaults to 0
     jd.friction = 0;
   }
   else
@@ -85,30 +91,31 @@ bool parseJointDynamics(JointDynamics &jd, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("friction value (%s) is not a float: %s",friction_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "': dynamics friction value (" << friction_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
   if (damping_str == NULL && friction_str == NULL)
   {
-    logError("joint dynamics element specified with no damping and no friction");
-    return false;
-  }
-  else{
-    logDebug("urdfdom.joint_dynamics: damping %f and friction %f", jd.damping, jd.friction);
-    return true;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing joint '" << getJointName(config)
+              << "': joint dynamics element specified with no damping and no friction!";
+    throw URDFParseError(error_msg.str());
   }
 }
 
-bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
+void parseJointLimits(JointLimits &jl, TiXmlElement* config)
 {
   jl.clear();
 
   // Get lower joint limit
   const char* lower_str = config->Attribute("lower");
   if (lower_str == NULL){
-    logDebug("urdfdom.joint_limit: no lower, defaults to 0");
+    // urdfdom.joint_limit: no lower, defaults to 0;
     jl.lower = 0;
   }
   else
@@ -119,15 +126,18 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("lower value (%s) is not a float: %s", lower_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "': limits lower value (" << lower_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
   // Get upper joint limit
   const char* upper_str = config->Attribute("upper");
   if (upper_str == NULL){
-    logDebug("urdfdom.joint_limit: no upper, , defaults to 0");
+    //urdfdom.joint_limit: no upper, , defaults to 0;
     jl.upper = 0;
   }
   else
@@ -138,16 +148,21 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("upper value (%s) is not a float: %s",upper_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "': limits upper value (" << upper_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
   // Get joint effort limit
   const char* effort_str = config->Attribute("effort");
   if (effort_str == NULL){
-    logError("joint limit: no effort");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing joint '" << getJointName(config)
+              << "' joint limit: no effort!";
+    throw URDFParseError(error_msg.str());
   }
   else
   {
@@ -157,16 +172,21 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("effort value (%s) is not a float: %s",effort_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' limits effort value (" << effort_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
   // Get joint velocity limit
   const char* velocity_str = config->Attribute("velocity");
   if (velocity_str == NULL){
-    logError("joint limit: no velocity");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing joint '" << getJointName(config)
+              << "' joint limit: no velocity!";
+    throw URDFParseError(error_msg.str());
   }
   else
   {
@@ -176,15 +196,16 @@ bool parseJointLimits(JointLimits &jl, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("velocity value (%s) is not a float: %s",velocity_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' limits velocity value (" << velocity_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
-
-  return true;
 }
 
-bool parseJointSafety(JointSafety &js, TiXmlElement* config)
+void parseJointSafety(JointSafety &js, TiXmlElement* config)
 {
   js.clear();
 
@@ -192,7 +213,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
   const char* soft_lower_limit_str = config->Attribute("soft_lower_limit");
   if (soft_lower_limit_str == NULL)
   {
-    logDebug("urdfdom.joint_safety: no soft_lower_limit, using default value");
+    //urdfdom.joint_safety: no soft_lower_limit, using default value
     js.soft_lower_limit = 0;
   }
   else
@@ -203,8 +224,11 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("soft_lower_limit value (%s) is not a float: %s",soft_lower_limit_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' safety soft_lower_limit value (" << soft_lower_limit_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
@@ -212,7 +236,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
   const char* soft_upper_limit_str = config->Attribute("soft_upper_limit");
   if (soft_upper_limit_str == NULL)
   {
-    logDebug("urdfdom.joint_safety: no soft_upper_limit, using default value");
+    //urdfdom.joint_safety: no soft_upper_limit, using default value
     js.soft_upper_limit = 0;
   }
   else
@@ -223,8 +247,11 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("soft_upper_limit value (%s) is not a float: %s",soft_upper_limit_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' safety soft_upper_limit value (" << soft_upper_limit_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
@@ -232,7 +259,7 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
   const char* k_position_str = config->Attribute("k_position");
   if (k_position_str == NULL)
   {
-    logDebug("urdfdom.joint_safety: no k_position, using default value");
+    //urdfdom.joint_safety: no k_position, using default value
     js.k_position = 0;
   }
   else
@@ -243,16 +270,21 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("k_position value (%s) is not a float: %s",k_position_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' safety k_position value (" << k_position_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
   // Get k_velocity_ safety velocity gain
   const char* k_velocity_str = config->Attribute("k_velocity");
   if (k_velocity_str == NULL)
   {
-    logError("joint safety: no k_velocity");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing joint '" << getJointName(config)
+              << "' joint safety no k_velocity !";
+    throw URDFParseError(error_msg.str());
   }
   else
   {
@@ -262,15 +294,16 @@ bool parseJointSafety(JointSafety &js, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("k_velocity value (%s) is not a float: %s",k_velocity_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' safety k_velocity value (" << k_velocity_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
-
-  return true;
 }
 
-bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
+void parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
 {
   jc.clear();
 
@@ -278,7 +311,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
   const char* rising_position_str = config->Attribute("rising");
   if (rising_position_str == NULL)
   {
-    logDebug("urdfdom.joint_calibration: no rising, using default value");
+    //urdfdom.joint_calibration: no rising, using default value
     jc.rising.reset();
   }
   else
@@ -289,8 +322,11 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("risingvalue (%s) is not a float: %s",rising_position_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' calibration rising_position value (" << rising_position_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
@@ -298,7 +334,7 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
   const char* falling_position_str = config->Attribute("falling");
   if (falling_position_str == NULL)
   {
-    logDebug("urdfdom.joint_calibration: no falling, using default value");
+    //urdfdom.joint_calibration: no falling, using default value
     jc.falling.reset();
   }
   else
@@ -309,15 +345,16 @@ bool parseJointCalibration(JointCalibration &jc, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("fallingvalue (%s) is not a float: %s",falling_position_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' calibration falling_position value (" << falling_position_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
-
-  return true;
 }
 
-bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
+void parseJointMimic(JointMimic &jm, TiXmlElement* config)
 {
   jm.clear();
 
@@ -326,8 +363,10 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
 
   if (joint_name_str == NULL)
   {
-    logError("joint mimic: no mimic joint specified");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing joint '" << getJointName(config)
+              << "joint mimic: no mimic joint specified!";
+    throw URDFParseError(error_msg.str());
   }
   else
     jm.joint_name = joint_name_str;
@@ -337,7 +376,7 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
 
   if (multiplier_str == NULL)
   {
-    logDebug("urdfdom.joint_mimic: no multiplier, using default value of 1");
+    //urdfdom.joint_mimic: no multiplier, using default value of 1
     jm.multiplier = 1;    
   }
   else
@@ -348,8 +387,11 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("multiplier value (%s) is not a float: %s",multiplier_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' mimic multiplier value (" << multiplier_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
@@ -358,7 +400,7 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
   const char* offset_str = config->Attribute("offset");
   if (offset_str == NULL)
   {
-    logDebug("urdfdom.joint_mimic: no offset, using default value of 0");
+    //urdfdom.joint_mimic: no offset, using default value of 0
     jm.offset = 0;
   }
   else
@@ -369,15 +411,16 @@ bool parseJointMimic(JointMimic &jm, TiXmlElement* config)
     }
     catch (boost::bad_lexical_cast &e)
     {
-      logError("offset value (%s) is not a float: %s",offset_str, e.what());
-      return false;
+      std::ostringstream error_msg;
+      error_msg << "Error while parsing joint '" << getJointName(config)
+                << "' mimic offset value (" << offset_str
+                << ") is not a float: " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
-
-  return true;
 }
 
-bool parseJoint(Joint &joint, TiXmlElement* config)
+void parseJoint(Joint &joint, TiXmlElement* config)
 {
   joint.clear();
 
@@ -385,8 +428,9 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   const char *name = config->Attribute("name");
   if (!name)
   {
-    logError("unnamed joint found");
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error while parsing model: unnamed joint found!";
+    throw URDFParseError(error_msg.str());
   }
   joint.name = name;
 
@@ -394,16 +438,19 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   TiXmlElement *origin_xml = config->FirstChildElement("origin");
   if (!origin_xml)
   {
-    logDebug("urdfdom: Joint [%s] missing origin tag under parent describing transform from Parent Link to Joint Frame, (using Identity transform).", joint.name.c_str());
+    //urdfdom: Joint missing origin tag under parent describing transform
+    //from Parent Link to Joint Frame, (using Identity transform)
     joint.parent_to_joint_origin_transform.clear();
   }
   else
   {
-    if (!parsePose(joint.parent_to_joint_origin_transform, origin_xml))
-    {
-      joint.parent_to_joint_origin_transform.clear();
-      logError("Malformed parent origin element for joint [%s]", joint.name.c_str());
-      return false;
+    try {
+      parsePose(joint.parent_to_joint_origin_transform, origin_xml);
+    } catch (urdf::URDFParseError& e) {
+      std::ostringstream error_msg;
+      error_msg << "Error! Malformed parent origin element for joint '" <<joint.name
+                << "': " << e.what() << "!";
+      throw URDFParseError(error_msg.str());
     }
   }
 
@@ -414,7 +461,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     const char *pname = parent_xml->Attribute("link");
     if (!pname)
     {
-      logInform("no parent link name specified for Joint link [%s]. this might be the root?", joint.name.c_str());
+      //no parent link name specified for Joint link. this might be the root?
     }
     else
     {
@@ -429,7 +476,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     const char *pname = child_xml->Attribute("link");
     if (!pname)
     {
-      logInform("no child link name specified for Joint link [%s].", joint.name.c_str());
+      //no child link name specified for Joint link
     }
     else
     {
@@ -441,8 +488,10 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   const char* type_char = config->Attribute("type");
   if (!type_char)
   {
-    logError("joint [%s] has no type, check to see if it's a reference.", joint.name.c_str());
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error! Joint " << joint.name
+              <<" has no type, check to see if it's a reference.";
+    throw URDFParseError(error_msg.str());
   }
   
   std::string type_str = type_char;
@@ -460,8 +509,10 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     joint.type = Joint::FIXED;
   else
   {
-    logError("Joint [%s] has no known type [%s]", joint.name.c_str(), type_str.c_str());
-    return false;
+    std::ostringstream error_msg;
+    error_msg << "Error! Joint '" << joint.name
+              <<"' has unknown type (" << type_str << ")!";
+    throw URDFParseError(error_msg.str());
   }
 
   // Get Joint Axis
@@ -470,7 +521,8 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
     // axis
     TiXmlElement *axis_xml = config->FirstChildElement("axis");
     if (!axis_xml){
-      logDebug("urdfdom: no axis elemement for Joint link [%s], defaulting to (1,0,0) axis", joint.name.c_str());
+      //urdfdom: no axis elemement for joint
+      //defaulting to (1,0,0) axis
       joint.axis = Vector3(1.0, 0.0, 0.0);
     }
     else{
@@ -479,9 +531,10 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
           joint.axis.init(axis_xml->Attribute("xyz"));
         }
         catch (URDFParseError &e) {
-          joint.axis.clear();
-          logError("Malformed axis element for joint [%s]: %s", joint.name.c_str(), e.what());
-          return false;
+          std::ostringstream error_msg;
+          error_msg << "Error! Malformed axis element for joint ["<< joint.name
+                    <<"]: " << e.what();
+          throw URDFParseError(error_msg.str());
         }
       }
     }
@@ -492,22 +545,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   if (limit_xml)
   {
     joint.limits.reset(new JointLimits());
-    if (!parseJointLimits(*joint.limits, limit_xml))
-    {
-      logError("Could not parse limit element for joint [%s]", joint.name.c_str());
-      joint.limits.reset();
-      return false;
-    }
-  }
-  else if (joint.type == Joint::REVOLUTE)
-  {
-    logError("Joint [%s] is of type REVOLUTE but it does not specify limits", joint.name.c_str());
-    return false;
-  }
-  else if (joint.type == Joint::PRISMATIC)
-  {
-    logError("Joint [%s] is of type PRISMATIC without limits", joint.name.c_str()); 
-    return false;
+    parseJointLimits(*joint.limits, limit_xml);
   }
 
   // Get safety
@@ -515,12 +553,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   if (safety_xml)
   {
     joint.safety.reset(new JointSafety());
-    if (!parseJointSafety(*joint.safety, safety_xml))
-    {
-      logError("Could not parse safety element for joint [%s]", joint.name.c_str());
-      joint.safety.reset();
-      return false;
-    }
+    parseJointSafety(*joint.safety, safety_xml);
   }
 
   // Get calibration
@@ -528,12 +561,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   if (calibration_xml)
   {
     joint.calibration.reset(new JointCalibration());
-    if (!parseJointCalibration(*joint.calibration, calibration_xml))
-    {
-      logError("Could not parse calibration element for joint  [%s]", joint.name.c_str());
-      joint.calibration.reset();
-      return false;
-    }
+    parseJointCalibration(*joint.calibration, calibration_xml);
   }
 
   // Get Joint Mimic
@@ -541,12 +569,7 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   if (mimic_xml)
   {
     joint.mimic.reset(new JointMimic());
-    if (!parseJointMimic(*joint.mimic, mimic_xml))
-    {
-      logError("Could not parse mimic element for joint  [%s]", joint.name.c_str());
-      joint.mimic.reset();
-      return false;
-    }
+    parseJointMimic(*joint.mimic, mimic_xml);
   }
 
   // Get Dynamics
@@ -554,18 +577,9 @@ bool parseJoint(Joint &joint, TiXmlElement* config)
   if (prop_xml)
   {
     joint.dynamics.reset(new JointDynamics());
-    if (!parseJointDynamics(*joint.dynamics, prop_xml))
-    {
-      logError("Could not parse joint_dynamics element for joint [%s]", joint.name.c_str());
-      joint.dynamics.reset();
-      return false;
-    }
+    parseJointDynamics(*joint.dynamics, prop_xml);
   }
-
-  return true;
 }
 
-
-
-
+// end namespace urdf
 }

@@ -44,6 +44,7 @@
 #define my_shared_ptr boost::shared_ptr
 
 #include <urdf_model/pose.h>
+#include <tinyxml/tinyxml.h>
 
 
 namespace urdf{
@@ -164,7 +165,6 @@ public:
   };
 };
 
-
 class Joint
 {
 public:
@@ -225,6 +225,8 @@ public:
     this->type = UNKNOWN;
   };
 };
+
+void parseJoint(Joint& joint, TiXmlElement* config);
 
 }
 

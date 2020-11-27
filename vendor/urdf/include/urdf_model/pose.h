@@ -49,6 +49,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <urdf_exception/exception.h>
+#include <tinyxml/tinyxml.h>
 #include <assert.h>
 
 namespace urdf{
@@ -252,6 +253,8 @@ public:
     this->rotation.clear();
   };
 };
+
+void parsePose(Pose& pose, TiXmlElement* xml);
 
 }
 

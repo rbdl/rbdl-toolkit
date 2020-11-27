@@ -35,14 +35,11 @@
 /* Author: Wim Meeussen */
 //#include <boost/algorithm/string.hpp>
 #include <vector>
+#include <string>
 #include "urdf_parser/urdf_parser.h"
+#include "urdf_model/link.h"
 
 namespace urdf{
-
-bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_ok);
-bool parseLink(Link &link, TiXmlElement *config);
-bool parseJoint(Joint &joint, TiXmlElement *config);
-
 
 my_shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
 {
@@ -53,27 +50,24 @@ my_shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
   xml_doc.Parse(xml_string.c_str());
   if (xml_doc.Error())
   {
-    logError(xml_doc.ErrorDesc());
+    std::string error_msg = xml_doc.ErrorDesc();
     xml_doc.ClearError();
-    model.reset();
-    return model;
+    throw URDFParseError(error_msg);
   }
 
   TiXmlElement *robot_xml = xml_doc.FirstChildElement("robot");
   if (!robot_xml)
   {
-    logError("Could not find the 'robot' element in the xml file");
-    model.reset();
-    return model;
+    std::string error_msg = "Error! Could not find the <robot> element in the xml file";
+    throw URDFParseError(error_msg);
   }
 
   // Get robot name
   const char *name = robot_xml->Attribute("name");
   if (!name)
   {
-    logError("No name given for the robot.");
-    model.reset();
-    return model;
+    std::string error_msg = "No name given for the robot. Please add a name attribute to the robot element!";
+    throw URDFParseError(error_msg);
   }
   model->name_ = std::string(name);
 
@@ -83,119 +77,73 @@ my_shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
     my_shared_ptr<Material> material;
     material.reset(new Material);
 
-    try {
-      parseMaterial(*material, material_xml, false); // material needs to be fully defined here
-      if (model->getMaterial(material->name))
-      {
-        logError("material '%s' is not unique.", material->name.c_str());
-        material.reset();
-        model.reset();
-        return model;
-      }
-      else
-      {
+    parseMaterial(*material, material_xml, false); // material needs to be fully defined here
+    if (model->getMaterial(material->name)) {
+      std::ostringstream error_msg;
+      error_msg << "Duplicate materials '" << material->name << "' found!";
+      throw URDFParseError(error_msg.str());
+    } else {
         model->materials_.insert(make_pair(material->name,material));
-        logDebug("urdfdom: successfully added a new material '%s'", material->name.c_str());
-      }
-    }
-    catch (URDFParseError &e) {
-      logError("material xml is not initialized correctly");
-      material.reset();
-      model.reset();
-      return model;
     }
   }
 
   // Get all Link elements
-  for (TiXmlElement* link_xml = robot_xml->FirstChildElement("link"); link_xml; link_xml = link_xml->NextSiblingElement("link"))
-  {
+  for (TiXmlElement* link_xml = robot_xml->FirstChildElement("link"); link_xml; link_xml = link_xml->NextSiblingElement("link")) {
     my_shared_ptr<Link> link;
     link.reset(new Link);
     model->m_numLinks++;
 
-    try {
-      parseLink(*link, link_xml);
-      if (model->getLink(link->name))
-      {
-        logError("link '%s' is not unique.", link->name.c_str());
-        model.reset();
-        return model;
-      }
-      else
-      {
-        // set link visual material
-        logDebug("urdfdom: setting link '%s' material", link->name.c_str());
-        if (link->visual)
-        {
-          if (!link->visual->material_name.empty())
-          {
-            if (model->getMaterial(link->visual->material_name))
-            {
-              logDebug("urdfdom: setting link '%s' material to '%s'", link->name.c_str(),link->visual->material_name.c_str());
+    parseLink(*link, link_xml);
+    if (model->getLink(link->name)) {
+      std::ostringstream error_msg;
+      error_msg << "Error! Duplicate links '" << link->name << "' found!";
+      throw URDFParseError(error_msg.str());
+    } else {
+      // set link visual material
+      if (link->visual) {
+        if (!link->visual->material_name.empty()) {
+          //find the correct material in model
+          if (model->getMaterial(link->visual->material_name)) {
               link->visual->material = model->getMaterial( link->visual->material_name.c_str() );
-            }
-            else
-            {
-              if (link->visual->material)
-              {
-                logDebug("urdfdom: link '%s' material '%s' defined in Visual.", link->name.c_str(),link->visual->material_name.c_str());
+          } else {
+            // if no model matrial found use the one defined in the visual
+            if (link->visual->material) {
                 model->materials_.insert(make_pair(link->visual->material->name,link->visual->material));
-              }
-              else
-              {
-                logError("link '%s' material '%s' undefined.", link->name.c_str(),link->visual->material_name.c_str());
-                model.reset();
-                return model;
-              }
+            } else {
+              // no matrial information available for this visual -> error
+              std::ostringstream error_msg;
+              error_msg << "Error! Link '" << link->name
+                        << "' material '" << link->visual->material_name
+                        <<" ' undefined!";
+              throw URDFParseError(error_msg.str());
             }
           }
         }
-
-        model->links_.insert(make_pair(link->name,link));
-        logDebug("urdfdom: successfully added a new link '%s'", link->name.c_str());
       }
-    }
-    catch (URDFParseError &e) {
-      logError("link xml is not initialized correctly");
-      model.reset();
-      return model;
+      model->links_.insert(make_pair(link->name,link));
     }
   }
+
   if (model->links_.empty()){
-    logError("No link elements found in urdf file");
-    model.reset();
-    return model;
+    std::string error_msg = "Error! No link elements found in the urdf file.";
+    throw URDFParseError(error_msg);
   }
 
   // Get all Joint elements
-  for (TiXmlElement* joint_xml = robot_xml->FirstChildElement("joint"); joint_xml; joint_xml = joint_xml->NextSiblingElement("joint"))
-  {
+  for (TiXmlElement* joint_xml = robot_xml->FirstChildElement("joint"); joint_xml; joint_xml = joint_xml->NextSiblingElement("joint")) {
     my_shared_ptr<Joint> joint;
     joint.reset(new Joint);
     model->m_numJoints++;
 
-    if (parseJoint(*joint, joint_xml))
-    {
-      if (model->getJoint(joint->name))
-      {
-        logError("joint '%s' is not unique.", joint->name.c_str());
-        model.reset();
-        return model;
-      }
-      else
-      {
+    parseJoint(*joint, joint_xml);
+    if (model->getJoint(joint->name)) {
+      std::ostringstream error_msg;
+      error_msg << "Error! Duplicate joints '" << joint->name << "' found!";
+      throw URDFParseError(error_msg.str());
+    } else {
         model->joints_.insert(make_pair(joint->name,joint));
-        logDebug("urdfdom: successfully added a new joint '%s'", joint->name.c_str());
-      }
-    }
-    else
-    {
-      logError("joint xml is not initialized correctly");
-      model.reset();
-      return model;
     }
   }
-
 
   // every link has children links and joints, but no parents, so we create a
   // local convenience data structure for keeping child->parent relations
@@ -203,33 +151,13 @@ my_shared_ptr<ModelInterface>  parseURDF(const std::string &xml_string)
   parent_link_tree.clear();
 
   // building tree: name mapping
-  try 
-  {
-    model->initTree(parent_link_tree);
-  }
-  catch(URDFParseError &e)
-  {
-    logError("Failed to build tree: %s", e.what());
-    model.reset();
-    return model;
-  }
+  model->initTree(parent_link_tree);
 
   // find the root link
-  try
-  {
-    model->initRoot(parent_link_tree);
-  }
-  catch(URDFParseError &e)
-  {
-    logError("Failed to find root link: %s", e.what());
-    model.reset();
-    return model;
-  }
-  
+  model->initRoot(parent_link_tree);
+
   return model;
 }
-
-
 
 }
 

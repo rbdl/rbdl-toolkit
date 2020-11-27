@@ -37,9 +37,9 @@ void UrdfModelWrapper::load(QString model_file) {
 
 	auto urdf_model = urdf::parseURDF(model_xml_string);
 
-	if (!RigidBodyDynamics::Addons::URDFReadFromString(model_xml_string.c_str(), rbdl_model, false)) {
-		throw RigidBodyDynamics::Errors::RBDLFileParseError("Error reading urdf file!");
-	}
+	//if (!RigidBodyDynamics::Addons::URDFReadFromString(model_xml_string.c_str(), rbdl_model, false)) {
+	//	throw RigidBodyDynamics::Errors::RBDLFileParseError("Error reading urdf file!");
+	//}
 
 
 	//load relevant information from modelfile
