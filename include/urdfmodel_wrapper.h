@@ -3,7 +3,7 @@
 
 #include <rbdl/rbdl.h>
 #include <rbdl/rbdl_math.h>
-//#include <rbdl/addons/urdfreader/urdfreader.h>
+#include <rbdl/addons/urdfreader/urdfreader.h>
 
 #include "rbdl_wrapper.h"
 

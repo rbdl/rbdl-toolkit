@@ -3,7 +3,7 @@
 #include <QDir>
 
 #include "urdfmodel_wrapper.h"
-#include "urdf_parser/urdf_parser.h"
+#include "urdf/model.h"
 
 #include "util.h"
 
@@ -35,12 +35,13 @@ void UrdfModelWrapper::load(QString model_file) {
 	                         std::istreambuf_iterator<char>());
 	model_file_stream.close();
 
-	auto urdf_model = urdf::parseURDF(model_xml_string);
-
-	//if (!RigidBodyDynamics::Addons::URDFReadFromString(model_xml_string.c_str(), rbdl_model, false)) {
-	//	throw RigidBodyDynamics::Errors::RBDLFileParseError("Error reading urdf file!");
-	//}
-
+	try {
+		RigidBodyDynamics::Addons::URDFReadFromString(model_xml_string.c_str(), rbdl_model, false);
+	} catch (std::exception& e) {
+		std::ostringstream error_msg;
+		error_msg << "Error parsing urdf file!\n" << e.what();
+		throw RigidBodyDynamics::Errors::RBDLFileParseError(error_msg.str());
+	}
 
 	//load relevant information from modelfile
 	auto model_info = loadModelInfo();
@@ -120,10 +121,10 @@ void findRelativeToRosPackageRoot(QString& path, QString model_file_path) {
 std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 	std::vector<SegmentVisualInfo> info;
 
-	auto urdf_model = urdf::parseURDF(model_xml_string);
+	auto urdf_model = urdf::UrdfModel::fromUrdfStr(model_xml_string);
 
-	for ( auto link = urdf_model->links_.begin(); link != urdf_model->links_.end(); link++ ) {
-		auto l = link->second.get();
+	for ( auto link = urdf_model->link_map.begin(); link != urdf_model->link_map.end(); link++ ) {
+		auto l = link->second;
 		while ( rbdl_model->GetBodyId(l->name.c_str()) > rbdl_model->dof_count ) {
 			if (l->getParent() == nullptr ) {
 				break;
@@ -134,57 +135,58 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 		bool add_to_root = rbdl_model->GetBodyId(l->name.c_str()) > rbdl_model->dof_count;
 		auto segment_name = l->name;
 
-		l = link->second.get();
+		l = link->second;
 
-		if ( l->visual != nullptr ) {
-			auto visual = l->visual.get();
+		for ( auto visual : l->visuals ) {
 
-			auto pos = visual->origin.position;
+			auto pos = visual.origin.position;
 			//QVector3D visual_center = QVector3D(pos.x, pos.y, pos.z);
 			QVector3D visual_center = QVector3D(0, 0, 0);
 			QVector3D mesh_translation = QVector3D(0, 0, 0);
 
-			auto rot = visual->origin.rotation;
+			auto rot = visual.origin.rotation;
 			QQuaternion mesh_rotation = QQuaternion(rot.x, rot.y, rot.z, rot.w);
 
 
 			QColor visual_color = QColor::fromRgbF(1., 1., 1., 1.);
-			if (visual->material != nullptr) {
-				auto color = visual->material->color;
+			if (visual.material.has_value()) {
+				auto color = visual.material.value().color;
 				visual_color = QColor::fromRgbF(color.r, color.g, color.b, color.a);
 			}
 
 			QString mesh_file;
 			QVector3D visual_dimentions;
 
-			switch (visual->geometry->type) {
-				case urdf::Geometry::SPHERE: {
-					urdf::Sphere* geo = (urdf::Sphere*)visual->geometry.get();
-					mesh_file = findFile(QString("unit_sphere_medres.obj"),true);
-					visual_dimentions = QVector3D(geo->radius, geo->radius, geo->radius);
-					break;
-				}
-				case urdf::Geometry::BOX: {
-					urdf::Box* geo = (urdf::Box*)visual->geometry.get();
-					mesh_file = findFile(QString("unit_cube.obj"), true);
-					visual_dimentions = QVector3D(geo->dim.x, geo->dim.y, geo->dim.z);
-					break;
-				}
-				case urdf::Geometry::CYLINDER: {
-					urdf::Cylinder* geo = (urdf::Cylinder*)visual->geometry.get();
-					mesh_file = findFile(QString("unit_cylinder_medres_z.obj"),true);
-					visual_dimentions = QVector3D(geo->radius, geo->radius, geo->length);
-					break;
-				}
-				case urdf::Geometry::MESH :{
-					urdf::Mesh* geo = (urdf::Mesh*)visual->geometry.get();
-					QString filename = QString::fromStdString(geo->filename);
-					if (filename.startsWith("package://")) {
-						findRelativeToRosPackageRoot(filename, this->model_file);
+			if (visual.geometry.has_value()) {
+				switch ((*visual.geometry.value()).type) {
+					case urdf::GeometryType::SPHERE: {
+						auto geo = (urdf::Sphere&)visual.geometry.value();
+						mesh_file = findFile(QString("unit_sphere_medres.obj"),true);
+						visual_dimentions = QVector3D(geo.radius, geo.radius, geo.radius);
+						break;
 					}
-					mesh_file = findFile(filename, true);
-					visual_dimentions = QVector3D(geo->scale.x, geo->scale.y, geo->scale.z);
-					break;
+					case urdf::GeometryType::BOX: {
+						auto geo = (urdf::Box&)visual.geometry.value();
+						mesh_file = findFile(QString("unit_cube.obj"), true);
+						visual_dimentions = QVector3D(geo.dim.x, geo.dim.y, geo.dim.z);
+						break;
+					}
+					case urdf::GeometryType::CYLINDER: {
+						auto geo = (urdf::Cylinder&)visual.geometry.value();
+						mesh_file = findFile(QString("unit_cylinder_medres_z.obj"),true);
+						visual_dimentions = QVector3D(geo.radius, geo.radius, geo.length);
+						break;
+					}
+					case urdf::GeometryType::MESH :{
+						auto geo = (urdf::Mesh&)visual.geometry.value();
+						QString filename = QString::fromStdString(geo.filename);
+						if (filename.startsWith("package://")) {
+							findRelativeToRosPackageRoot(filename, this->model_file);
+						}
+						mesh_file = findFile(filename, true);
+						visual_dimentions = QVector3D(geo.scale.x, geo.scale.y, geo.scale.z);
+						break;
+					}
 				}
 			}
 			std::cout << mesh_file.toStdString() << std::endl;
@@ -192,14 +194,14 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 			QDebug(&msg) << visual_dimentions;
 			std::cout << msg.toStdString() << std::endl;
 			SegmentVisualInfo si = {
-			    segment_name,
-			    mesh_file,
-			    mesh_translation,
-			    mesh_rotation,
-			    visual_color,
-			    visual_center,
-			    visual_dimentions
-			};
+			segment_name,
+			mesh_file,
+			mesh_translation,
+			mesh_rotation,
+			visual_color,
+			visual_center,
+			visual_dimentions
+		};
 			info.push_back(std::move(si));
 		}
 	}
