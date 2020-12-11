@@ -149,7 +149,7 @@ void ToolkitApp::action_reload_files() {
 void ToolkitApp::action_load_model() {
 	QFileDialog file_dialog (this, "Select Model File");
 
-	file_dialog.setNameFilter(tr("MeshupModels (*lua, *urdf)"));
+	file_dialog.setNameFilter(tr("MeshupModels (*lua *urdf)"));
 	file_dialog.setFileMode(QFileDialog::ExistingFile);
 
 	if (file_dialog.exec()) {

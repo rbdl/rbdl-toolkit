@@ -127,8 +127,8 @@ Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
 
 	//Mesh Material
 	Qt3DExtras::QDiffuseSpecularMaterial* visual_material = new Qt3DExtras::QDiffuseSpecularMaterial;
-	if (mesh_color.alpha() < 0.7) 
-		visual_material->setAlphaBlendingEnabled(true);
+	//if (mesh_color.alpha() < 0.7)
+	//	visual_material->setAlphaBlendingEnabled(true);
 	visual_material->setAmbient(mesh_color);
 
 	//Mesh src

@@ -55,9 +55,13 @@ void UrdfModelWrapper::load(QString model_file) {
 }
 
 ModelInfo UrdfModelWrapper::loadModelInfo() {
-	QMatrix4x4 orientation;
-	orientation.rotate(-90., 1., 0., 0.);
-	ModelInfo info = { 
+	QMatrix4x4 orientation(
+		0., 1., 0., 0.,
+		0., 0., 1., 0.,
+		1., 0., 0., 0.,
+		0., 0., 0., 1.
+	);
+	ModelInfo info = {
 	                   orientation,
 	                   1.
 	                 };
@@ -139,60 +143,54 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 
 		for ( auto visual : l->visuals ) {
 
-			auto pos = visual.origin.position;
-			//QVector3D visual_center = QVector3D(pos.x, pos.y, pos.z);
+			auto pos = visual->origin.position;
 			QVector3D visual_center = QVector3D(0, 0, 0);
-			QVector3D mesh_translation = QVector3D(0, 0, 0);
+			QVector3D mesh_translation = QVector3D(pos.x, pos.y, pos.z);
 
-			auto rot = visual.origin.rotation;
+			auto rot = visual->origin.rotation;
 			QQuaternion mesh_rotation = QQuaternion(rot.x, rot.y, rot.z, rot.w);
 
-
 			QColor visual_color = QColor::fromRgbF(1., 1., 1., 1.);
-			if (visual.material.has_value()) {
-				auto color = visual.material.value().color;
+			if (visual->material.has_value()) {
+				auto color = visual->material.value()->color;
 				visual_color = QColor::fromRgbF(color.r, color.g, color.b, color.a);
 			}
 
 			QString mesh_file;
 			QVector3D visual_dimentions;
 
-			if (visual.geometry.has_value()) {
-				switch ((*visual.geometry.value()).type) {
+			if (visual->geometry.has_value()) {
+				switch ((*visual->geometry.value()).type) {
 					case urdf::GeometryType::SPHERE: {
-						auto geo = (urdf::Sphere&)visual.geometry.value();
+						auto geo = (std::shared_ptr<urdf::Sphere>&)visual->geometry.value();
 						mesh_file = findFile(QString("unit_sphere_medres.obj"),true);
-						visual_dimentions = QVector3D(geo.radius, geo.radius, geo.radius);
+						visual_dimentions = QVector3D(geo->radius, geo->radius, geo->radius);
 						break;
 					}
 					case urdf::GeometryType::BOX: {
-						auto geo = (urdf::Box&)visual.geometry.value();
+						auto geo = (std::shared_ptr<urdf::Box>&)visual->geometry.value();
 						mesh_file = findFile(QString("unit_cube.obj"), true);
-						visual_dimentions = QVector3D(geo.dim.x, geo.dim.y, geo.dim.z);
+						visual_dimentions = QVector3D(geo->dim.x, geo->dim.y, geo->dim.z);
 						break;
 					}
 					case urdf::GeometryType::CYLINDER: {
-						auto geo = (urdf::Cylinder&)visual.geometry.value();
+						auto geo = (std::shared_ptr<urdf::Cylinder>&)visual->geometry.value();
 						mesh_file = findFile(QString("unit_cylinder_medres_z.obj"),true);
-						visual_dimentions = QVector3D(geo.radius, geo.radius, geo.length);
+						visual_dimentions = QVector3D(geo->radius, geo->radius, geo->length);
 						break;
 					}
 					case urdf::GeometryType::MESH :{
-						auto geo = (urdf::Mesh&)visual.geometry.value();
-						QString filename = QString::fromStdString(geo.filename);
+						auto geo = (std::shared_ptr<urdf::Mesh>&)visual->geometry.value();
+						QString filename = QString::fromStdString(geo->filename);
 						if (filename.startsWith("package://")) {
 							findRelativeToRosPackageRoot(filename, this->model_file);
 						}
 						mesh_file = findFile(filename, true);
-						visual_dimentions = QVector3D(geo.scale.x, geo.scale.y, geo.scale.z);
+						visual_dimentions = QVector3D(geo->scale.x, geo->scale.y, geo->scale.z);
 						break;
 					}
 				}
 			}
-			std::cout << mesh_file.toStdString() << std::endl;
-			QString msg;
-			QDebug(&msg) << visual_dimentions;
-			std::cout << msg.toStdString() << std::endl;
 			SegmentVisualInfo si = {
 			segment_name,
 			mesh_file,
