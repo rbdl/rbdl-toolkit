@@ -9,7 +9,7 @@ RBDL-Toolkit is designed to be extendable via plugins and to make developing plu
 [wiki](https://github.com/ORB-HD/rbdl-toolkit/wiki) articles describing the architechture of the
 application.
 
-At this point RBDL-Toolkit only supports loading and displaying luamodels!
+RBDL-Toolkit now supports loading and displaying of lua and urdf models!
 
 # How to get this software
 
@@ -25,8 +25,9 @@ git clone --recursive https://github.com/ORB-HD/rbdl-toolkit
 ## Dependencies
 
 * RBDL with minimum version 3.0.0 with error handling [rbdl-orb](https://github.com/ORB-HD/rbdl-orb)
+	* Note: currently for urdf models to work there is a PR open on rbdl-orb: while it is not merged please use my fork of (rbdl-orb)[https://github.com/ju6ge/rbdl-orb] this is only required if you want to build rbdl-toolkit yourself. Othewise use the provided AppImage or DMG! 
 * Eigen3
-* Qt5 version == 5.13.2
+* Qt5 version >= 5.14
 * Qt3D and assimp for model loading
 
 ## Building On Ubuntu
