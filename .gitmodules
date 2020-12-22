@@ -4,3 +4,6 @@
 [submodule "plugins/MotionMarkerPlugin/c3dfile"]
 	path = plugins/MotionMarkerPlugin/c3dfile
 	url = https://github.com/ORB-HD/c3dfile
+[submodule "vendor/urdfparser"]
+	path = vendor/urdfparser
+	url = https://github.com/ORB-HD/URDF_Parser

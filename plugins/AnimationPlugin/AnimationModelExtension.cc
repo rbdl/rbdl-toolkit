@@ -16,6 +16,7 @@ std::string AnimationModelExtension::getExtensionName() {
 
 void AnimationModelExtension::update(float current_time) {
 	unsigned int time_index = 0;
+
 	for (; time_index < animation_times.size(); time_index++) {
 		if (time_index == animation_times.size()-1) break;
 		if (animation_times[time_index] <= current_time && animation_times[time_index+1] > current_time) {

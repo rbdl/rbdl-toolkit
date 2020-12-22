@@ -97,3 +97,7 @@ QStringList findAllPlugins() {
 
 	return plugin_list;
 }
+
+QVector3D to_qt_vector(RigidBodyDynamics::Math::Vector3d& vec) {
+	return QVector3D(vec[0], vec[1], vec[2]);
+}
