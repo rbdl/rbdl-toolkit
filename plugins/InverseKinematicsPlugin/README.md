@@ -2,7 +2,7 @@ Inverse Kinematics Plugin
 =========================
 
 This is a relatively simple computation plugin. It finds models that have Markers and a corresponding Motion Capture, it will then calculate the inverse
-kinematics to find the joint dofs for every mocap farme calculating a new animation for the model.
+kinematics to find the joint dofs for every mocap frame calculating a new animation for the model.
 
 # Settings
 

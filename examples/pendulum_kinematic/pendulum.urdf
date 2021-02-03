@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="pendulum">
+	<material name="red">
+		<color rgba="1 0 0 1"/>
+	</material>
+	<material name="green">
+		<color rgba="0 1 0 1"/>
+	</material>
+
+	<link name="root">
+	</link>
+
+	<link name="segment1">
+		<visual>
+			<geometry>
+				<box size="0.2 0.2 1"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0.5"/>
+			<material name="red"/>
+		</visual>
+	</link>
+
+	<link name="segment2">
+		<visual>
+			<geometry>
+				<box size="0.1 0.1 1"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0.5"/>
+			<material name="green"/>
+		</visual>
+	</link>
+
+	<joint name="roottoseg1" type="revolute">
+		<axis xyz="1 0 0"/>
+		<parent link="root"/>
+		<child link="segment1"/>
+	</joint>
+
+	<joint name="seg1toseg2" type="revolute">
+		<origin xyz="0 0 1"/>
+		<axis xyz="1 0 0"/>
+		<parent link="segment1"/>
+		<child link="segment2"/>
+	</joint>
+</robot>
