@@ -80,7 +80,6 @@ class RBDLModelWrapper : public QObject {
 		RigidBodyDynamics::Model* rbdl_model;
 
 		RBDLModelWrapper();
-		void buildModelTreeWireframe();
 		void build3DEntity(ModelInfo&, std::vector<SegmentVisualInfo>&);
 
 		QString getFileName() { return QFileInfo(model_file).baseName(); }
