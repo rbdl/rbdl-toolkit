@@ -13,6 +13,7 @@ Qt3DCore::QEntity* createGridFloor(float lxy_border,
 
 Qt3DCore::QEntity* createWire(const QVector3D& wire,
 							  const QColor& line_color,
+                              float line_width = 1.,
 							  Qt3DCore::QEntity* parent=nullptr);
 
 Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file, 

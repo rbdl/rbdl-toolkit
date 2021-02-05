@@ -11,7 +11,9 @@
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 #include <Qt3DRender/QMesh>
+#include <Qt3DRender/QLineWidth>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QCylinderMesh>
 
 #include <cmath>
 
@@ -108,71 +110,20 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	return floor;
 }
 
-Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_color, Qt3DCore::QEntity* parent) {
-	QGeometry* wire_geometry = new Qt3DRender::QGeometry();
-	QByteArray vertexBytes;
-	// buffer size:		(one line) * () * (start end) * (vertex size) * (data type)
-	vertexBytes.resize( 1 * 1 * 2 * 3 * sizeof(float) );
-	float* data_ptr = reinterpret_cast<float*> (vertexBytes.data());
-	//wire start
-	*data_ptr++ = 0.;
-	*data_ptr++ = 0.;
-	*data_ptr++ = 0.;
-    //wire end
-	*data_ptr++ = direction.x();
-	*data_ptr++ = direction.y();
-	*data_ptr++ = direction.z();
-
-	#if QT_VERSION > 0x50a00
-		QBuffer* wire_vertexes = new QBuffer(wire_geometry);
-	#else
-		QBuffer* wire_vertexes = new QBuffer(Qt3DRender::QBuffer::VertexBuffer, wrie_geometry);
-	#endif
-
-	wire_vertexes->setUsage(QBuffer::StaticDraw);
-	wire_vertexes->setData(vertexBytes);
-
-	auto *vertexAttribute = new Qt3DRender::QAttribute(wire_geometry);
-	vertexAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
-	vertexAttribute->setVertexBaseType(Qt3DRender::QAttribute::Float);
-	vertexAttribute->setVertexSize(3);
-	vertexAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
-	vertexAttribute->setBuffer(wire_vertexes);
-	vertexAttribute->setByteStride(3 * sizeof(float));
-	vertexAttribute->setCount(2);
-	wire_geometry->addAttribute(vertexAttribute); // We add the vertices in the geometry
-
-	// connectivity between vertices
-	QByteArray indexBytes;
-	indexBytes.resize(2  * sizeof(unsigned int)); // start to end
-	unsigned int *indices = reinterpret_cast<unsigned int*>(indexBytes.data());
-	for (int i=0; i < 2; i++) {
-		*indices++ = i;
-	}
-
-	#if QT_VERSION > 0x50a00
-		auto *indexBuffer = new Qt3DRender::QBuffer(wire_geometry);
-	#else
-		auto *indexBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::IndexBuffer, wire_geometry);
-	#endif
-	indexBuffer->setData(indexBytes);
-
-	auto *indexAttribute = new Qt3DRender::QAttribute(wire_geometry);
-	indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
-	indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
-	indexAttribute->setBuffer(indexBuffer);
-	indexAttribute->setCount(2);
-	wire_geometry->addAttribute(indexAttribute); // We add the indices linking the points in the geometry
-
-	auto *wire_line = new Qt3DRender::QGeometryRenderer;
-	wire_line->setGeometry(wire_geometry);
-	wire_line->setPrimitiveType(QGeometryRenderer::Lines);
-
+Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_color, float line_width, Qt3DCore::QEntity* parent) {
+	auto rot = QQuaternion::rotationTo(QVector3D(0.0, 1.0, 0.0), direction);
+	auto trans = QVector3D(0.0, 1*direction.length()/2, 0.0);
 	Qt3DCore::QTransform* transform = new Qt3DCore::QTransform;
-	transform->setTranslation(QVector3D(0.0, 0.0, 0.0));
+	transform->setTranslation(rot*trans);
+	transform->setRotation(rot);
 
 	Qt3DExtras::QDiffuseSpecularMaterial *material = new Qt3DExtras::QDiffuseSpecularMaterial;
 	material->setAmbient(line_color);
+
+	Qt3DExtras::QCylinderMesh *wire_mesh = new Qt3DExtras::QCylinderMesh;
+	wire_mesh->setLength(direction.length());
+	wire_mesh->setRadius(line_width/2);
+
 
 	QEntity* wire;
 	if (parent == nullptr) {
@@ -182,8 +133,8 @@ Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_col
 	}
 
 	wire->addComponent(transform);
-	wire->addComponent(wire_line);
 	wire->addComponent(material);
+	wire->addComponent(wire_mesh);
 
 	return wire;
 }

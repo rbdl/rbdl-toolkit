@@ -107,7 +107,7 @@ void RBDLModelWrapper::buildModelTreeWireframe() {
 									  body_translation.x(),
 									  body_translation.y(),
 									  body_translation.z()),
-									  QColor("white"), segment_render_node);
+									  QColor("yellow"), .001, segment_render_node);
 		wire_entity->setProperty("Scene.ObjGroup", QVariant("ModelTree"));
 	}
 }
@@ -183,6 +183,7 @@ void RBDLModelWrapper::clear() {
 void RBDLModelWrapper::reload() {
 	this->clear();
 	this->load(this->model_file);
+	this->buildModelTreeWireframe();
 }
 
 void RBDLModelWrapper::model_update(float current_time) {
