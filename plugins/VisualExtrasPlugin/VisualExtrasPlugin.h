@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QString>
+#include <QColor>
 
 #include "toolkit_interfaces.h"
 #include "toolkit_errors.h"
@@ -22,8 +23,14 @@ class VisualExtrasPlugin : public QObject, public CoreInterface {
 		
 	private:
 		ToolkitApp* parentApp;
+
+		QColor modeltree_color;
+		float modeltree_size;
 		
 		void loadVisualExtrasSettings();
+
+		void buildModelTreeWireframe(RBDLModelWrapper* model);
+		void addJointFrameAxis(RBDLModelWrapper* model);
 		
 	public Q_SLOTS:
 		
