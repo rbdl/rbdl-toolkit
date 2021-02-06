@@ -6,6 +6,7 @@
 #include <rbdl/addons/luamodel/luamodel.h>
 #include <rbdl/addons/luamodel/luatables.h>
 
+#include <QColor>
 #include <QString>
 #include <QFileInfo>
 #include <Qt3DCore/QEntity>
@@ -16,22 +17,38 @@ class RBDLModelWrapper;
 
 /* This class provides an abstact base for adding data to a loaded model, such as (Animations, Forces, etc.).
  */
-class WrapperExtention {
+class WrapperExtension {
 	protected:
 		RBDLModelWrapper* model_parent;
 
 	public:
-		WrapperExtention();
+		WrapperExtension();
 
 		void setModelParent(RBDLModelWrapper* model);
 
-		//needs to be implemented by every extention
-		virtual std::string getExtentionName() = 0;
+		//needs to be implemented by every extension
+		virtual std::string getExtensionName() = 0;
 		virtual void update(float current_time) = 0; 
 
 		//optional implementetion, default does nothing
 		virtual Qt3DCore::QEntity* getVisual();
-		virtual void exportData();
+};
+
+struct ModelInfo {
+	QMatrix4x4 model_world_transform;
+	float unit_scaling;
+};
+
+struct SegmentVisualInfo {
+	std::string segment_name;
+
+	QString mesh_file;
+	QVector3D mesh_translation;
+	QQuaternion mesh_rotation;
+
+	QColor visual_color;
+	QVector3D visual_center;
+	QVector3D visual_dimensions;
 };
 
 
@@ -39,53 +56,60 @@ class WrapperExtention {
  */
 class RBDLModelWrapper : public QObject {
 	Q_OBJECT
-	private:
+	protected:
 		QString model_file;
+		std::string model_type;
 
-		Qt3DCore::QEntity* model_render_obj;
-		std::map<std::string, Qt3DCore::QEntity*> body_mesh_map;
+		Qt3DCore::QEntity* model_root;
+		std::map<std::string, Qt3DCore::QEntity*> body_segment_map;
 		std::map<std::string, Qt3DCore::QTransform*> body_transform_map;
 		float mesh_unit_scaling;
 
-		//all loaded extra data is supposed to be loaded as an extention to the model
-		std::vector<std::string> extention_names;
-		std::map<std::string, WrapperExtention*> extentions;
+		//all loaded extra data is supposed to be loaded as an extension to the model
+		std::vector<std::string> extension_names;
+		std::map<std::string, WrapperExtension*> extensions;
+
+		RigidBodyDynamics::Math::VectorNd current_Q;
+
+		void clear();
+		virtual void load(QString model_file) = 0;
 	public:
-		LuaTable model_luatable;
+		static RBDLModelWrapper* loadFromFile(QString model_file);
+
 
 		RigidBodyDynamics::Model* rbdl_model;
 
 		RBDLModelWrapper();
+		void build3DEntity(ModelInfo&, std::vector<SegmentVisualInfo>&);
 
-		Qt3DCore::QEntity* getRenderObj() { return model_render_obj; }
-
-		Qt3DCore::QEntity* loadFromFile(QString model_file);
-
-		//takes ownership of extention -> only delete via model not where it was created
-		void addExtention(WrapperExtention* extention);
-		void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
-		//void deleteExtention(std::string name);
-		bool hasExtention(std::string name);
-		const std::vector<std::string>& loadedExtentions() { return extention_names; }
-		WrapperExtention* getExtention(std::string name);
-
-		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 		QString getFileName() { return QFileInfo(model_file).baseName(); }
-
+		std::string getModelType() { return model_type; }
+		QString getModelFile();
 		int getModelDof();
+		Qt3DCore::QEntity* getRenderObj() { return model_root; }
+		Qt3DCore::QEntity* getSegmentEntity(std::string segment_name, bool create=false);
+
+		void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
+		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 
 		void reload();
 
-		QString getModelFile();
+		//takes ownership of extension -> only delete via model not where it was created
+		void addExtension(WrapperExtension* extension);
+		//void deleteExtension(std::string name);
+		bool hasExtension(std::string name);
+		const std::vector<std::string>& loadedExtensions() { return extension_names; }
+		WrapperExtension* getExtension(std::string name);
 
 	public Q_SLOTS:
 		void model_update(float current_time);
 
 	Q_SIGNALS:
-		void new_extention_added();
+		void new_extension_added();
 		void visual_added(Qt3DCore::QEntity* visual);
 
 };
+
 
 #endif 
 

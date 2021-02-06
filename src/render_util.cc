@@ -10,7 +10,10 @@
 #include <Qt3DRender/QBuffer>
 #include <Qt3DRender/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
-#include <Qt3DExtras/QPhongMaterial>
+#include <Qt3DRender/QMesh>
+#include <Qt3DRender/QLineWidth>
+#include <Qt3DExtras/QDiffuseSpecularMaterial>
+#include <Qt3DExtras/QCylinderMesh>
 
 #include <cmath>
 
@@ -93,7 +96,7 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	Qt3DCore::QTransform* transform = new Qt3DCore::QTransform;
 	transform->setTranslation(QVector3D(0.0, 0.0, 0.0));
 
-	Qt3DExtras::QPhongMaterial *material = new Qt3DExtras::QPhongMaterial;
+	Qt3DExtras::QDiffuseSpecularMaterial *material = new Qt3DExtras::QDiffuseSpecularMaterial;
 	material->setAmbient(line_color);
 
 	QEntity* floor = new QEntity;
@@ -105,5 +108,71 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	floor->setProperty("Scene.ObjGroup", QVariant("Grid"));
 
 	return floor;
+}
+
+Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_color, float line_width, Qt3DCore::QEntity* parent) {
+	auto rot = QQuaternion::rotationTo(QVector3D(0.0, 1.0, 0.0), direction);
+	auto trans = QVector3D(0.0, 1*direction.length()/2, 0.0);
+	Qt3DCore::QTransform* transform = new Qt3DCore::QTransform;
+	transform->setTranslation(rot*trans);
+	transform->setRotation(rot);
+
+	Qt3DExtras::QDiffuseSpecularMaterial *material = new Qt3DExtras::QDiffuseSpecularMaterial;
+	material->setAmbient(line_color);
+
+	Qt3DExtras::QCylinderMesh *wire_mesh = new Qt3DExtras::QCylinderMesh;
+	wire_mesh->setLength(direction.length());
+	wire_mesh->setRadius(line_width/2);
+
+
+	QEntity* wire;
+	if (parent == nullptr) {
+		wire = new Qt3DCore::QEntity();
+	} else {
+		wire = new Qt3DCore::QEntity(parent);
+	}
+
+	wire->addComponent(transform);
+	wire->addComponent(material);
+	wire->addComponent(wire_mesh);
+
+	return wire;
+}
+
+Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
+                                    const QColor& mesh_color, 
+                                    const QVector3D& mesh_translation, 
+                                    const QQuaternion& mesh_rotation,
+                                    Qt3DCore::QEntity* parent) {
+	Qt3DCore::QEntity* mesh_entity;
+	if (parent == nullptr) {
+		mesh_entity = new Qt3DCore::QEntity();
+	} else {
+		mesh_entity = new Qt3DCore::QEntity(parent);
+	}
+
+	//Mesh Transforms 
+	Qt3DCore::QTransform* mesh_transform = new Qt3DCore::QTransform;
+	mesh_transform->setRotation(mesh_rotation);
+	mesh_transform->setTranslation(mesh_translation);
+
+	//Mesh Material
+	Qt3DExtras::QDiffuseSpecularMaterial* visual_material = new Qt3DExtras::QDiffuseSpecularMaterial;
+	//if (mesh_color.alpha() < 0.7)
+	//	visual_material->setAlphaBlendingEnabled(true);
+	visual_material->setAmbient(mesh_color);
+
+	//Mesh src
+	Qt3DRender::QMesh* visual_mesh = new Qt3DRender::QMesh;
+	visual_mesh->setSource(QUrl::fromLocalFile(mesh_file));
+
+	//Mesh Entity completed
+	mesh_entity->addComponent(visual_mesh);
+	mesh_entity->addComponent(mesh_transform);
+	mesh_entity->addComponent(visual_material);
+
+	mesh_entity->setProperty("Scene.ObjGroup", QVariant("Meshes"));
+
+	return mesh_entity;
 }
 

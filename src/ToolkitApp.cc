@@ -15,7 +15,7 @@
 #include <QCommandLineOption>
 #include <QProcessEnvironment>
 
-#define PATH_VAR "TOOLKIT_SEARCHDIR_PATH" 
+#define PATH_VAR "TOOLKIT_SEARCHDIR_PATH"
 
 ToolkitApp::ToolkitApp(QWidget *parent) {
 	//setup standard menu
@@ -31,9 +31,9 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	toolkit_menu_list["Toolkit"]->addAction("Settings", &toolkit_settings, "aeditSettings()");
 	this->setMenuBar(main_menu_bar);
 
-	//settings 
+	//settings
 	toolkit_settings.setType("toolkit.showWarnings", true);
-	connect(&toolkit_settings, &ToolkitSettings::settings_changed, 
+	connect(&toolkit_settings, &ToolkitSettings::settings_changed,
 	        this, [=]() { this->showWarningDialog("Changed settings will get applied at the next restart of the application!"); });
 
 	//main view
@@ -46,11 +46,11 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	cmd_parser.addVersionOption();
 
 	QCommandLineOption model_option( QStringList() << "m" << "model",
-	                                 "Load lua model files <file>", 
+	                                 "Load lua model files <file>",
 	                                 "file"
 	                               );
 	QCommandLineOption plugin_option( QStringList() << "p" << "plugin",
-	                                 "Load additional plugins <plugin name/path>", 
+	                                 "Load additional plugins <plugin name/path>",
 	                                 "plugin"
 	                               );
 	cmd_parser.addOption(plugin_option);
@@ -67,7 +67,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 	timeline = new ToolkitTimeline(this);
 	addView("Timeline", timeline, Qt::BottomDockWidgetArea, false);
 	connect(main_display, SIGNAL(frame_sync_signal(float)), timeline, SLOT(tick(float)));
-	connect(this, SIGNAL(reload_files()), timeline, SLOT(reset_timeline()));
+	connect(this, SIGNAL(reload()), timeline, SLOT(reset_timeline()));
 
 	//add standard scene objects
 	main_display->addSceneObject(createGridFloor(-15., 15., 32));
@@ -81,9 +81,25 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 		QDir::addSearchPath("plugins", "./plugins");
 	#endif
 
-	
+
 	auto paths = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+	//find application path important for plugin loading if running as AppImage
+	auto app_dir = QDir(QCoreApplication::applicationDirPath());
+	bool found = false;
+	if (app_dir.cd("../share/ORB/rbdl-toolkit")) {
+		std::cout << app_dir.absolutePath().toStdString() << std::endl;
+		paths.prepend(app_dir.absolutePath());
+		found = true;
+	}
+
+	app_dir = QDir(QCoreApplication::applicationDirPath());
+	if ( !found && app_dir.cd("../local/share/ORB/rbdl-toolkit")) {
+		std::cout << app_dir.absolutePath().toStdString() << std::endl;
+		paths.prepend(app_dir.absolutePath());
+	}
+
 	if (env.contains(PATH_VAR)) {
 		paths << env.value(PATH_VAR);
 	}
@@ -133,7 +149,7 @@ void ToolkitApp::action_reload_files() {
 void ToolkitApp::action_load_model() {
 	QFileDialog file_dialog (this, "Select Model File");
 
-	file_dialog.setNameFilter(tr("MeshupModels (*lua)"));
+	file_dialog.setNameFilter(tr("MeshupModels (*lua *urdf)"));
 	file_dialog.setFileMode(QFileDialog::ExistingFile);
 
 	if (file_dialog.exec()) {
@@ -147,15 +163,16 @@ std::vector<RBDLModelWrapper*>* ToolkitApp::getLoadedModels() {
 
 
 void ToolkitApp::loadModel(const QString &model_file) {
-	RBDLModelWrapper *model = new RBDLModelWrapper();
 	bool errors_happend = false;
 
 	Qt3DCore::QEntity* model_scene_obj;
 
 	auto model_file_info = QFileInfo(model_file);
+	RBDLModelWrapper *model;
 
 	try {
-		model_scene_obj = model->loadFromFile(model_file_info.absoluteFilePath());
+		model = RBDLModelWrapper::loadFromFile(model_file_info.absoluteFilePath());
+		model_scene_obj = model->getRenderObj();
 	} catch (RigidBodyDynamics::Errors::RBDLFileParseError& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
@@ -171,7 +188,7 @@ void ToolkitApp::loadModel(const QString &model_file) {
 	} catch (std::exception& e) {
 		errors_happend = true;
 		QMessageBox errorBox;
-		errorBox.setText(e.what());
+		errorBox.setText(QString("Could not load the model!\n%1").arg(e.what()));
 		errorBox.setStandardButtons(QMessageBox::Cancel);
 		errorBox.setDefaultButton(QMessageBox::Cancel);
 		errorBox.exec();
@@ -294,7 +311,8 @@ void ToolkitApp::addPlugin(QString plugin_path, bool enable) {
 		if (getPluginLoadSetting(plugin_name).isNull()) {
 			//optional plugins only get loaded if user enables them
 			setPluginLoadSetting(plugin_name, false);
-		} else if ( getPluginLoadSetting(plugin_name).toBool() == true || enable) {
+		}
+		if ( getPluginLoadSetting(plugin_name).toBool() == true || enable) {
 			plugin_action->setChecked(true);
 		}
 	}

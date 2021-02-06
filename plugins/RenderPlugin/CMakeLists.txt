@@ -36,6 +36,7 @@ ADD_SUBDIRECTORY (
 	vendor/QVideoWriter/
 )
 
+INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
 
 QT5_WRAP_UI ( RenderPlugin_UI_SRC
 	ui/RenderImageDialog.ui	
@@ -67,6 +68,7 @@ TARGET_LINK_LIBRARIES (renderplugin
 	Qt5::3DInput
 	${RBDL_LIBRARY}
 	qvideowriter
+	toolkitlib
 )
 
 INSTALL( TARGETS renderplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

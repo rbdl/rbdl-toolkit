@@ -2,8 +2,8 @@ PROJECT(MotionMarkerPlugin)
 	
 SET(MotionMarkerPlugin_SRCS
 	MotionMarkerPlugin.cc
-	MotionMarkerExtention.cc
-	ModelMarkerExtention.cc
+	MotionMarkerExtension.cc
+	ModelMarkerExtension.cc
 )
 
 SET(MotionMarkerPlugin_MOC_HDRS
@@ -42,6 +42,7 @@ TARGET_LINK_LIBRARIES (motionmarkerplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 	c3dfile
 )
 

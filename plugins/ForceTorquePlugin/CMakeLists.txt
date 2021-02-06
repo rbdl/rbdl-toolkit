@@ -2,7 +2,7 @@ PROJECT(ForceTorquePlugin)
 	
 SET(ForceTorquePlugin_SRCS
 	ForceTorquePlugin.cc
-	ArrowFieldModelExtention.cc
+	ArrowFieldModelExtension.cc
 )
 
 SET(ForceTorquePlugin_MOC_HDRS
@@ -38,6 +38,7 @@ TARGET_LINK_LIBRARIES (forcetorqueplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 )
 
 INSTALL( TARGETS forcetorqueplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

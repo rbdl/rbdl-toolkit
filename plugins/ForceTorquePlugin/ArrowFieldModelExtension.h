@@ -10,7 +10,7 @@
 
 typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3fd;
 
-class ArrowFieldModelExtention : public WrapperExtention {
+class ArrowFieldModelExtension : public WrapperExtension {
 	private:
 		float max_time; 
 		int arrow_count;
@@ -32,13 +32,13 @@ class ArrowFieldModelExtention : public WrapperExtention {
 		std::vector<Qt3DCore::QEntity*> arrow_entities;
 
 	public:
-		ArrowFieldModelExtention(QString arrow_mesh_path, 
+		ArrowFieldModelExtension(QString arrow_mesh_path, 
 		                         QString group_name,
 		                         QColor arrow_color,
 		                         float draw_threshold = 0.001,
 		                         float arrow_scale_factor = 0.001);
 
-		std::string getExtentionName();
+		std::string getExtensionName();
 		void update(float current_time);
 		Qt3DCore::QEntity* getVisual();
 

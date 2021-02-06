@@ -1,5 +1,5 @@
 PROJECT(InverseKinematicsPlugin)
-	
+
 SET(InverseKinematicsPlugin_SRCS
 	InverseKinematicsPlugin.cc
 )
@@ -10,7 +10,7 @@ SET(InverseKinematicsPlugin_MOC_HDRS
 )
 
 SET(CMAKE_AUTOMOC ON)
-	
+
 INCLUDE_DIRECTORIES (${QT_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR})
@@ -30,9 +30,9 @@ SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ADD_LIBRARY (IKplugin SHARED ${InverseKinematicsPlugin_SRCS})
 
-TARGET_LINK_LIBRARIES (IKplugin 
-	${QT_LIBRARIES} 
-	${QT_QTXML_LIBRARY} 
+TARGET_LINK_LIBRARIES (IKplugin
+	${QT_LIBRARIES}
+	${QT_QTXML_LIBRARY}
 	Qt5::Core
 	Qt5::Gui
 	Qt5::Widgets
@@ -41,6 +41,7 @@ TARGET_LINK_LIBRARIES (IKplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
+	toolkitlib
 	animationplugin
 )
 

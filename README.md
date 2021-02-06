@@ -1,10 +1,21 @@
 RBDL - Toolkit
 ==============
 
-At this stage I have re implemented most of the functionality that meshup
-provides. You can now use it to visualize your results. 
+This application is intended to be used to visualize results and data of rigid body dynamics systems. 
+It is build on top of [RBDL](https://github.com/ORB-HD/rbdl-orb) and uses Qt3D as it's graphics backend.
 
-# Build
+RBDL-Toolkit is designed to be extendable via plugins and to make developing plugins easy there is a
+[plugin template](https://github.com/ORB-HD/toolkit-plugin-template). There are also some 
+[wiki](https://github.com/ORB-HD/rbdl-toolkit/wiki) articles describing the architechture of the
+application.
+
+RBDL-Toolkit now supports loading and displaying of lua and urdf models!
+
+# How to get this software
+
+This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/download/v1.1.0/rbdl-toolkit-x86_64.AppImage) for Linux and as an [DMG](https://github.com/ORB-HD/rbdl-toolkit/releases/download/v1.1.0/rbdl-toolkit.dmg) for MACOS. It may even be possible to get this running on Windows by using the Linux Subsystem, and the AppImage. But I have not tried this yet.
+
+# Building from Source
 
 Use cmake to build and install, make sure to recursively clone the repository.
 ```
@@ -14,8 +25,9 @@ git clone --recursive https://github.com/ORB-HD/rbdl-toolkit
 ## Dependencies
 
 * RBDL with minimum version 3.0.0 with error handling [rbdl-orb](https://github.com/ORB-HD/rbdl-orb)
+	* Note: currently for urdf models to work there is a PR open on rbdl-orb: while it is not merged please use my fork of (rbdl-orb)[https://github.com/ju6ge/rbdl-orb] this is only required if you want to build rbdl-toolkit yourself. Othewise use the provided AppImage or DMG! 
 * Eigen3
-* Qt5 version == 5.13.2
+* Qt5 version >= 5.14
 * Qt3D and assimp for model loading
 
 ## Building On Ubuntu
@@ -26,7 +38,7 @@ but are not guarranted. This is due to the Qt3D Api no being stable yet.
 Since our research group is mostly using Ubuntu here is a quick one line
 install command for all dependencies except RBDL.
 
-`sudo apt install qt5* qt3d* libeigen3-dev libassimp-dev`
+`sudo apt install qt5* qt3d* libeigen3-dev libassimp-dev mesa-common-dev libboost-dev`
 
 Ubuntu installs qt5.9 per default and rbdl-toolkit might work with the exception
 of the rendering plugin.  In order use the rendering plugin you will have to
@@ -36,11 +48,13 @@ at version *5.13.2* other versions are not guaranteed to work, since Qt3D is
 at the moment subject to many changes!
 
 Afterwards build *rbdl-toolkit* with cmake and adding the CUSTOM_QT_PATH variable set to 
-your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]/lib. 
+your [QT_INSTALL_DIR]/[QT_VERSION]/[COMPILER]. If you compiled QT yourself just set this
+variable to the -prefix you used for the compile/install.
+
 For me that looked like this:
 
 ```code
-cmake -DCUSTOM_QT_PATH=~/Qt5.13/5.13.2/gcc_64/lib ..
+cmake -DCUSTOM_QT_PATH=~/Qt5.13/5.13.2/gcc_64 ..
 make
 ```
 
@@ -95,4 +109,8 @@ converting model meshes from meshup to rbdl-toolkit.
 # Issues
 
 If you find bugs or have other questions please file a GitHub issue on this repository.
+
+# License
+
+This work is licensed with the EUPL v1.2.
 

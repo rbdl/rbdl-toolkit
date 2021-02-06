@@ -69,7 +69,7 @@ void InverseKinematicsPlugin::loadIKSettings() {
 }
 
 bool only_models_with_markers_and_mocap_data(RBDLModelWrapper* model) {
-	if (model->hasExtention("ModelMarker") && model->hasExtention("MocapMarker")) {
+	if (model->hasExtension("ModelMarker") && model->hasExtension("MocapMarker")) {
 		return true;
 	}
 	return false;
@@ -114,8 +114,8 @@ void InverseKinematicsPlugin::run_ik() {
 		return;
 	}
 
-	auto markers_ext = (ModelMarkerExtention*)model->getExtention("ModelMarker");
-	auto mocap_ext = (MotionMarkerExtention*)model->getExtention("MocapMarker");
+	auto markers_ext = (ModelMarkerExtension*)model->getExtension("ModelMarker");
+	auto mocap_ext = (MotionMarkerExtension*)model->getExtension("MocapMarker");
 
 	//mapping markers
 	std::map<unsigned, unsigned> index_mapping;
@@ -172,7 +172,7 @@ void InverseKinematicsPlugin::run_ik() {
 	}
 
 	//IK
-	AnimationModelExtention* ext = new AnimationModelExtention();
+	AnimationModelExtension* ext = new AnimationModelExtension();
 
 	VectorNd Qinit(VectorNd::Zero(model->rbdl_model->dof_count));
 	VectorNd Qres(VectorNd::Zero(model->rbdl_model->dof_count));
@@ -204,6 +204,6 @@ void InverseKinematicsPlugin::run_ik() {
 		//Qinit = Qres;
 	}
 
-	model->addExtention(ext);
+	model->addExtension(ext);
 }
 

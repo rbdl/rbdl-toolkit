@@ -43,7 +43,7 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 		auto data_list = parser.values("motionmarker");
 		for (int i=0; i<data_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
-				MotionMarkerExtention* ext = nullptr; 
+				MotionMarkerExtension* ext = nullptr; 
 				auto file = data_list[i];
 
 				try {
@@ -55,7 +55,7 @@ void MotionMarkerPlugin::init(ToolkitApp* app) {
 				}
 
 				RBDLModelWrapper* rbdl_model = parentApp->getLoadedModels()->at(i);
-				rbdl_model->addExtention(ext);
+				rbdl_model->addExtension(ext);
 				model_file_map[rbdl_model] = file;
 				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 			} else {
@@ -112,25 +112,30 @@ void MotionMarkerPlugin::loadMarkerSettings() {
 	parentApp->toolkit_settings.endGroup();
 }
 
-void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *model) {
-	ModelMarkerExtention* ext = new ModelMarkerExtention(marker_color_model, marker_size);
-	unsigned int segment_cnt = model->model_luatable["frames"].length();
-	for(int i=1; i<=segment_cnt; i++) {
-		std::string segment_name = model->model_luatable["frames"][i]["name"].get<std::string>();
-		std::vector<LuaKey> keys= model->model_luatable["frames"][i]["markers"].keys();
+void MotionMarkerPlugin::addModelMarkersToModel(RBDLModelWrapper *rbdl_model) {
+	if (rbdl_model->getModelType() == MODELTYPE_LUA) {
+		LuaModelWrapper *model = (LuaModelWrapper*)rbdl_model;
+		ModelMarkerExtension* ext = new ModelMarkerExtension(marker_color_model, marker_size);
+		unsigned int segment_cnt = model->model_luatable["frames"].length();
+		for(int i=1; i<=segment_cnt; i++) {
+			std::string segment_name = model->model_luatable["frames"][i]["name"].get<std::string>();
+			std::vector<LuaKey> keys= model->model_luatable["frames"][i]["markers"].keys();
 
-		for (auto marker_name : keys) {
-			Vector3d marker_position = model->model_luatable["frames"][i]["markers"][marker_name.string_value.c_str()].getDefault(Vector3d(0.,0.,0.));
-			//marker_position = model->axis_transform * marker_position;
+			for (auto marker_name : keys) {
+				Vector3d marker_position = model->model_luatable["frames"][i]["markers"][marker_name.string_value.c_str()].getDefault(Vector3d(0.,0.,0.));
+				//marker_position = model->axis_transform * marker_position;
 
-			ext->addModelMarker(marker_name.string_value, segment_name, marker_position);
+				ext->addModelMarker(marker_name.string_value, segment_name, marker_position);
+			}
 		}
+		if (ext->getMarkerLabels().size() == 0) {
+			delete ext;
+			return;
+		}
+		model->addExtension(ext);
+	} else {
+		parentApp->showWarningDialog("Loading model markes from this model type is not supported.");
 	}
-	if (ext->getMarkerLabels().size() == 0) {
-		delete ext;
-		return;
-	}
-	model->addExtention(ext);
 }
 
 void MotionMarkerPlugin::action_load_data() {
@@ -140,7 +145,7 @@ void MotionMarkerPlugin::action_load_data() {
 		file_dialog.setNameFilter(tr("Mocap File (*.c3d)"));
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
-		MotionMarkerExtention* ext;
+		MotionMarkerExtension* ext;
 		if (file_dialog.exec()) {
 			try {
 				ext = loadMotionMarkerFile(file_dialog.selectedFiles().at(0));
@@ -158,7 +163,7 @@ void MotionMarkerPlugin::action_load_data() {
 				}
 
 				if (rbdl_model != nullptr) {
-					rbdl_model->addExtention(ext);
+					rbdl_model->addExtension(ext);
 					model_file_map[rbdl_model] = file_dialog.selectedFiles().at(0);
 					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 				} else {
@@ -172,14 +177,14 @@ void MotionMarkerPlugin::action_load_data() {
 	}
 }
 
-MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
+MotionMarkerExtension* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
 	C3DFile marker_file;
 	if(!marker_file.load(path.toStdString().c_str())) {
 		throw RBDLToolkitError("Error loading marker c3d file: " + path.toStdString());
 	}
 
 	unsigned int marker_count = marker_file.header.num_markers;
-	MotionMarkerExtention* extention = new MotionMarkerExtention(marker_count, marker_color, marker_size);
+	MotionMarkerExtension* extension = new MotionMarkerExtension(marker_count, marker_color, marker_size);
 
 	float frame_rate = 1. / marker_file.header.video_sampling_rate;
 	float current_frame_time = 0.;
@@ -200,16 +205,16 @@ MotionMarkerExtention* MotionMarkerPlugin::loadMotionMarkerFile(QString path) {
 			pos(1,j) = marker_trajectories.y[i] * 1.0e-3;
 			pos(2,j) = marker_trajectories.z[i] * 1.0e-3;
 			if (!first_frame_complete) 
-				extention->setMarkerLabel(j, marker_label);
+				extension->setMarkerLabel(j, marker_label);
 			j++;
 		}
 		first_frame_complete = true;
 
-		extention->addMocapMarkerFrame(current_frame_time, pos);
+		extension->addMocapMarkerFrame(current_frame_time, pos);
 		current_frame_time += frame_rate;
 	}
 
-	return extention;
+	return extension;
 }
 
 void MotionMarkerPlugin::reload(RBDLModelWrapper* model) {
@@ -218,7 +223,7 @@ void MotionMarkerPlugin::reload(RBDLModelWrapper* model) {
 	for (auto it = model_file_map.begin(); it != model_file_map.end(); it++) {
 		if ( it->first == model ) {
 			auto ext = loadMotionMarkerFile(it->second);
-			model->addExtention(ext);
+			model->addExtension(ext);
 			parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 		}
 	}
