@@ -26,6 +26,7 @@ class VisualExtrasPlugin : public QObject, public CoreInterface {
 
 		QColor modeltree_color;
 		float modeltree_size;
+		float frame_axis_size, frame_axis_diameter;
 		
 		void loadVisualExtrasSettings();
 

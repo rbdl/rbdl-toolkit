@@ -16,7 +16,7 @@ Qt3DCore::QEntity* createWire(const QVector3D& wire,
                               float line_width = 1.,
 							  Qt3DCore::QEntity* parent=nullptr);
 
-Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file, 
+Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
                                     const QColor& mesh_color, 
                                     const QVector3D& mesh_translation, 
                                     const QQuaternion& mesh_rotation, 

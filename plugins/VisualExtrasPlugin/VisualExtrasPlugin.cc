@@ -46,6 +46,24 @@ void VisualExtrasPlugin::loadVisualExtrasSettings() {
 	}
 	parentApp->toolkit_settings.setType("modeltree.size", modeltree_size);
 
+	val = parentApp->toolkit_settings.value("frame_axis.size");
+	if (val.isNull()) {
+		frame_axis_size = 0.02;
+		parentApp->toolkit_settings.setValue("frame_axis.size", frame_axis_size);
+	} else {
+		frame_axis_size = val.toFloat();
+	}
+	parentApp->toolkit_settings.setType("frame_axis.size", frame_axis_size);
+
+	val = parentApp->toolkit_settings.value("frame_axis.diameter");
+	if (val.isNull()) {
+		frame_axis_diameter = 0.001;
+		parentApp->toolkit_settings.setValue("frame_axis.diameter", frame_axis_diameter);
+	} else {
+		frame_axis_diameter = val.toFloat();
+	}
+	parentApp->toolkit_settings.setType("frame_axis.diameter", frame_axis_diameter);
+
 	parentApp->toolkit_settings.endGroup();
 }
 
@@ -84,10 +102,44 @@ void VisualExtrasPlugin::buildModelTreeWireframe(RBDLModelWrapper* model) {
 	}
 }
 
+void VisualExtrasPlugin::addJointFrameAxis(RBDLModelWrapper* model) {
 
+	for (auto it = model->rbdl_model->mBodyNameMap.begin(); it != model->rbdl_model->mBodyNameMap.end(); it++) {
+		std::string segment_name = it->first;
+		int body_id = it->second;
+
+		auto segment_render_node = model->getSegmentEntity(segment_name, true);
+
+		auto segment_axis = new Qt3DCore::QEntity(segment_render_node);
+
+		auto x_entity = createWire(QVector3D(
+									  frame_axis_size,
+									  0,
+									  0),
+								  QColor("red"),
+								  frame_axis_diameter,
+								  segment_axis);
+		auto y_entity = createWire(QVector3D(
+									  0,
+									  frame_axis_size,
+									  0),
+								   QColor("blue"),
+								   frame_axis_diameter,
+								   segment_axis);
+		auto z_entity = createWire(QVector3D(
+									   0,
+									   0,
+									   frame_axis_size),
+								   QColor("green"),
+								   frame_axis_diameter,
+								   segment_axis);
+		segment_axis->setProperty("Scene.ObjGroup", QVariant("FrameAxis"));
+	}
+}
 
 
 void VisualExtrasPlugin::reload(RBDLModelWrapper *model) {
 	loadVisualExtrasSettings();
 	buildModelTreeWireframe(model);
+	addJointFrameAxis(model);
 }
