@@ -106,7 +106,25 @@ model = {
 | `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
 
 - `frames` denote the individual frames that make up the model tree. Each frame require the following elements:
-  - `name`, an unique name is required. 
+  - `name`, an unique name is required for each frame
+  - `parent`, the frame that this frame is attached to. The world frame is named `ROOT`. 
+  - `visuals` denotes the mesh that should be loaded. In this example, it refers to the `meshes` object defined earlier. 
+  - `joint` denote the axes of rotation, in the order of the local frame rotation XYZ, then translation XYZ. 
+    - Multiple joints can be defined by concatination. A 3 DOF XYZ Euler joint would look like ` joint = {{ 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0 }}`
+  - `joint_frame` denotes the attachment site of the frame with respect to the parent frame. 
+    - `r` denotes the translational offset. For `segment1`, no offset is set. For `segment2`, the link starts at `rod_length` away from the parent frame. If unset, this is `{0, 0, 0}`.
+
+| ![pendulum_doubleoffset.png](figures/pendulum_doubleoffset.png) | 
+|:--:| 
+| `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
+
+    - `E` denotes the rotation matrix offset from the parent frame. If unset, this is identify `{1, 0, 0}, {0, 1, 0}, {0, 0, 1}`. 
+    
+| ![pendulum_rotx.png](figures/pendulum_rotx.png) | 
+|:--:| 
+| `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
+    
+
 
 ```
 return model
