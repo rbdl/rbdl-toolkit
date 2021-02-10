@@ -23,7 +23,9 @@ rod_length = 1
 
 The meshes denote how to visualize the model. Regardless of mesh definition, a basic wire-frame will be inserted to denote the mesh. The below code block describes two mesh objects that will later be used in the model itself. 
 - `color` denotes the color of the object in red, green, blue (RGB) order
-- 
+- `mesh_center` denotes the rotation center of this mesh. If it is set to `{0, 0, 0}`, it will rotate around its center instead. 
+
+![Default Model](figures/pendulum_model.png "Default model")
 
 ```
 meshes = {
