@@ -9,30 +9,21 @@ RBDL is capable of working with the following model files:
 - Lua: Lua models are a data structure created in the Lua language. As such, Lua models are simply Lua commands that is evaluated by the Lua compiler and offers strong flexibility. 
 - Unified Robot Description Format (URDF): URDF models are XML-based layout commonly used in the Robot Operating System (ROS).  
 
+## Useful functions
+
+The `F5` command in Toolkit reloads all the models, so you can make modifications and quickly see the results instead of needing to reopen the software. 
+
 ## Pendulum, kinematics
 
-The first set of example can be found in `./example/pendulum_kinematic`
+The first set of example can be found in `./example/pendulum_kinematic`. See below for a breakdown of file. 
 
-### Lua Model
-
-Since Lua is a programming language, simple assignment operations can be used to set up variables for use for the rest of the document, allowing for rapid modifications. 
+### Lua Model, `pendulum.lua`
 
 ```
 rod_length = 1
 ```
 
-The meshes denote how to visualize the model. Regardless of mesh definition, a basic wire-frame will be inserted to denote the mesh. The below code block describes two mesh objects that will later be used in the model itself. 
-- `color` denotes the color of the object in red, green, blue (RGB) order
-- `mesh_center` denotes the rotation center of this mesh. If it is set to `{0, 0, 0}`, it will rotate around its center instead. 
-
-| ![pendulum_model.png](figures/pendulum_model.png) | 
-|:--:| 
-| Default model from the examples |
-
-
-| ![pendulum_nomeshcenter.png](figures/pendulum_nomeshcenter.png) | 
-|:--:| 
-| Mesh center set to 0. |
+Since Lua is a programming language, simple assignment operations can be used to set up variables for use for the rest of the document, allowing for rapid modifications. 
 
 ```
 meshes = {
@@ -52,14 +43,35 @@ meshes = {
 }
 ```
 
+The meshes object denotes how to visualize the model. Regardless of mesh definition, a basic wire-frame will be inserted to denote the mesh. The below code block describes two mesh objects that will later be used in the model itself. 
+- `color` denotes the colour of the object in red, green, blue (RGB) order
+- `mesh_center` denotes the rotation center of this mesh. If it is set to `{0, 0, 0}`, it will rotate around its centre. 
+
+| ![pendulum_model.png](figures/pendulum_model.png) | 
+|:--:| 
+| Default model from the examples |
+
+
+| ![pendulum_nomeshcenter.png](figures/pendulum_nomeshcenter.png) | 
+|:--:| 
+| Mesh center set to `{0, 0, 0}`. |
+
+- `dimensions` sets the size of the mesh itself. If it is set to `{0.1, 0.1, 0.1}`, then it will be a 0.1 m cube. 
+
+| ![pendulum_nomeshcenter.png](figures/pendulum_wide.png) | 
+|:--:| 
+| Mesh center set to `{ rod_length, 0.1, rod_length}`. |
+
+- `src` denotes the source image file of the mesh. A set of default meshes can be found in `meshes\`
+
 ```
 model = {
   gravity = { 0, -9.81, 0 },
 
   configuration = {
-	axis_front = { 1, 0, 0 },
-	axis_up = { 0, 0, 1 },
-	axis_right = { 0, 1, 0 },
+	axis_right = { 1, 0, 0 },
+	axis_front = { 0, 1, 0 },
+	axis_up =    { 0, 0, 1 },
   },
 
   frames = {
@@ -69,7 +81,7 @@ model = {
 	  visuals = { meshes.rod1 },
 	  joint = {{ 0, 1, 0, 0, 0, 0 }},
 	  joint_frame = {
-		E = {{0, 0, 1}, {1, 0, 0}, {0, 1, 0}}
+		E = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}
 	  }
 	},
 	{
@@ -79,16 +91,28 @@ model = {
 	  joint = {{ 0, 1, 0, 0, 0, 0 }},
 	  joint_frame = {
 		r = { 0., 0., -rod_length },
-		E = {{1, 0, 0}, {0, -1, 0}, {0, 0, -1}}
+		E = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}
 	  }
 	}
   }
 }
+```
 
+- `gravity` denotes the direction of gravity with respect to the global frame. This is an important factor when you are using RBDL to calculate joint torque, but not important in this particular instance because the dynamic parameters are not incorporated yet. 
+- `configuration` denotes how the global frame is being visualized. In the default camera view (`Toolkit > Settings > CameraOptions`, position at `<6,3,6>` and view_center at `-4.34917, -1.85781, -4.63835`), then the axis directions are denoted as below:
+
+| ![pendulum_globalrgb.png](figures/pendulum_globalrgb.png) | 
+|:--:| 
+| `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
+
+- `frames` denote the individual frames that make up the model tree. Each frame require the following elements:
+  - `name`, an unique name is required. 
+
+```
 return model
 ```
 
-
+The model object denotes parameters of the model itself. 
 
 
 
