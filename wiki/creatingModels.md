@@ -1,3 +1,89 @@
+Creating Models
+=================
+
+In this wiki I will describe how to create Lua and URDF models. 
+
+## Background
+
+RBDL is capable of working with the following model files: 
+- Lua: Lua models are a data structure created in the Lua language. As such, Lua models are simply Lua commands that is evaluated by the Lua compiler and offers strong flexibility. 
+- Unified Robot Description Format (URDF): URDF models are XML-based layout commonly used in the Robot Operating System (ROS).  
+
+## Pendulum, kinematics
+
+The first set of example can be found in `./example/pendulum_kinematic`
+
+### Lua Model
+
+Since Lua is a programming language, simple assignment operations can be used to set up variables for use for the rest of the document, allowing for rapid modifications. 
+
+```
+rod_length = 1
+```
+
+The meshes denote how to visualize the model. Regardless of mesh definition, a basic wire-frame will be inserted to denote the mesh. The below code block describes two mesh objects that will later be used in the model itself. 
+- `color` denotes the color of the object in red, green, blue (RGB) order
+- 
+
+```
+meshes = {
+  rod1 = {
+	color = { 1, 0, 0 },
+	mesh_center = {0, 0, -rod_length/2},
+	dimensions = { 0.1, 0.1, rod_length},
+	src = "unit_cube.obj"
+  },
+  
+  rod2 = {
+	color = { 0, 1, 0 },
+	mesh_center = {0, 0, -rod_length/2},
+	dimensions = { 0.1, 0.1, rod_length},
+	src = "unit_cube.obj"
+  }
+}
+```
+
+```
+model = {
+  gravity = { 0, -9.81, 0 },
+
+  configuration = {
+	axis_front = { 1, 0, 0 },
+	axis_up = { 0, 0, 1 },
+	axis_right = { 0, 1, 0 },
+  },
+
+  frames = {
+	{
+	  name = "segment1",
+	  parent = "ROOT",
+	  visuals = { meshes.rod1 },
+	  joint = {{ 0, 1, 0, 0, 0, 0 }},
+	  joint_frame = {
+		E = {{0, 0, 1}, {1, 0, 0}, {0, 1, 0}}
+	  }
+	},
+	{
+	  name = "segment2",
+	  parent = "segment1",
+	  visuals = { meshes.rod2 },
+	  joint = {{ 0, 1, 0, 0, 0, 0 }},
+	  joint_frame = {
+		r = { 0., 0., -rod_length },
+		E = {{1, 0, 0}, {0, -1, 0}, {0, 0, -1}}
+	  }
+	}
+  }
+}
+
+return model
+```
+
+
+
+
+
+
 As such, we are denoting The components of each limb are denoted as follows, along with an example code for a right arm model. 
 
 - configuration
