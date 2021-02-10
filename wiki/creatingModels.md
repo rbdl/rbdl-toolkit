@@ -25,7 +25,14 @@ The meshes denote how to visualize the model. Regardless of mesh definition, a b
 - `color` denotes the color of the object in red, green, blue (RGB) order
 - `mesh_center` denotes the rotation center of this mesh. If it is set to `{0, 0, 0}`, it will rotate around its center instead. 
 
-![Default Model](figures/pendulum_model.png "Default model")
+| ![pendulum_model.png](figures/pendulum_model.png) | 
+|:--:| 
+| Default model from the examples |
+
+
+| ![pendulum_nomeshcenter.png](figures/pendulum_nomeshcenter.png) | 
+|:--:| 
+| Mesh center set to 0. |
 
 ```
 meshes = {
