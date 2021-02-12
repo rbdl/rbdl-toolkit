@@ -56,7 +56,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::getSegmentEntity(std::string segment_name, 
 	// if segment_entity not found and create enable create a new model segment
 	if (create) {
 		Qt3DCore::QEntity* segment_render_node = new Qt3DCore::QEntity();
-		segment_render_node->setProperty("Scene.ObjGroup", QVariant(QString("Segments"))); 
+		//segment_render_node->setProperty("Scene.ObjGroup", QVariant(QString("Segments")));
 
 		//calculate position and orientation of segment to the model root
 		unsigned int body_id = rbdl_model->GetBodyId(segment_name.c_str());
@@ -77,6 +77,7 @@ Qt3DCore::QEntity* RBDLModelWrapper::getSegmentEntity(std::string segment_name, 
 
 	throw RigidBodyDynamics::Errors::RBDLError(QString("Segment with name %1 was not found it this model!").arg(QString::fromStdString(segment_name)).toStdString());
 }
+
 
 void RBDLModelWrapper::build3DEntity(ModelInfo& model_info, std::vector<SegmentVisualInfo>& visuals_info) {
 	current_Q = VectorNd::Zero(rbdl_model->q_size);
