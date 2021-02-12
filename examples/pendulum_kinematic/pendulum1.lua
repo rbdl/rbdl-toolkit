@@ -1,4 +1,4 @@
-rod_length = 5
+rod_length = 1
 
 meshes = {
   rod1 = {
@@ -11,9 +11,9 @@ meshes = {
 
 model = {
   configuration = {
-	axis_right = { 1, 0, 0 },
-	axis_front = { 0, 1, 0 },
-	axis_up =    { 0, 0, 1 },
+	axis_right = { -1, 0, 0 },
+	axis_front = { 0, -1, 0 },
+	axis_up =    { 0, 0, -1 },
   },
 
   frames = {
@@ -21,7 +21,7 @@ model = {
 	  name = "segment1",
 	  parent = "ROOT",
 	  visuals = { meshes.rod1 },
-	  joint = {{ 0, 0, 0, 1, 0, 0 }},
+	  joint = {{ 0, 1, 0, 0, 0, 0 }},
 	  joint_frame = {
 		E = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}
 	  }

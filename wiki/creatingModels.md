@@ -69,9 +69,9 @@ model = {
   gravity = { 0, -9.81, 0 },
 
   configuration = {
-	axis_right = { 1, 0, 0 },
-	axis_front = { 0, 1, 0 },
-	axis_up =    { 0, 0, 1 },
+	axis_right = { -1, 0, 0 },
+	axis_front = { 0, -1, 0 },
+	axis_up =    { 0, 0, -1 },
   },
 
   frames = {
@@ -99,7 +99,7 @@ model = {
 ```
 
 - `gravity` denotes the direction of gravity with respect to the global frame. This is an important factor when you are using RBDL to calculate joint torque, but not important in this particular instance because the dynamic parameters are not incorporated yet. 
-- `configuration` denotes how the global frame is being visualized. In the default camera view (`Toolkit > Settings > CameraOptions`, position at `<6,3,6>` and view_center at `-4.34917, -1.85781, -4.63835`), then the axis directions are denoted as below:
+- `configuration` denotes how the global frame is being visualized. *Note that there appears to be some sort of bug where the joint rotations may not respect the global angle direction so `-1` may be needed instead of `1`*. In the default camera view (`Toolkit > Settings > CameraOptions`, position at `<6,3,6>` and view_center at `-4.34917, -1.85781, -4.63835`), then the axis directions are denoted as below:
 
 | ![pendulum_globalrgb.png](figures/pendulum_globalrgb2.png) | 
 |:--:| 
@@ -123,9 +123,11 @@ model = {
 | ![pendulum_rotx.png](figures/pendulum_rotx.png) | 
 |:--:| 
 | `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
-    
-
 
 ```
 return model
 ```
+
+Since the Lua model is basically running a code snippet, the model must be returned. 
+
+### URDF Model, `pendulum.urdf`
