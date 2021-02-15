@@ -177,6 +177,7 @@ std::vector<SegmentVisualInfo> UrdfModelWrapper::loadSegmentInfo() {
 						auto geo = (std::shared_ptr<urdf::Cylinder>&)visual->geometry.value();
 						mesh_file = findFile(QString("unit_cylinder_medres_z.obj"),true);
 						visual_dimentions = QVector3D(geo->radius, geo->radius, geo->length);
+						mesh_rotation = QQuaternion::fromAxisAndAngle(0., 1., 0., 90.) * mesh_rotation;
 						break;
 					}
 					case urdf::GeometryType::MESH :{
