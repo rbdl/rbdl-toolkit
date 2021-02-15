@@ -6,9 +6,9 @@
 
 #include <Qt3DCore/QTransform>
 
-#include <Qt3DRender/QAttribute>
-#include <Qt3DRender/QBuffer>
-#include <Qt3DRender/QGeometry>
+#include <Qt3DCore/QAttribute>
+#include <Qt3DCore/QBuffer>
+#include <Qt3DCore/QGeometry>
 #include <Qt3DRender/QGeometryRenderer>
 #include <Qt3DRender/QMesh>
 #include <Qt3DRender/QLineWidth>
@@ -22,7 +22,7 @@ using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
 QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_color) {
-	QGeometry* floor_geometry = new Qt3DRender::QGeometry();
+	QGeometry* floor_geometry = new Qt3DCore::QGeometry();
 	float step = fabs (rborder - lborder) / (float) count;
 	QByteArray vertexBytes;
 	// buffer size:		(x and z) * (count of lines) * (start end) * (vertex size) * (data type)
@@ -51,17 +51,17 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	#if QT_VERSION > 0x50a00
 		QBuffer* grid_vertexes = new QBuffer(floor_geometry);
 	#else
-		QBuffer* grid_vertexes = new QBuffer(Qt3DRender::QBuffer::VertexBuffer, floor_geometry);
+		QBuffer* grid_vertexes = new QBuffer(Qt3DCore::QBuffer::VertexBuffer, floor_geometry);
 	#endif
 
 	grid_vertexes->setUsage(QBuffer::StaticDraw);
 	grid_vertexes->setData(vertexBytes);
 
-	auto *vertexAttribute = new Qt3DRender::QAttribute(floor_geometry);
-	vertexAttribute->setName(Qt3DRender::QAttribute::defaultPositionAttributeName());
-	vertexAttribute->setVertexBaseType(Qt3DRender::QAttribute::Float);
+	auto *vertexAttribute = new Qt3DCore::QAttribute(floor_geometry);
+	vertexAttribute->setName(Qt3DCore::QAttribute::defaultPositionAttributeName());
+	vertexAttribute->setVertexBaseType(Qt3DCore::QAttribute::Float);
 	vertexAttribute->setVertexSize(3);
-	vertexAttribute->setAttributeType(Qt3DRender::QAttribute::VertexAttribute);
+	vertexAttribute->setAttributeType(Qt3DCore::QAttribute::VertexAttribute);
 	vertexAttribute->setBuffer(grid_vertexes);
 	vertexAttribute->setByteStride(3 * sizeof(float));
 	vertexAttribute->setCount(2 * 2 * (count+1));
@@ -76,15 +76,15 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	}
 
 	#if QT_VERSION > 0x50a00
-		auto *indexBuffer = new Qt3DRender::QBuffer(floor_geometry);
+		auto *indexBuffer = new Qt3DCore::QBuffer(floor_geometry);
 	#else
-		auto *indexBuffer = new Qt3DRender::QBuffer(Qt3DRender::QBuffer::IndexBuffer, floor_geometry);
+		auto *indexBuffer = new Qt3DCore::QBuffer(Qt3DCore::QBuffer::IndexBuffer, floor_geometry);
 	#endif
 	indexBuffer->setData(indexBytes);
 
-	auto *indexAttribute = new Qt3DRender::QAttribute(floor_geometry);
-	indexAttribute->setVertexBaseType(Qt3DRender::QAttribute::UnsignedInt);
-	indexAttribute->setAttributeType(Qt3DRender::QAttribute::IndexAttribute);
+	auto *indexAttribute = new Qt3DCore::QAttribute(floor_geometry);
+	indexAttribute->setVertexBaseType(Qt3DCore::QAttribute::UnsignedInt);
+	indexAttribute->setAttributeType(Qt3DCore::QAttribute::IndexAttribute);
 	indexAttribute->setBuffer(indexBuffer);
 	indexAttribute->setCount(4*(count+1));
 	floor_geometry->addAttribute(indexAttribute); // We add the indices linking the points in the geometry

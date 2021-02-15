@@ -4,7 +4,7 @@
 
 #include <Qt3DCore/QTransform>
 #include <Qt3DRender/QMesh>
-#include <Qt3DRender/QAttribute>
+#include <Qt3DCore/QAttribute>
 #include <Qt3DExtras/QPhongMaterial>
 #include <Qt3DExtras/QDiffuseSpecularMaterial>
 

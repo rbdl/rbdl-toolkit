@@ -1,8 +1,8 @@
 PROJECT(VisualExtrasPlugin)
 
-	
+
 SET(Plugin_SRCS
-	
+
 	VisualExtrasPlugin.cc
 )
 
@@ -16,7 +16,7 @@ SET(CMAKE_AUTOUIC ON )
 SET(CMAKE_AUTOMOC ON )
 
 
-	
+
 INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR} )
 INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES (${QT_INCLUDE_DIR})
@@ -33,18 +33,10 @@ ADD_DEFINITIONS (-DQT_SHARED)
 
 ADD_LIBRARY (visualextrasplugin SHARED ${Plugin_SRCS})
 
-TARGET_LINK_LIBRARIES (visualextrasplugin 
-	${QT_LIBRARIES} 
-	${QT_QTXML_LIBRARY} 
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::3DCore
-	Qt5::3DExtras
-	Qt5::3DRender
-	Qt5::3DInput
+TARGET_LINK_LIBRARIES (visualextrasplugin
+	${QT_LIBRARIES}
 	${RBDL_LIBRARY}
 	${TOOLKIT_LIB}
 )
 
-INSTALL( TARGETS visualextrasplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	
+INSTALL( TARGETS visualextrasplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

@@ -31,15 +31,7 @@ SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 ADD_LIBRARY (IKplugin SHARED ${InverseKinematicsPlugin_SRCS})
 
 TARGET_LINK_LIBRARIES (IKplugin
-	${QT_LIBRARIES}
-	${QT_QTXML_LIBRARY}
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::3DCore
-	Qt5::3DExtras
-	Qt5::3DRender
-	Qt5::3DInput
+    ${QT_LIBRARIES}
 	${RBDL_LIBRARY}
 	toolkitlib
 	animationplugin
