@@ -123,14 +123,14 @@ void VisualExtrasPlugin::addJointFrameAxis(RBDLModelWrapper* model) {
 									  0,
 									  frame_axis_size,
 									  0),
-								   QColor("blue"),
+								   QColor("green"),
 								   frame_axis_diameter,
 								   segment_axis);
 		auto z_entity = createWire(QVector3D(
 									   0,
 									   0,
 									   frame_axis_size),
-								   QColor("green"),
+								   QColor("blue"),
 								   frame_axis_diameter,
 								   segment_axis);
 		segment_axis->setProperty("Scene.ObjGroup", QVariant("FrameAxis"));
