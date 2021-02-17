@@ -13,7 +13,7 @@
 	<link name="segment1">
 		<visual>
 			<geometry>
-				<box size="0.1 0.1 1"/>
+				<box size="0.2 0.2 1"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 -0.5"/>
 			<material name="red"/>
@@ -37,7 +37,7 @@
 	</joint>
 
 	<joint name="seg1toseg2" type="revolute">
-		<origin xyz="0 0 -1"/>
+		<origin xyz="1 0 0"/>
 		<axis xyz="1 0 0"/>
 		<parent link="segment1"/>
 		<child link="segment2"/>
