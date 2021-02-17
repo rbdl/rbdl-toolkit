@@ -19,6 +19,9 @@ The first set of example can be found in `./example/pendulum_kinematic`. See bel
 
 ### Lua Model, `pendulum.lua`
 
+To load the Lua model and the trajectory file into rbdl-toolkit, the command is `rbdl-toolkit --model pendulum.lua 
+--animation pendulum.csv`
+
 ```
 rod_length = 1
 ```
@@ -28,14 +31,13 @@ Since Lua is a programming language, simple assignment operations can be used to
 ```
 meshes = {
   rod1 = {
-	color = { 1, 0, 0 },
+	color = { 1, 0, 0},
 	mesh_center = {0, 0, -rod_length/2},
-	dimensions = { 0.1, 0.1, rod_length},
+	dimensions = { 0.2, 0.2, rod_length},
 	src = "unit_cube.obj"
   },
-  
   rod2 = {
-	color = { 0, 1, 0 },
+	color = { 0, 1, 0},
 	mesh_center = {0, 0, -rod_length/2},
 	dimensions = { 0.1, 0.1, rod_length},
 	src = "unit_cube.obj"
@@ -66,8 +68,6 @@ The meshes object denotes how to visualize the model. Regardless of mesh definit
 
 ```
 model = {
-  gravity = { 0, -9.81, 0 },
-
   configuration = {
 	axis_right = { -1, 0, 0 },
 	axis_front = { 0, -1, 0 },
@@ -120,9 +120,9 @@ model = {
 
     - `E` denotes the rotation matrix offset from the parent frame. If unset, this is identify `{1, 0, 0}, {0, 1, 0}, {0, 0, 1}`. 
     
-| ![pendulum_rotx.png](figures/pendulum_rotx.png) | 
+| ![pendulum_animate1.mp4](figures/pendulum_animate1.mp4) | 
 |:--:| 
-| `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
+| Pendulum animating. |
 
 ```
 return model

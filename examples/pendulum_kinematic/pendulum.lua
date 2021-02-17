@@ -17,9 +17,9 @@ meshes = {
 
 model = {
   configuration = {
-	axis_right = { 1, 0, 0 },
-	axis_front = { 0, 1, 0 },
-	axis_up =    { 0, 0, 1 },
+	axis_right = { -1, 0, 0 },
+	axis_front = { 0, -1, 0 },
+	axis_up =    { 0, 0, -1 },
   },
 
   frames = {
@@ -39,7 +39,7 @@ model = {
 	  joint = {{ 0, 1, 0, 0, 0, 0 }},
 	  joint_frame = {
 		r = { 0., 0., -rod_length },
-		E = {{0, -1, 0}, {1, 0, 0}, {0, 0, 1}}
+		E = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}
 	  }
 	}
   }
