@@ -120,7 +120,7 @@ model = {
 
     - `E` denotes the rotation matrix offset from the parent frame. If unset, this is identify `{1, 0, 0}, {0, 1, 0}, {0, 0, 1}`. 
     
-| ![pendulum_animate1.mp4](figures/pendulum_animate1.mp4) | 
+| figures/pendulum_animate1.mp4 | 
 |:--:| 
 | Pendulum animating. |
 
