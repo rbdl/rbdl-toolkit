@@ -2,14 +2,16 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 SET ( TOOLKIT_VERSION_MAJOR 1 )
 SET ( TOOLKIT_VERSION_MINOR 1 )
-SET ( TOOLKIT_VERSION_PATCH 0 )
-SET ( TOOLKIT_VERSION 
+SET ( TOOLKIT_VERSION_PATCH 1 )
+SET ( TOOLKIT_VERSION
 	${TOOLKIT_VERSION_MAJOR}.${TOOLKIT_VERSION_MINOR}.${TOOLKIT_VERSION_PATCH} )
 
 PROJECT ( RBDL-Toolkit VERSION ${TOOLKIT_VERSION} )
 
 CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
 LIST( APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake )
+
+OPTION(USE_QT6 "if on build toolkit using qt6 else qt5")
 
 IF(APPLE)
 OPTION(BUILD_OSX_BUNDLE "Build Application as osx app bundle" OFF)
@@ -23,6 +25,9 @@ SET( QT_WRAP_CPP TRUE )
 SET(CMAKE_AUTOMOC ON )
 SET(CMAKE_AUTORCC ON )
 SET(CMAKE_AUTOUIC ON )
+
+# add flag for relocatable code -- required to work with shared Qt libraries
+SET(CMAKE_CXX_FLAGS  ${CMAKE_CXX_FLAGS} "-fPIC" )
 
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DTOOLKIT_DEBUG")
 SET(CUSTOM_RBDL_PATH "" CACHE PATH "Path to specific RBDL Installation")
@@ -38,10 +43,102 @@ IF (CUSTOM_QT_PATH)
 	SET(CMAKE_PREFIX_PATH "${CUSTOM_QT_PATH}/lib/cmake")
 ENDIF(CUSTOM_QT_PATH)
 
-FIND_PACKAGE (Qt5 REQUIRED COMPONENTS Core Gui Widgets 3DCore 3DExtras 3DRender 3DInput)
 FIND_PACKAGE (RBDL COMPONENTS LUAMODEL URDFREADER REQUIRED)
 FIND_PACKAGE (Eigen3 REQUIRED)
 FIND_PACKAGE (Boost REQUIRED)
+
+IF(USE_QT6)
+  FIND_PACKAGE (Qt6 REQUIRED COMPONENTS Core Gui Widgets 3DCore 3DExtras 3DRender 3DInput Concurrent )
+  ADD_DEFINITIONS (${QT_DEFINITIONS})
+  ADD_DEFINITIONS ( -DUSE_QT6 )
+  SET( QT_INCLUDE_DIR
+	${Qt6Core_INCLUDE_DIRS}
+	${Qt6Gui_INCLUDE_DIRS}
+	${Qt6Widgets_INCLUDE_DIRS}
+	${Qt63DCore_INCLUDE_DIRS}
+	${Qt63DExtras_INCLUDE_DIRS}
+	${Qt63DRender_INCLUDE_DIRS}
+	${Qt63DInput_INCLUDE_DIRS}
+	${Qt6Concurrent_INCLUDE_DIRS}
+	)
+
+  SET( QT_LIBRARIES
+    ${Qt6Core_LIBRARIES}
+	${Qt6Gui_LIBRARIES}
+	${Qt6Widgets_LIBRARIES}
+	${Qt63DCore_LIBRARIES}
+    ${Qt63DExtras_LIBRARIES}
+	${Qt63DRender_LIBRARIES}
+	${Qt63DInput_LIBRARIES}
+	${Qt6Concurrent_LIBRARIES}
+	)
+  QT6_WRAP_UI ( UI_SRC
+	ui/Timeline.ui
+	ui/ModelSelector.ui
+	ui/SceneGroupList.ui
+	ui/SettingsEditor.ui
+	ui/VectorEditor.ui
+	)
+
+  #Sources that contain q objects
+  QT6_WRAP_CPP ( MOC_SRCS
+	include/ToolkitApp.h
+	include/SceneWidget.h
+	include/ModelSelectorDialog.h
+	include/Timeline.h
+	include/VectorEditor.h
+	include/rbdl_wrapper.h
+	include/SceneGroupsWidget.h
+	include/variantdelegate.h
+	include/ToolkitSettings.h
+	)
+ELSE (USE_QT6)
+  FIND_PACKAGE (Qt5 REQUIRED COMPONENTS Core Gui Widgets 3DCore 3DExtras 3DRender 3DInput Concurrent )
+  ADD_DEFINITIONS (${QT_DEFINITIONS})
+
+  SET( QT_INCLUDE_DIR
+	${Qt5Core_INCLUDE_DIRS}
+	${Qt5Gui_INCLUDE_DIRS}
+	${Qt5Widgets_INCLUDE_DIRS}
+	${Qt53DCore_INCLUDE_DIRS}
+	${Qt53DExtras_INCLUDE_DIRS}
+	${Qt53DRender_INCLUDE_DIRS}
+	${Qt53DInput_INCLUDE_DIRS}
+	${Qt5Concurrent_INCLUDE_DIRS}
+	)
+
+  SET( QT_LIBRARIES
+    ${Qt5Core_LIBRARIES}
+	${Qt5Gui_LIBRARIES}
+	${Qt5Widgets_LIBRARIES}
+	${Qt53DCore_LIBRARIES}
+    ${Qt53DExtras_LIBRARIES}
+	${Qt53DRender_LIBRARIES}
+	${Qt53DInput_LIBRARIES}
+	${Qt5Concurrent_LIBRARIES}
+	)
+  QT5_WRAP_UI ( UI_SRC
+	ui/Timeline.ui
+	ui/ModelSelector.ui
+	ui/SceneGroupList.ui
+	ui/SettingsEditor.ui
+	ui/VectorEditor.ui
+	)
+
+  #Sources that contain q objects
+  QT5_WRAP_CPP ( MOC_SRCS
+	include/ToolkitApp.h
+	include/SceneWidget.h
+	include/ModelSelectorDialog.h
+	include/Timeline.h
+	include/VectorEditor.h
+	include/rbdl_wrapper.h
+	include/SceneGroupsWidget.h
+	include/variantdelegate.h
+	include/ToolkitSettings.h
+	)
+ENDIF (USE_QT6)
+
 INCLUDE_DIRECTORIES (${QT_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR})
@@ -52,8 +149,6 @@ INCLUDE_DIRECTORIES (${CMAKE_CURRENT_BINARY_DIR}/ui)
 INCLUDE_DIRECTORIES (${RBDL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${BOOST_INCLUDE_DIR})
-
-ADD_DEFINITIONS (${QT_DEFINITIONS})
 
 IF ( ${CMAKE_VERSION} VERSION_LESS 3.12.0 )
 	ADD_DEFINITIONS (-DTOOKIT_VERSION="${TOOLKIT_VERSION}" -DINSTALL_DIR="${CMAKE_INSTALL_PREFIX}/share/ORB/rbdl-toolkit")
@@ -66,26 +161,6 @@ CONFIGURE_FILE(extra/mk_appimage.sh mk_appimage.sh)
 CONFIGURE_FILE(extra/mk_pluginbuilder.sh mk_pluginbuilder.sh)
 ENDIF(NOT APPLE)
 
-QT5_WRAP_UI ( UI_SRC
-	ui/Timeline.ui
-	ui/ModelSelector.ui
-	ui/SceneGroupList.ui
-	ui/SettingsEditor.ui
-	ui/VectorEditor.ui
-)
-
-#Sources that contain q objects
-QT5_WRAP_CPP ( MOC_SRCS
-	include/ToolkitApp.h
-	include/SceneWidget.h
-	include/ModelSelectorDialog.h
-	include/Timeline.h
-	include/VectorEditor.h
-	include/rbdl_wrapper.h
-	include/SceneGroupsWidget.h
-	include/variantdelegate.h
-	include/ToolkitSettings.h
-)
 
 SET ( ToolkitLib_SRCS
 	src/ToolkitApp.cc
@@ -107,14 +182,6 @@ SET ( Toolkit_SRCS
 	src/main.cc
 )
 
-ADD_SUBDIRECTORY (
-  plugins
-)
-
-ADD_SUBDIRECTORY (
-  vendor
-)
-
 ADD_LIBRARY ( toolkitlib SHARED
 	${ToolkitLib_SRCS}
 	${MOC_SRCS}
@@ -123,17 +190,18 @@ ADD_LIBRARY ( toolkitlib SHARED
 
 TARGET_LINK_LIBRARIES ( toolkitlib
 	${QT_LIBRARIES}
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::3DCore
-	Qt5::3DExtras
-	Qt5::3DRender
-	Qt5::3DInput
 	${RBDL_LIBRARY}
 	${RBDL_LUAMODEL_LIBRARY}
 	${RBDL_URDFREADER_LIBRARY}
 	urdfparser
+)
+
+ADD_SUBDIRECTORY (
+  plugins
+)
+
+ADD_SUBDIRECTORY (
+  vendor
 )
 
 IF(BUILD_OSX_BUNDLE)

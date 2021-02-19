@@ -3,10 +3,6 @@
 #include <QMatrix4x4>
 
 #include <Qt3DCore/QTransform>
-#include <Qt3DRender/QMesh>
-#include <Qt3DRender/QAttribute>
-#include <Qt3DExtras/QPhongMaterial>
-#include <Qt3DExtras/QDiffuseSpecularMaterial>
 
 #include "render_util.h"
 #include "util.h"
