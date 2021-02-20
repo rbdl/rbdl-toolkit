@@ -1,5 +1,5 @@
 PROJECT(MotionMarkerPlugin)
-	
+
 SET(MotionMarkerPlugin_SRCS
 	MotionMarkerPlugin.cc
 	MotionMarkerExtension.cc
@@ -12,7 +12,7 @@ SET(MotionMarkerPlugin_MOC_HDRS
 )
 
 SET(CMAKE_AUTOMOC ON)
-	
+
 INCLUDE_DIRECTORIES (${QT_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR})
@@ -31,16 +31,8 @@ SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 ADD_LIBRARY (motionmarkerplugin SHARED ${MotionMarkerPlugin_SRCS})
 
-TARGET_LINK_LIBRARIES (motionmarkerplugin 
-	${QT_LIBRARIES} 
-	${QT_QTXML_LIBRARY} 
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::3DCore
-	Qt5::3DExtras
-	Qt5::3DRender
-	Qt5::3DInput
+TARGET_LINK_LIBRARIES (motionmarkerplugin
+    ${QT_LIBRARIES}
 	${RBDL_LIBRARY}
 	toolkitlib
 	c3dfile

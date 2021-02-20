@@ -71,7 +71,7 @@ SceneWidget::SceneWidget(QWidget *parent):
 	qt3d_view->setRootEntity(scene_root);
 
 	display_container = new QHBoxLayout(this);
-	display_container->setMargin(0);
+	display_container->setContentsMargins(QMargins(0,0,0,0));
 	display_container->addWidget(QWidget::createWindowContainer(qt3d_view));
 
 	render_selector = new SceneGroupsWidget(this);

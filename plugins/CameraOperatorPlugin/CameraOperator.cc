@@ -12,6 +12,8 @@ using namespace RigidBodyDynamics::Math;
 
 CameraOperatorPlugin::CameraOperatorPlugin() {
 	parentApp = NULL;
+	default_distance = 5.0;
+	camera_reset_enabled = true;
 }
 
 CameraOperatorPlugin::~CameraOperatorPlugin() {
@@ -26,20 +28,20 @@ void CameraOperatorPlugin::init(ToolkitApp* app) {
 
 	// Camera direct actions
 	QAction* front_view = camera_menu->addAction("Front View");
-	front_view->setShortcut(QKeySequence::fromString("1"));
+	front_view->setShortcut(QKeySequence::fromString("Ctrl+1"));
 	connect(front_view, &QAction::triggered, this, &CameraOperatorPlugin::setFrontView);
 
 	QAction* side_view = camera_menu->addAction("Side View");
-	side_view->setShortcut(QKeySequence::fromString("2"));
+	side_view->setShortcut(QKeySequence::fromString("Ctrl+2"));
 	connect(side_view, &QAction::triggered, this, &CameraOperatorPlugin::setSideView);
 
 	QAction* top_view = camera_menu->addAction("Top View");
-	top_view->setShortcut(QKeySequence::fromString("3"));
+	top_view->setShortcut(QKeySequence::fromString("Ctrl+3"));
 	connect(top_view, &QAction::triggered, this, &CameraOperatorPlugin::setTopView);
 
 	QAction* orthographic_toggle = camera_menu->addAction("Orthograpic View");
 	orthographic_toggle->setCheckable(true);
-	orthographic_toggle->setShortcut(QKeySequence::fromString("5"));
+	orthographic_toggle->setShortcut(QKeySequence::fromString("Ctrl+5"));
 	connect(orthographic_toggle, &QAction::changed, [=]
 	       	{
 		       	setOrthographicView(orthographic_toggle->isChecked());
