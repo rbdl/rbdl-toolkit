@@ -1,17 +1,19 @@
 Creating Models
 =================
 
-In this wiki I will describe how to create Lua and URDF models. 
+In this wiki I will describe how to create Lua and URDF models. The models generally are broken up into the 
+following components:
+- The model kinematics/dynamics, consisting of the link length, kinematic chain, and dynamic parameters like the 
+  inertial matrix, centre of mass, and link mass
+- The model visualizatoin, consisting of a basic wireframe, and surface meshes
+  - Note that RBDL-Toolkit currently only supports `.stl` files for meshes
+- Model marker parameters, used for inverse kinematics calculations when given marker data
 
 ## Background
 
 RBDL is capable of working with the following model files: 
 - Lua: Lua models are a data structure created in the Lua language. As such, Lua models are simply Lua commands that is evaluated by the Lua compiler and offers strong flexibility. 
-- Unified Robot Description Format (URDF): URDF models are XML-based layout commonly used in the Robot Operating System (ROS).  
-
-## Useful functions
-
-The `F5` command in Toolkit reloads all the models, so you can make modifications and quickly see the results instead of needing to reopen the software. 
+- Unified Robot Description Format (URDF): URDF models are XML-based layout commonly used in the Robot Operating System (ROS).
 
 ## Pendulum, kinematics
 
@@ -113,13 +115,12 @@ model = {
     - Multiple joints can be defined by concatination. A 3 DOF XYZ Euler joint would look like ` joint = {{ 1, 0, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0 }, { 0, 0, 1, 0, 0, 0 }}`
   - `joint_frame` denotes the attachment site of the frame with respect to the parent frame. 
     - `r` denotes the translational offset. For `segment1`, no offset is set. For `segment2`, the link starts at `rod_length` away from the parent frame. If unset, this is `{0, 0, 0}`.
-
-| ![pendulum_doubleoffset.png](figures/pendulum_doubleoffset.png) | 
+    - `E` denotes the rotation matrix offset from the parent frame. If unset, this is identity `{1, 0, 0}, {0, 1, 0},
+  {0, 0, 1}`.
+      
+  | ![pendulum_doubleoffset.png](figures/pendulum_doubleoffset.png) | 
 |:--:| 
 | `axis_front`, `axis_right`, and `axis_up` denoted as RGB. In the example, this is set to be XYZ. |
-
-    - `E` denotes the rotation matrix offset from the parent frame. If unset, this is identity `{1, 0, 0}, {0, 1, 0}, 
-{0, 0, 1}`. 
     
 | ![pendulum_animate1.gif](figures/pendulum_animate1.gif) | 
 |:--:| 
@@ -127,11 +128,8 @@ model = {
 
 | ![pendulum_animate2.gif](figures/pendulum_animate2.gif) |
 |:--:|
-| Pendulum animating after modifying the second link attachment offset and orientation:
-```
-r = { 0., 0., -rod_length*2 },
-E = {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}}
-```|
+| Pendulum animating after modifying the second link attachment offset and orientation: `r = { 0., 0., -rod_length*2 
+}, E = {{1, 0, 0}, {0, 0, -1}, {0, 1, 0}}` |
 
 ```
 return model
@@ -141,3 +139,61 @@ Since the Lua model is basically running a code snippet, the model must be retur
 
 ### URDF Model, `pendulum.urdf`
 
+To load the URDF model and the trajectory file into rbdl-toolkit, the command is `rbdl-toolkit --model pendulum.lua
+--animation pendulum.csv`
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="pendulum">
+	<material name="red">
+		<color rgba="1 0 0 1"/>
+	</material>
+	<material name="green">
+		<color rgba="0 1 0 1"/>
+	</material>
+```
+
+This text sets up the XML, as well as define some variable names. 
+
+```
+	<link name="root">
+	</link>
+	
+	<link name="segment1">
+		<visual>
+			<geometry>
+				<box size="0.2 0.2 1"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0.5"/>
+			<material name="red"/>
+		</visual>
+	</link>
+
+	<link name="segment2">
+		<visual>
+			<geometry>
+				<box size="0.1 0.1 1"/>
+			</geometry>
+			<origin rpy="0 0 0" xyz="0 0 0.5"/>
+			<material name="green"/>
+		</visual>
+	</link>
+```
+
+In URDF, the linkages and the joints are defined separately. Here, each link's visual characterstics are defined. 
+
+```
+	<joint name="roottoseg1" type="revolute">
+		<axis xyz="1 0 0"/>
+		<parent link="root"/>
+		<child link="segment1"/>
+	</joint>
+
+	<joint name="seg1toseg2" type="revolute">
+		<origin xyz="0 0 1"/>
+		<axis xyz="1 0 0"/>
+		<parent link="segment1"/>
+		<child link="segment2"/>
+	</joint>
+</robot>
+```

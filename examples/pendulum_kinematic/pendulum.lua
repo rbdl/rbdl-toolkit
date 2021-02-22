@@ -2,15 +2,15 @@ rod_length = 1
 
 meshes = {
   rod1 = {
-	color = { 1, 0, 0},
-	mesh_center = {0, 0, -rod_length/2},
-	dimensions = { 0.2, 0.2, rod_length},
+	color = { 1, 0, 0 },
+	mesh_center = { 0, 0, -rod_length/2 },
+	dimensions = { 0.2, 0.2, rod_length },
 	src = "unit_cube.obj"
   },
   rod2 = {
-	color = { 0, 1, 0},
-	mesh_center = {0, 0, -rod_length/2},
-	dimensions = { 0.1, 0.1, rod_length},
+	color = { 0, 1, 0 },
+	mesh_center = { 0, 0, -rod_length/2 },
+	dimensions = { 0.1, 0.1, rod_length },
 	src = "unit_cube.obj"
   }
 }
@@ -38,7 +38,7 @@ model = {
 	  visuals = { meshes.rod2 },
 	  joint = {{ 0, 1, 0, 0, 0, 0 }},
 	  joint_frame = {
-		r = { 0., 0., -rod_length },
+		r = { 0, 0, -rod_length },
 		E = {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}}
 	  }
 	}

@@ -15,7 +15,7 @@
 			<geometry>
 				<box size="0.2 0.2 1"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 -0.5"/>
+			<origin rpy="0 0 0" xyz="0 0 0.5"/>
 			<material name="red"/>
 		</visual>
 	</link>
@@ -25,7 +25,7 @@
 			<geometry>
 				<box size="0.1 0.1 1"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 -0.5"/>
+			<origin rpy="0 0 0" xyz="0 0 0.5"/>
 			<material name="green"/>
 		</visual>
 	</link>
@@ -37,10 +37,9 @@
 	</joint>
 
 	<joint name="seg1toseg2" type="revolute">
-		<origin xyz="1 0 0"/>
+		<origin xyz="0 0 1"/>
 		<axis xyz="1 0 0"/>
 		<parent link="segment1"/>
 		<child link="segment2"/>
 	</joint>
-
 </robot>
