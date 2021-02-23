@@ -36,7 +36,7 @@ ADD_LIBRARY (visualextrasplugin SHARED ${Plugin_SRCS})
 TARGET_LINK_LIBRARIES (visualextrasplugin
 	${QT_LIBRARIES}
 	${RBDL_LIBRARY}
-	${TOOLKIT_LIB}
+	toolkitlib
 )
 
 INSTALL( TARGETS visualextrasplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

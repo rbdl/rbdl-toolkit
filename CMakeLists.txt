@@ -161,6 +161,9 @@ CONFIGURE_FILE(extra/mk_appimage.sh mk_appimage.sh)
 CONFIGURE_FILE(extra/mk_pluginbuilder.sh mk_pluginbuilder.sh)
 ENDIF(NOT APPLE)
 
+ADD_SUBDIRECTORY (
+  vendor
+)
 
 SET ( ToolkitLib_SRCS
 	src/ToolkitApp.cc
@@ -200,9 +203,6 @@ ADD_SUBDIRECTORY (
   plugins
 )
 
-ADD_SUBDIRECTORY (
-  vendor
-)
 
 IF(BUILD_OSX_BUNDLE)
 	CONFIGURE_FILE(extra/mk_dmg.sh mk_dmg.sh)
