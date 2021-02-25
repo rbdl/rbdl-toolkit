@@ -16,7 +16,7 @@ chmod +x rbdl-toolkit-x86_64.AppImage
 ./ rbdl-toolkit-x86_64.AppImage
 ```
 
-If you need to compile this code from source, please see the Wiki page on [Building from Source](https://github.com/ORB-HD/rbdl-toolkit/wiki/Building-From-Source)
+If you need to compile this code from source, please see the Wiki page on [Build from Source](https://github.com/ORB-HD/rbdl-toolkit/wiki/Build-From-Source)
 
 # Wiki
 
