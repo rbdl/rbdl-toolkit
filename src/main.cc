@@ -25,5 +25,5 @@ int main(int argc, char *argv[])
 
 	//start Gui 
 	rbdl_toolkit->show();
-	return app.exec()
+	return app.exec();
 }
