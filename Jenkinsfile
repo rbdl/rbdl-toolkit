@@ -8,9 +8,7 @@ pipeline {
         dir(path: 'build') {
           sh 'make -j 8'
         }
-
       }
     }
-
   }
 }
