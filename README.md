@@ -1,5 +1,4 @@
-[![Build Status](https://orb.iwr.uni-heidelberg.de/buildbot/buildStatus/icon?job=rbdl-toolkit-release)](https://orb.iwr.uni-heidelberg.de/buildbot/job/rbdl-toolkit-release/)
-RBDL - Toolkit
+RBDL - Toolkit [![Build Status](https://orb.iwr.uni-heidelberg.de/buildbot/buildStatus/icon?job=rbdl-toolkit-release)](https://orb.iwr.uni-heidelberg.de/buildbot/job/rbdl-toolkit-release/)
 ==============
 
 This application is intended to be used to visualize results and data of rigid body dynamics systems. It is build on top of [RBDL](https://github.com/ORB-HD/rbdl-orb) and uses Qt3D as it's graphics backend. RBDL-Toolkit is designed to be extendable via plugins and to make developing plugins easy there is a [plugin template](https://github.com/ORB-HD/toolkit-plugin-template). 
