@@ -1,3 +1,4 @@
+[![Build Status](https://orb.iwr.uni-heidelberg.de/buildbot/buildStatus/icon?job=rbdl-toolkit-release)](https://orb.iwr.uni-heidelberg.de/buildbot/job/rbdl-toolkit-release/)
 RBDL - Toolkit
 ==============
 
