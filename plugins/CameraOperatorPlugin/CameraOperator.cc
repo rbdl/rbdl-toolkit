@@ -12,6 +12,8 @@ using namespace RigidBodyDynamics::Math;
 
 CameraOperatorPlugin::CameraOperatorPlugin() {
 	parentApp = NULL;
+	default_distance = 5.0;
+	camera_reset_enabled = true;
 }
 
 CameraOperatorPlugin::~CameraOperatorPlugin() {

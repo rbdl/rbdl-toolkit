@@ -13,7 +13,7 @@
 #include "toolkit_interfaces.h"
 #include "util.h"
 
-#include "ArrowFieldModelExtention.h"
+#include "ArrowFieldModelExtension.h"
 
 class ForceTorquePlugin : public QObject, public CoreInterface{
 	Q_OBJECT
@@ -26,7 +26,7 @@ class ForceTorquePlugin : public QObject, public CoreInterface{
 
 		void init(ToolkitApp* app);
 
-		void loadForceTorqueFile(QString path, ArrowFieldModelExtention* force_field, ArrowFieldModelExtention* torque_field);
+		void loadForceTorqueFile(QString path, ArrowFieldModelExtension* force_field, ArrowFieldModelExtension* torque_field);
 
 	private:
 		ToolkitApp* parentApp;

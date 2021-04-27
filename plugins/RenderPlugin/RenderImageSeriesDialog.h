@@ -17,7 +17,7 @@ public:
 
 		void action_select_directory() {
 			QFileDialog file_dialog (this, "Select Save Directory");
-			file_dialog.setFileMode(QFileDialog::DirectoryOnly);
+			file_dialog.setFileMode(QFileDialog::Directory);
 
 			if (file_dialog.exec()) {
 				filenameEdit->setText(file_dialog.selectedFiles().at(0));

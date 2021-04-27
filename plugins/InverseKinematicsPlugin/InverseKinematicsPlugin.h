@@ -9,9 +9,9 @@
 #include "toolkit_interfaces.h"
 #include "util.h"
 
-#include "MotionMarkerExtention.h"
-#include "ModelMarkerExtention.h"
-#include "AnimationModelExtention.h"
+#include "MotionMarkerExtension.h"
+#include "ModelMarkerExtension.h"
+#include "AnimationModelExtension.h"
 
 class InverseKinematicsPlugin : public QObject, public OptionalInterface{
 	Q_OBJECT

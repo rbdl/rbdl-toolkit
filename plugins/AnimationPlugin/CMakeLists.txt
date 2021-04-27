@@ -1,8 +1,8 @@
 PROJECT(AnimationPlugin)
-	
+
 SET(AnimationPlugin_SRCS
 	AnimationPlugin.cc
-	AnimationModelExtention.cc
+	AnimationModelExtension.cc
 )
 
 SET(AnimationPlugin_MOC_HDRS
@@ -11,7 +11,7 @@ SET(AnimationPlugin_MOC_HDRS
 )
 
 SET(CMAKE_AUTOMOC ON)
-	
+
 INCLUDE_DIRECTORIES (${QT_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${CMAKE_SOURCE_DIR}/include)
 INCLUDE_DIRECTORIES (${CMAKE_CURRENT_SOURCE_DIR})
@@ -27,17 +27,10 @@ ADD_DEFINITIONS (-DQT_SHARED)
 
 ADD_LIBRARY (animationplugin SHARED ${AnimationPlugin_SRCS})
 
-TARGET_LINK_LIBRARIES (animationplugin 
-	${QT_LIBRARIES} 
-	${QT_QTXML_LIBRARY} 
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::3DCore
-	Qt5::3DExtras
-	Qt5::3DRender
-	Qt5::3DInput
+TARGET_LINK_LIBRARIES (animationplugin
+    ${QT_LIBRARIES}
 	${RBDL_LIBRARY}
+	toolkitlib
 )
 
-INSTALL( TARGETS animationplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	
+INSTALL( TARGETS animationplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

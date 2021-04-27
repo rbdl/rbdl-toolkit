@@ -6,7 +6,7 @@ SET( CMAKE_INCLUDE_CURRENT_DIR ON )
 SET( CMAKE_AUTOMOC ON )
 SET( CMAKE_AUTORCC ON )
 SET( CMAKE_AUTOUIC ON )
-	
+
 SET(RenderPlugin_SRCS
 	RenderPlugin.cc
 )
@@ -36,37 +36,43 @@ ADD_SUBDIRECTORY (
 	vendor/QVideoWriter/
 )
 
+INCLUDE_DIRECTORIES(${FFMPEG_INCLUDE_DIRS})
 
-QT5_WRAP_UI ( RenderPlugin_UI_SRC
-	ui/RenderImageDialog.ui	
-	ui/RenderImageSeriesDialog.ui	
-	ui/RenderVideoDialog.ui	
+IF (USE_QT6)
+QT6_WRAP_UI ( RenderPlugin_UI_SRC
+	ui/RenderImageDialog.ui
+	ui/RenderImageSeriesDialog.ui
+	ui/RenderVideoDialog.ui
 )
-
+QT6_WRAP_CPP ( RenderPlugin_MOC_SRCS
+	RenderImageDialog.h
+	RenderImageSeriesDialog.h
+	RenderVideoDialog.h
+)
+ELSE (USE_QT6)
+QT5_WRAP_UI ( RenderPlugin_UI_SRC
+	ui/RenderImageDialog.ui
+	ui/RenderImageSeriesDialog.ui
+	ui/RenderVideoDialog.ui
+)
 QT5_WRAP_CPP ( RenderPlugin_MOC_SRCS
 	RenderImageDialog.h
 	RenderImageSeriesDialog.h
 	RenderVideoDialog.h
 )
+ENDIF (USE_QT6)
 
-ADD_LIBRARY (renderplugin SHARED 
+ADD_LIBRARY (renderplugin SHARED
 	${RenderPlugin_SRCS}
 	${RenderPlugin_MOC_SRCS}
 	${RenderPlugin_UI_SRC}
 )
 
-TARGET_LINK_LIBRARIES (renderplugin 
-	${QT_LIBRARIES} 
-	${QT_QTXML_LIBRARY} 
-	Qt5::Core
-	Qt5::Gui
-	Qt5::Widgets
-	Qt5::3DCore
-	Qt5::3DExtras
-	Qt5::3DRender
-	Qt5::3DInput
+TARGET_LINK_LIBRARIES (renderplugin
+    ${QT_LIBRARIES}
 	${RBDL_LIBRARY}
 	qvideowriter
+	toolkitlib
 )
 
 INSTALL( TARGETS renderplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})

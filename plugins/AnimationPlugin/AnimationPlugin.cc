@@ -44,7 +44,7 @@ void AnimationPlugin::init(ToolkitApp* app) {
 		for (int i=0; i<animation_list.size(); i++) {
 			if (i < parentApp->getLoadedModels()->size() ) {
 				auto file = animation_list[i];
-				AnimationModelExtention* ext;
+				AnimationModelExtension* ext;
 				try {
 					ext = this->loadAnimationFile(animation_list[i]);
 				} catch (RigidBodyDynamics::Errors::RBDLError& e){
@@ -52,7 +52,7 @@ void AnimationPlugin::init(ToolkitApp* app) {
 					continue;
 				}
 				RBDLModelWrapper* model = parentApp->getLoadedModels()->at(i);
-				model->addExtention(ext);
+				model->addExtension(ext);
 				model_file_map[model] = file;
 				parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 				model->model_update(parentApp->getToolkitTimeline()->getCurrentTime());
@@ -99,7 +99,7 @@ void AnimationPlugin::action_load_animation() {
 		file_dialog.setFileMode(QFileDialog::ExistingFile);
 
 		if (file_dialog.exec()) {
-			AnimationModelExtention* ext;
+			AnimationModelExtension* ext;
 			try {
 				ext = loadAnimationFile (file_dialog.selectedFiles().at(0));
 			} catch (RigidBodyDynamics::Errors::RBDLError& e) {
@@ -117,7 +117,7 @@ void AnimationPlugin::action_load_animation() {
 				}
 
 				if (rbdl_model != nullptr) {
-					rbdl_model->addExtention(ext);
+					rbdl_model->addExtension(ext);
 					model_file_map[rbdl_model] = file_dialog.selectedFiles().at(0);
 					parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 					rbdl_model->model_update(parentApp->getToolkitTimeline()->getCurrentTime());
@@ -133,7 +133,7 @@ void AnimationPlugin::action_load_animation() {
 }
 
 bool only_models_with_animation_data(RBDLModelWrapper* model) {
-	if (model->hasExtention("Animation")) {
+	if (model->hasExtension("Animation")) {
 		return true;
 	}
 	return false;
@@ -169,7 +169,7 @@ void AnimationPlugin::action_export_animation() {
 		}
 		QTextStream out(&animation_file);
 
-		AnimationModelExtention* ext = (AnimationModelExtention*) model->getExtention("Animation");
+		AnimationModelExtension* ext = (AnimationModelExtension*) model->getExtension("Animation");
 		auto times = ext->getAnimationTimes();
 		auto frames = ext->getAnimationFrames();
 		auto dof = ext->getDOF();
@@ -184,8 +184,8 @@ void AnimationPlugin::action_export_animation() {
 
 }
 
-AnimationModelExtention* AnimationPlugin::loadAnimationFile(QString path) {
-	AnimationModelExtention* animation = new AnimationModelExtention();
+AnimationModelExtension* AnimationPlugin::loadAnimationFile(QString path) {
+	AnimationModelExtension* animation = new AnimationModelExtension();
 
 	std::vector<std::string> names;
 	std::vector<float> row_values;
@@ -273,7 +273,7 @@ void AnimationPlugin::reload(RBDLModelWrapper* model) {
 	for (auto it = model_file_map.begin(); it != model_file_map.end(); it++) {
 		if ( it->first == model ) {
 			auto ext = loadAnimationFile(it->second);
-			model->addExtention(ext);
+			model->addExtension(ext);
 			parentApp->getToolkitTimeline()->setMaxTime(ext->getMaxTime());
 			model->model_update(parentApp->getToolkitTimeline()->getCurrentTime());
 		}

@@ -1,6 +1,7 @@
 debug
 release
 build
+.DS_Store
 
 **/*.bak
 

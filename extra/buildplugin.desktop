@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=toolkit-buildplugin
+Exec=mk_plugin.sh
+Type=Application
+Icon=rbdl-toolkit
+Categories=Utility;

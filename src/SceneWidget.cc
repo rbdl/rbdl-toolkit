@@ -29,7 +29,8 @@ SceneWidget::SceneWidget(QWidget *parent):
 	near(0.1f),
 	far(100.f),
 	render_capture(nullptr),
-	default_clear_color(QColor("black")) 
+	//use almost black, because just black is transparent at application start up 🙈
+	default_clear_color(QColor::fromRgbF(0.01, 0.01, 0.01, 1.)) 
 {
 	//set default surface format to be able to use the alpha channel from the start
 	QSurfaceFormat format = QSurfaceFormat::defaultFormat();
@@ -70,7 +71,7 @@ SceneWidget::SceneWidget(QWidget *parent):
 	qt3d_view->setRootEntity(scene_root);
 
 	display_container = new QHBoxLayout(this);
-	display_container->setMargin(0);
+	display_container->setContentsMargins(QMargins(0,0,0,0));
 	display_container->addWidget(QWidget::createWindowContainer(qt3d_view));
 
 	render_selector = new SceneGroupsWidget(this);

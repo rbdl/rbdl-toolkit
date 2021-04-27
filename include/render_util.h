@@ -6,8 +6,21 @@
 
 #include <rbdl/addons/luamodel/luatables.h>
 
-Qt3DCore::QEntity* createGridFloor(float lxy_border, float r_xyborder, int count, QColor line_color=QColor(QRgb(0xffffff)));
-//Qt3DCore::QEntity* loadFromLuaTable(LuaTableNode &table);
+Qt3DCore::QEntity* createGridFloor(float lxy_border,
+								   float r_xyborder,
+								   int count,
+								   QColor line_color=QColor(QRgb(0xffffff)));
+
+Qt3DCore::QEntity* createWire(const QVector3D& wire,
+							  const QColor& line_color,
+                              float line_width = 1.,
+							  Qt3DCore::QEntity* parent=nullptr);
+
+Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
+                                    const QColor& mesh_color, 
+                                    const QVector3D& mesh_translation, 
+                                    const QQuaternion& mesh_rotation, 
+                                    Qt3DCore::QEntity* parent=nullptr);
 
 #endif 
 

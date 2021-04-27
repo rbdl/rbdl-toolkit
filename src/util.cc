@@ -47,7 +47,7 @@ QString findFile(std::string file, bool absolute) {
 QString findPlugin(QString plugin) {
 	QFileInfo check_file(plugin);
 	if (check_file.exists()) {
-		return plugin;
+		return check_file.absoluteFilePath();
 	}
 
 	QString filename0 = QString("lib%1.so").arg(plugin);
@@ -96,4 +96,8 @@ QStringList findAllPlugins() {
 	}
 
 	return plugin_list;
+}
+
+QVector3D to_qt_vector(RigidBodyDynamics::Math::Vector3d& vec) {
+	return QVector3D(vec[0], vec[1], vec[2]);
 }
