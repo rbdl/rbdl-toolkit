@@ -105,7 +105,7 @@ class RBDLModelWrapper : public QObject {
 		void model_update(float current_time);
 
 	Q_SIGNALS:
-		void new_extention_added();
+		void new_extension_added();
 		void visual_added(Qt3DCore::QEntity* visual);
 
 };
