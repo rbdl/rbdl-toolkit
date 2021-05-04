@@ -52,6 +52,7 @@ TARGET_LINK_LIBRARIES (pythonplugin
 	${RBDL_LIBRARY}
 	${PYTHON_LIBRARIES}
 	qtermwidget5
+	toolkitlib
 )
 
 INSTALL( TARGETS pythonplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	

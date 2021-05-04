@@ -229,16 +229,36 @@ void ToolkitApp::showExceptionDialog(std::exception& e) {
 }
 
 
+std::vector<QDockWidget*> ToolkitApp::getWidgetsInDock(Qt::DockWidgetArea area) {
+	std::vector<QDockWidget*> results;
 
-void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_tilte) {
+	for ( auto widget : view_widgets ) {
+		if ( dockWidgetArea(widget) == area ) {
+			results.push_back(widget);
+		}
+	}
+	return results;
+}
+
+
+void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_title) {
 	QDockWidget* dock = new QDockWidget(name, this);
 	dock->setWidget(view_widget);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	if (!show_tilte) {
+	if (!show_title) {
 		dock->setTitleBarWidget(new QWidget());
 	}
 
-	addDockWidget(area, dock);
+	if (area == Qt::BottomDockWidgetArea || area == Qt::TopDockWidgetArea ) {
+		auto widgets_in_area = getWidgetsInDock(area);
+		if (widgets_in_area.size() > 0) {
+			tabifyDockWidget(widgets_in_area[widgets_in_area.size()-1], dock);
+		} else {
+			addDockWidget(area, dock);
+		}
+	} else {
+		addDockWidget(area, dock);
+	}
 
 	view_widgets.push_back(dock);
 	toolkit_menu_list["View"]->addAction(dock->toggleViewAction());

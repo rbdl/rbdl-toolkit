@@ -40,14 +40,14 @@ void PythonPlugin::init(ToolkitApp* app) {
 #else
     font.setFamily(QStringLiteral("Monospace"));
 #endif
-	font.setPointSize(12);
+	font.setPointSize(11);
 
     console->setTerminalFont(font);
 	console->setShellProgram("/usr/bin/python");
 	console->startShellProgram();
 
 
-	parentApp->addView("Terminal", qobject_cast<QWidget*>(console), Qt::TopDockWidgetArea);
+	parentApp->addView("Terminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
 
 
 	//Py_Initialize();

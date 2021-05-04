@@ -45,6 +45,7 @@ class ToolkitApp : public QMainWindow
 		QVariant getPluginLoadSetting(QString plugin_name);
 		void setPluginLoadSetting(QString plugin_name, bool load);
 
+		std::vector<QDockWidget*> getWidgetsInDock(Qt::DockWidgetArea area);
 	public:
 		ToolkitSettings toolkit_settings;
 
