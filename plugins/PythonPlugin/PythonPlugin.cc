@@ -1,21 +1,65 @@
 #include "PythonPlugin.h"
 #include <iostream>
+#include <unistd.h>
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>
 
-//#define PY_SSIZE_T_CLEAN
-//#include <Python.h>
+ToolkitTerminal::ToolkitTerminal(const QString socket_addr, QWidget *parent) : QTermWidget(false, parent) {
+	socket = new QLocalSocket(this);
 
+	connect(this, &ToolkitTerminal::sendData, [this](const char *data, int size){
+		if ( strcmp(data, "\r") == 0 ) {
+			write(this->getPtySlaveFd(), data, size);
+			write(this->getPtySlaveFd(), "\n", 1);
+			this->socket->write(data, size);
+			this->socket->write("\n", 1);
+		} else {
+			write(this->getPtySlaveFd(), data, size);
+			this->socket->write(data, size);
+		}
+	});
+
+	connect(socket, &QLocalSocket::readyRead, [this](){
+		QByteArray data = socket->readAll();
+		write(this->getPtySlaveFd(), data.data(), data.size());
+	});
+	connect(socket, &QLocalSocket::errorOccurred, this , &ToolkitTerminal::atError);
+
+	this->startTerminalTeletype();
+
+	socket->connectToServer(socket_addr);
+}
+
+ToolkitTerminal::~ToolkitTerminal() {
+	socket->close();
+}
+
+void ToolkitTerminal::atError(QLocalSocket::LocalSocketError err) {
+	std::cout << socket->errorString().toStdString() << std::endl;
+}
 
 PythonPlugin::PythonPlugin() {
 	parentApp = NULL;
 
-	//Py_Initialize();
+	embedded_python = NULL;
+	python_gateway = NULL;
+	console = NULL;
 }
 
 PythonPlugin::~PythonPlugin() {
-	//Py_Finalize();
+	if (python_gateway != NULL) {
+		python_gateway->close();
+		delete python_gateway;
+	}
+
+	if (console != NULL) {
+		parentApp->deleteView("ToolkitTerminal");
+	}
+
+	if (embedded_python != NULL) {
+		delete embedded_python;
+	}
 }
 
 void PythonPlugin::init(ToolkitApp* app) {
@@ -31,7 +75,14 @@ void PythonPlugin::init(ToolkitApp* app) {
 		// implement cmd function here
 	});
 
-	QTermWidget* console = new QTermWidget(false);
+	embedded_python = new EmbeddedPython;
+
+	python_gateway = new QLocalServer();
+	python_gateway->listen("toolkitpy.socket");
+	std::cout << python_gateway->fullServerName().toStdString() << std::endl;
+	connect(python_gateway, &QLocalServer::newConnection, this, &PythonPlugin::handleGatewayConnection);
+
+	console = new ToolkitTerminal(python_gateway->fullServerName());
 	QFont font = QApplication::font();
 #ifdef Q_OS_MACOS
     font.setFamily(QStringLiteral("Monaco"));
@@ -43,14 +94,18 @@ void PythonPlugin::init(ToolkitApp* app) {
 	font.setPointSize(11);
 
     console->setTerminalFont(font);
-	console->setShellProgram("/usr/bin/python");
-	console->startShellProgram();
 
+	parentApp->addView("ToolkitTerminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
+}
 
-	parentApp->addView("Terminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
+void PythonPlugin::handleGatewayConnection() {
+	QLocalSocket* socket = python_gateway->nextPendingConnection();
+    connect(socket, &QLocalSocket::disconnected, [socket](){
+       socket->disconnect();
+       socket->deleteLater();
+    });
 
+	QString hello("Successfully connected to socket!");
+	socket->write(hello.toStdString().c_str(), hello.size());
 
-	//Py_Initialize();
-	//PyRun_SimpleString("print('Hello World from Python')");
-	//Py_Finalize();
 }

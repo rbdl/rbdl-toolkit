@@ -1,22 +1,25 @@
 PROJECT(PythonPlugin)
 	
 SET(Plugin_SRCS
-	
 	PythonPlugin.cc
+)
+
+SET(Python_SRCS
+  EmbeddedPython.cc
 )
 
 SET(PythonPlugin_MOC_HDRS
 	include/toolkit_interfaces.h
 	PythonPlugin.h
+	EmbeddedPython.h
 )
 
 SET(CMAKE_AUTORCC ON )
 SET(CMAKE_AUTOUIC ON )
 SET(CMAKE_AUTOMOC ON )
 
-#ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
-#FIND_PACKAGE(PythonLibs REQUIRED)
+FIND_PACKAGE(PythonLibs REQUIRED)
 IF (USE_QT6)
   MESSAGE(WARNING "Python Addon requires support for QTermWidget which is not availbe for Qt6 yet, so the python plugin can not be built!")
   RETURN()
@@ -33,9 +36,14 @@ INCLUDE_DIRECTORIES (${RBDL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${EIGEN3_INCLUDE_DIR})
 INCLUDE_DIRECTORIES (${PYTHON_INCLUDE_DIRS})
 
-
 ADD_DEFINITIONS (-DQT_PLUGIN)
 ADD_DEFINITIONS (-DQT_SHARED)
+
+ADD_LIBRARY (embeddedpython STATIC ${Python_SRCS})
+TARGET_COMPILE_DEFINITIONS(embeddedpython PRIVATE -DQT_NO_KEYWORDS)
+TARGET_LINK_LIBRARIES(embeddedpython
+	${PYTHON_LIBRARIES}
+)
 
 ADD_LIBRARY (pythonplugin SHARED ${Plugin_SRCS})
 
@@ -50,9 +58,9 @@ TARGET_LINK_LIBRARIES (pythonplugin
 	Qt5::3DRender
 	Qt5::3DInput
 	${RBDL_LIBRARY}
-	${PYTHON_LIBRARIES}
 	qtermwidget5
 	toolkitlib
+	embeddedpython
 )
 
 INSTALL( TARGETS pythonplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	
