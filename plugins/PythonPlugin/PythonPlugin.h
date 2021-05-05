@@ -45,6 +45,9 @@ class PythonPlugin : public QObject, public OptionalInterface {
 
 	public Q_SLOTS:
 		void handleGatewayConnection();
+
+	Q_SIGNALS:
+		void socket_client_connected(QLocalSocket*);
 };
 
 #endif 

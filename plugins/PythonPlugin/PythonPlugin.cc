@@ -75,7 +75,9 @@ void PythonPlugin::init(ToolkitApp* app) {
 		// implement cmd function here
 	});
 
-	embedded_python = new EmbeddedPython;
+	embedded_python = new EmbeddedPython(parentApp);
+	connect(this, &PythonPlugin::socket_client_connected,
+			embedded_python, &EmbeddedPython::connect_client);
 
 	python_gateway = new QLocalServer();
 	python_gateway->listen("toolkitpy.socket");
@@ -105,7 +107,5 @@ void PythonPlugin::handleGatewayConnection() {
        socket->deleteLater();
     });
 
-	QString hello("Successfully connected to socket!");
-	socket->write(hello.toStdString().c_str(), hello.size());
-
+	emit socket_client_connected(socket);
 }
