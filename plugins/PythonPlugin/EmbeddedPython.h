@@ -12,12 +12,9 @@ class EmbeddedPython : public QObject {
 		EmbeddedPython(ToolkitApp* toolkit);
 		~EmbeddedPython();
 
-	public Q_SLOTS:
-		void connect_client(QLocalSocket*);
+		void startPythonShell(QLocalSocket*);
 	private:
 		ToolkitApp *toolkit;
-
-		void* guard;
 };
 
 #endif

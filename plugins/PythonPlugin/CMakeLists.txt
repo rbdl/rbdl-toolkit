@@ -18,7 +18,7 @@ SET(CMAKE_AUTORCC ON )
 SET(CMAKE_AUTOUIC ON )
 SET(CMAKE_AUTOMOC ON )
 
-
+find_package(Python COMPONENTS Interpreter Development REQUIRED)
 FIND_PACKAGE(pybind11 REQUIRED)
 IF (USE_QT6)
   MESSAGE(WARNING "Python Addon requires support for QTermWidget which is not availbe for Qt6 yet, so the python plugin can not be built!")

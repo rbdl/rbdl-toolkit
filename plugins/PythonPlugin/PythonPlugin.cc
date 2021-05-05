@@ -4,20 +4,13 @@
 
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <QThread>
 
 ToolkitTerminal::ToolkitTerminal(const QString socket_addr, QWidget *parent) : QTermWidget(false, parent) {
 	socket = new QLocalSocket(this);
 
 	connect(this, &ToolkitTerminal::sendData, [this](const char *data, int size){
-		if ( strcmp(data, "\r") == 0 ) {
-			write(this->getPtySlaveFd(), data, size);
-			write(this->getPtySlaveFd(), "\n", 1);
-			this->socket->write(data, size);
-			this->socket->write("\n", 1);
-		} else {
-			write(this->getPtySlaveFd(), data, size);
-			this->socket->write(data, size);
-		}
+		this->socket->write(data, size);
 	});
 
 	connect(socket, &QLocalSocket::readyRead, [this](){
@@ -76,36 +69,29 @@ void PythonPlugin::init(ToolkitApp* app) {
 	});
 
 	embedded_python = new EmbeddedPython(parentApp);
-	connect(this, &PythonPlugin::socket_client_connected,
-			embedded_python, &EmbeddedPython::connect_client);
 
 	python_gateway = new QLocalServer();
 	python_gateway->listen("toolkitpy.socket");
 	std::cout << python_gateway->fullServerName().toStdString() << std::endl;
 	connect(python_gateway, &QLocalServer::newConnection, this, &PythonPlugin::handleGatewayConnection);
 
-	console = new ToolkitTerminal(python_gateway->fullServerName());
-	QFont font = QApplication::font();
-#ifdef Q_OS_MACOS
-    font.setFamily(QStringLiteral("Monaco"));
-#elif defined(Q_WS_QWS)
-    font.setFamily(QStringLiteral("fixed"));
-#else
-    font.setFamily(QStringLiteral("Monospace"));
-#endif
-	font.setPointSize(11);
-
-    console->setTerminalFont(font);
-
-	parentApp->addView("ToolkitTerminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
+//	console = new ToolkitTerminal(python_gateway->fullServerName());
+//	QFont font = QApplication::font();
+//#ifdef Q_OS_MACOS
+//    font.setFamily(QStringLiteral("Monaco"));
+//#elif defined(Q_WS_QWS)
+//    font.setFamily(QStringLiteral("fixed"));
+//#else
+//    font.setFamily(QStringLiteral("Monospace"));
+//#endif
+//	font.setPointSize(11);
+//
+//    console->setTerminalFont(font);
+//
+//	parentApp->addView("ToolkitTerminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
 }
 
 void PythonPlugin::handleGatewayConnection() {
 	QLocalSocket* socket = python_gateway->nextPendingConnection();
-    connect(socket, &QLocalSocket::disconnected, [socket](){
-       socket->disconnect();
-       socket->deleteLater();
-    });
-
-	emit socket_client_connected(socket);
+	embedded_python->startPythonShell(socket);
 }
