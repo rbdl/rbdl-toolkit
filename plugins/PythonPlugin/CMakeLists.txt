@@ -9,8 +9,7 @@ SET(Python_SRCS
 )
 
 SET(PythonPlugin_MOC_HDRS
-	include/toolkit_interfaces.h
-	PythonPlugin.h
+	PythonSocket.h
 	EmbeddedPython.h
 )
 
@@ -39,23 +38,39 @@ INCLUDE_DIRECTORIES (${pybind11_INCLUDE_DIRS})
 ADD_DEFINITIONS (-DQT_PLUGIN)
 ADD_DEFINITIONS (-DQT_SHARED)
 
+QT5_WRAP_CPP ( PYTHON_MOC_SRCS
+	${PythonPlugin_MOC_HDRS}
+)
+
+ADD_LIBRARY (pythonsocket STATIC PythonSocket.cc
+	${PYTHON_MOC_SRCS}
+)
+
+TARGET_COMPILE_OPTIONS(pythonsocket PRIVATE -fPIC)
+TARGET_LINK_LIBRARIES (pythonsocket
+	${QT_LIBRARIES}
+	${QT_QTXML_LIBRARY}
+	Qt5::Core
+	Qt5::Gui
+	Qt5::Widgets
+	Qt5::3DCore
+	Qt5::3DExtras
+	Qt5::3DRender
+	Qt5::3DInput
+	embeddedpython
+)
+
 ADD_LIBRARY (embeddedpython STATIC ${Python_SRCS})
 TARGET_COMPILE_DEFINITIONS(embeddedpython PRIVATE -DQT_NO_KEYWORDS ${pybind11_DEFINITIONS})
 TARGET_COMPILE_OPTIONS(embeddedpython PRIVATE -fPIC)
-TARGET_LINK_OPTIONS(embeddedpython PRIVATE
-  -export-dynamic
-  -static
-  -Wl,--whole-archive pybind11::embed -Wl,--no-whole-archive)
-#SET_TARGET_PROPERTIES(embeddedpython PROPERTIES CXX_STANDARD 11)
 TARGET_LINK_LIBRARIES(embeddedpython PUBLIC
-  	toolkitlib
+  toolkitlib
 	pybind11::embed
+	pythonsocket
 )
 
 ADD_LIBRARY (pythonplugin SHARED ${Plugin_SRCS})
 TARGET_COMPILE_OPTIONS(pythonplugin PRIVATE -fPIC)
-TARGET_LINK_OPTIONS(pythonplugin PRIVATE -export-dynamic)
-#SET_TARGET_PROPERTIES(pythonplugin PROPERTIES CXX_STANDARD 11)
 TARGET_LINK_LIBRARIES (pythonplugin
 	${QT_LIBRARIES} 
 	${QT_QTXML_LIBRARY} 
@@ -70,6 +85,7 @@ TARGET_LINK_LIBRARIES (pythonplugin
 	qtermwidget5
 	toolkitlib
 	embeddedpython
+	pythonsocket
 )
 
 INSTALL( TARGETS pythonplugin LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})	

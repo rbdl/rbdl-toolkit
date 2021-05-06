@@ -9,16 +9,16 @@
 #include "util.h"
 
 #include <qtermwidget5/qtermwidget.h>
-#include <QLocalServer>
-#include <QLocalSocket>
 
 #include <EmbeddedPython.h>
+#include <PythonSocket.h>
 
-class ToolkitTerminal : public QTermWidget {
+
+class ToolkitSocketTerminal : public QTermWidget {
 	Q_OBJECT
 	public:
-		ToolkitTerminal(const QString socket_addr, QWidget *parent=NULL);
-		~ToolkitTerminal();
+		ToolkitSocketTerminal(const QString socket_addr, QWidget *parent=NULL);
+		~ToolkitSocketTerminal();
 	public Q_SLOTS:
 		void atError(QLocalSocket::LocalSocketError err);
 	private:
@@ -40,8 +40,8 @@ class PythonPlugin : public QObject, public OptionalInterface {
 		ToolkitApp* parentApp;
 
 		EmbeddedPython* embedded_python;
-		QLocalServer* python_gateway;
-		ToolkitTerminal* console;
+		PythonSocketServer* python_server;
+		ToolkitSocketTerminal* console;
 
 	public Q_SLOTS:
 		void handleGatewayConnection();

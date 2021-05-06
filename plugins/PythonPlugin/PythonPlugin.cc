@@ -6,10 +6,16 @@
 #include <QCommandLineOption>
 #include <QThread>
 
-ToolkitTerminal::ToolkitTerminal(const QString socket_addr, QWidget *parent) : QTermWidget(false, parent) {
+/*==============================================================================
+ * ToolkitSocketTerminal
+ *=============================================================================*/
+
+ToolkitSocketTerminal::ToolkitSocketTerminal(const QString socket_addr, QWidget *parent)
+	: QTermWidget(false, parent)
+ {
 	socket = new QLocalSocket(this);
 
-	connect(this, &ToolkitTerminal::sendData, [this](const char *data, int size){
+	connect(this, &ToolkitSocketTerminal::sendData, [this](const char *data, int size){
 		this->socket->write(data, size);
 	});
 
@@ -17,33 +23,37 @@ ToolkitTerminal::ToolkitTerminal(const QString socket_addr, QWidget *parent) : Q
 		QByteArray data = socket->readAll();
 		write(this->getPtySlaveFd(), data.data(), data.size());
 	});
-	connect(socket, &QLocalSocket::errorOccurred, this , &ToolkitTerminal::atError);
+	connect(socket, &QLocalSocket::errorOccurred, this , &ToolkitSocketTerminal::atError);
 
 	this->startTerminalTeletype();
 
 	socket->connectToServer(socket_addr);
 }
 
-ToolkitTerminal::~ToolkitTerminal() {
+ToolkitSocketTerminal::~ToolkitSocketTerminal() {
 	socket->close();
 }
 
-void ToolkitTerminal::atError(QLocalSocket::LocalSocketError err) {
+void ToolkitSocketTerminal::atError(QLocalSocket::LocalSocketError err) {
 	std::cout << socket->errorString().toStdString() << std::endl;
 }
+
+/*==============================================================================
+ *PythonPlugin
+ *=============================================================================*/
 
 PythonPlugin::PythonPlugin() {
 	parentApp = NULL;
 
 	embedded_python = NULL;
-	python_gateway = NULL;
+	python_server = NULL;
 	console = NULL;
 }
 
 PythonPlugin::~PythonPlugin() {
-	if (python_gateway != NULL) {
-		python_gateway->close();
-		delete python_gateway;
+	if (python_server != NULL) {
+		python_server->close();
+		delete python_server;
 	}
 
 	if (console != NULL) {
@@ -69,13 +79,10 @@ void PythonPlugin::init(ToolkitApp* app) {
 	});
 
 	embedded_python = new EmbeddedPython(parentApp);
+	python_server = new PythonSocketServer(embedded_python);
+	python_server->startServer("toolkitpy.socket");
 
-	python_gateway = new QLocalServer();
-	python_gateway->listen("toolkitpy.socket");
-	std::cout << python_gateway->fullServerName().toStdString() << std::endl;
-	connect(python_gateway, &QLocalServer::newConnection, this, &PythonPlugin::handleGatewayConnection);
-
-//	console = new ToolkitTerminal(python_gateway->fullServerName());
+//	console = new ToolkitSocketTerminal(python_server->fullServerName());
 //	QFont font = QApplication::font();
 //#ifdef Q_OS_MACOS
 //    font.setFamily(QStringLiteral("Monaco"));
@@ -91,7 +98,3 @@ void PythonPlugin::init(ToolkitApp* app) {
 //	parentApp->addView("ToolkitTerminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
 }
 
-void PythonPlugin::handleGatewayConnection() {
-	QLocalSocket* socket = python_gateway->nextPendingConnection();
-	embedded_python->startPythonShell(socket);
-}
