@@ -2,6 +2,7 @@
 #define PYTHON_TOOLKIT_INTERFACE_INCLUDED
 
 #include <pybind11/embed.h>
+#include <pybind11/numpy.h>
 #include <PythonSocket.h>
 
 const char *INIT_SCRIPT =
@@ -12,11 +13,10 @@ const char *INIT_SCRIPT =
     "      locals = {\"__name__\": \"__console__\", \"__doc__\": None}\n"
     "    self.locals = locals\n"
     "    self.compile = CommandCompiler()\n"
+    "    sys.stdout = sock\n"
 
     "    self.filename = filename\n"
     "    self.resetbuffer()\n"
-    "    sys.stderr = sock\n"
-    "    sys.stdout = sock\n"
 
     "    self.sock = sock\n"
 

@@ -46,7 +46,6 @@ ADD_LIBRARY (pythonsocket STATIC PythonSocket.cc
 	${PYTHON_MOC_SRCS}
 )
 
-TARGET_COMPILE_OPTIONS(pythonsocket PRIVATE -fPIC)
 TARGET_LINK_LIBRARIES (pythonsocket
 	${QT_LIBRARIES}
 	${QT_QTXML_LIBRARY}
@@ -62,15 +61,14 @@ TARGET_LINK_LIBRARIES (pythonsocket
 
 ADD_LIBRARY (embeddedpython STATIC ${Python_SRCS})
 TARGET_COMPILE_DEFINITIONS(embeddedpython PRIVATE -DQT_NO_KEYWORDS ${pybind11_DEFINITIONS})
-TARGET_COMPILE_OPTIONS(embeddedpython PRIVATE -fPIC)
 TARGET_LINK_LIBRARIES(embeddedpython PUBLIC
   toolkitlib
 	pybind11::embed
 	pythonsocket
+	${Python_LIBRARIES}
 )
 
 ADD_LIBRARY (pythonplugin SHARED ${Plugin_SRCS})
-TARGET_COMPILE_OPTIONS(pythonplugin PRIVATE -fPIC)
 TARGET_LINK_LIBRARIES (pythonplugin
 	${QT_LIBRARIES} 
 	${QT_QTXML_LIBRARY} 

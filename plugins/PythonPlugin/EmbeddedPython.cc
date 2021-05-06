@@ -55,5 +55,4 @@ void EmbeddedPython::startPythonShell(PythonLocalSocket *s) {
 		"traceback"_a = traceback
 	);
 	pybind11::exec(INIT_SCRIPT, locals);
-	delete guard;
 }

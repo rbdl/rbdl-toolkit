@@ -43,11 +43,6 @@ class PythonPlugin : public QObject, public OptionalInterface {
 		PythonSocketServer* python_server;
 		QTermWidget* console;
 
-	public Q_SLOTS:
-		void handleGatewayConnection();
-
-	Q_SIGNALS:
-		void socket_client_connected(QLocalSocket*);
 };
 
 #endif 

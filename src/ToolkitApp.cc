@@ -288,6 +288,7 @@ void ToolkitApp::setPluginLoadSetting(QString plugin_name, bool load) {
 
 void ToolkitApp::addPlugin(QString plugin_path, bool enable) {
 	QPluginLoader* loader = new QPluginLoader(plugin_path);
+	loader->setLoadHints(QLibrary::ResolveAllSymbolsHint | QLibrary::ExportExternalSymbolsHint);
 	QString plugin_iid = loader->metaData().value("IID").toString();
 	QString plugin_name = loader->metaData().value("MetaData").toObject().value("Name").toString();
 
@@ -347,7 +348,6 @@ void ToolkitApp::initPlugins() {
 }
 
 void ToolkitApp::setPluginUsage(QString plugin_name, bool state) {
-
 	QPluginLoader* loader = toolkit_plugins[plugin_name];
 	QString plugin_iid = loader->metaData().value("IID").toString();
 	setPluginLoadSetting(plugin_name, state);
