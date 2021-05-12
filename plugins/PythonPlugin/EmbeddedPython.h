@@ -7,6 +7,7 @@
 #include <QThread>
 
 class PythonLocalSocket;
+class EmbeddedPythonImpl;
 
 class EmbeddedPython : public QObject {
 	Q_OBJECT
@@ -15,25 +16,10 @@ class EmbeddedPython : public QObject {
 		EmbeddedPython(ToolkitApp* toolkit);
 		~EmbeddedPython();
 
-		void startPythonShell(PythonLocalSocket* socket);
+		void run_code(QString py_code, PythonLocalSocket* callback_socket);
+		void run_source(QString python_file);
 	private:
-		ToolkitApp *toolkit;
-};
-
-class PythonThread : public QThread {
-	Q_OBJECT
-	public:
-		explicit PythonThread(EmbeddedPython* ep, quintptr ID, QObject* parent = NULL);
-
-		void run();
-
-	public Q_SLOTS:
-		void disconnected();
-
-	private:
-		PythonLocalSocket* socket;
-		quintptr socket_descriptor;
-		EmbeddedPython* embedded_python;
+		EmbeddedPythonImpl* impl;
 };
 
 #endif

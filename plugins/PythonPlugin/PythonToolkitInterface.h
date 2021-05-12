@@ -7,18 +7,15 @@
 
 const char *INIT_SCRIPT =
     "from codeop import CommandCompiler, compile_command\n"
-    "class InteractiveSocket():\n"
-    "  def __init__(self, sock, locals=None, filename='console'):\n"
+    "class ToolkitPythonInteractive():\n"
+    "  def __init__(self, locals=None, filename='console'):\n"
     "    if locals is None:\n"
     "      locals = {\"__name__\": \"__console__\", \"__doc__\": None}\n"
     "    self.locals = locals\n"
     "    self.compile = CommandCompiler()\n"
-    "    sys.stdout = sock\n"
 
     "    self.filename = filename\n"
     "    self.resetbuffer()\n"
-
-    "    self.sock = sock\n"
 
     "  def runsource(self, source, filename=\"<input>\", symbol=\"single\"):\n"
     "    try:\n"
@@ -80,6 +77,13 @@ const char *INIT_SCRIPT =
     "    finally:\n"
     "        last_tb = ei = None\n"
 
+    "  def showbanner(self, banner=None):\n"
+    "    cprt = 'Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.'\n"
+    "    if banner is None:\n"
+    "        self.write('Python %s on %s\\n%s\\n(%s)\\n' % (sys.version, sys.platform, cprt, self.__class__.__name__))\n"
+    "    elif banner:\n"
+    "        self.write(\"%s\\n\" % str(banner))\n"
+
     "  def interact(self, banner=None, exitmsg=None):\n"
     "    try:\n"
     "        sys.ps1\n"
@@ -89,11 +93,6 @@ const char *INIT_SCRIPT =
     "        sys.ps2\n"
     "    except AttributeError:\n"
     "        sys.ps2 = \"... \"\n"
-    "    cprt = 'Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.'\n"
-    "    if banner is None:\n"
-    "        self.write('Python %s on %s\\n%s\\n(%s)\\n' % (sys.version, sys.platform, cprt, self.__class__.__name__))\n"
-    "    elif banner:\n"
-    "        self.write(\"%s\\n\" % str(banner))\n"
     "    more = 0\n"
     "    while 1:\n"
     "        try:\n"
@@ -141,9 +140,7 @@ const char *INIT_SCRIPT =
     "    r = self.sock.readline()\n"
     "    return r\n"
 
-    "repl_scope = dict(globals(), **locals())\n"
-    "isock = InteractiveSocket(pls, repl_scope)\n"
-    "isock.interact()\n";
+    "toolkit_pyi = ToolkitPythonInteractive(dict(**locals()))\n";
 
 PYBIND11_EMBEDDED_MODULE(pythonlocalsocket, m) {
 	pybind11::class_<PythonLocalSocket>(m, "PythonLocalSocket")

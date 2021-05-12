@@ -8,8 +8,8 @@ PythonSocketServer::PythonSocketServer(EmbeddedPython* ep, QObject* parent)
 	: QLocalServer(parent), embedded_python(ep) {}
 
 PythonSocketServer::~PythonSocketServer() {
-	for (auto thread : py_threads) {
-		thread->terminate();
+	for (auto socket : py_sockets) {
+		socket->disconnect();
 	}
 }
 
@@ -24,11 +24,12 @@ void PythonSocketServer::startServer(QString name) {
 }
 
 void PythonSocketServer::incomingConnection(quintptr socket_descriptor) {
-	auto python_thread = new PythonThread(embedded_python, socket_descriptor, this);
-	connect(python_thread, SIGNAL(finished()), python_thread, SLOT(deleteLater()));
+	auto socket = new PythonLocalSocket();
 
-	py_threads.push_back(python_thread);
-	python_thread->start();
+	if (!socket->setSocketDescriptor(socket_descriptor)) {
+		return;
+	}
+	py_sockets.push_back(socket);
 }
 
 PythonLocalSocket::PythonLocalSocket(QObject *parent) : QLocalSocket(parent) {}
@@ -49,8 +50,9 @@ std::string PythonLocalSocket::py_read(int len) {
 }
 
 std::string PythonLocalSocket::py_readline() {
-	while(!this->waitForReadyRead()){}
+	while(!this->waitForReadyRead() && !this->canReadLine()){}
 	auto line = this->readLine(1024);
+	std::cout << line.toStdString();
 	return QString(line).toStdString();
 }
 

@@ -14,16 +14,16 @@
 #include <PythonSocket.h>
 
 
-//class ToolkitSocketTerminal : public QTermWidget {
-//	Q_OBJECT
-//	public:
-//		ToolkitSocketTerminal(const QString socket_addr, QWidget *parent=NULL);
-//		~ToolkitSocketTerminal();
-//	public Q_SLOTS:
-//		void atError(QLocalSocket::LocalSocketError err);
-//	private:
-//		QLocalSocket *socket;
-//};
+class ToolkitSocketTerminal : public QTermWidget {
+	Q_OBJECT
+	public:
+		ToolkitSocketTerminal(const QString socket_addr, QWidget *parent=NULL);
+		~ToolkitSocketTerminal();
+	public Q_SLOTS:
+		void atError(QLocalSocket::LocalSocketError err);
+	private:
+		QLocalSocket *socket;
+};
 
 class PythonPlugin : public QObject, public OptionalInterface {
 	Q_OBJECT
@@ -41,7 +41,7 @@ class PythonPlugin : public QObject, public OptionalInterface {
 
 		EmbeddedPython* embedded_python;
 		PythonSocketServer* python_server;
-		QTermWidget* console;
+		ToolkitSocketTerminal* console;
 
 };
 

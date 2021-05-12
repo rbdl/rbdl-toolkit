@@ -4,55 +4,56 @@
 #include "PythonSocket.h"
 
 /*==============================================================================
- * PythonThread
- *=============================================================================*/
-
-PythonThread::PythonThread(EmbeddedPython* ep, quintptr socket_descriptor, QObject* parent)
-	: QThread(parent)
-{
-	this->socket_descriptor = socket_descriptor;
-	this->embedded_python = ep;
-}
-
-void PythonThread::run() {
-	socket = new PythonLocalSocket();
-
-	if (!socket->setSocketDescriptor(this->socket_descriptor)) {
-		return;
-	}
-
-	connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-
-	embedded_python->startPythonShell(socket);
-}
-
-void PythonThread::disconnected() {
-	socket->deleteLater();
-	exit(0);
-}
-
-/*==============================================================================
  * EmbeddedPython
  *=============================================================================*/
 
-EmbeddedPython::EmbeddedPython(ToolkitApp* toolkit) : toolkit(toolkit) {
-}
+class EmbeddedPythonImpl {
+	private:
+		pybind11::scoped_interpreter* python_guard;
+		pybind11::dict *locals;
 
-EmbeddedPython::~EmbeddedPython() {
-}
+		ToolkitApp* toolkit;
+	public:
+		EmbeddedPythonImpl(ToolkitApp* toolkit);
+		~EmbeddedPythonImpl();
 
-void EmbeddedPython::startPythonShell(PythonLocalSocket *s) {
-	auto guard = new pybind11::scoped_interpreter();
+		void run_code(QString py_code, PythonLocalSocket *s);
+		void run_source(QString py_file);
+};
+
+EmbeddedPythonImpl::EmbeddedPythonImpl(ToolkitApp* toolkit) : toolkit(toolkit) {
+	python_guard = new pybind11::scoped_interpreter();
 	pybind11::module::import("pythonlocalsocket");
 	using namespace pybind11::literals;
 
-	pybind11::object pls = pybind11::cast(s);
 	pybind11::module_ sys = pybind11::module_::import("sys");
 	pybind11::module_ traceback = pybind11::module_::import("traceback");
-	auto locals = pybind11::dict(
-		"pls"_a = pls,
+	locals = new pybind11::dict(
 		"sys"_a = sys,
 		"traceback"_a = traceback
 	);
-	pybind11::exec(INIT_SCRIPT, locals);
+	pybind11::eval<pybind11::eval_statements>(INIT_SCRIPT, *locals);
+}
+
+EmbeddedPythonImpl::~EmbeddedPythonImpl() {
+	delete python_guard;
+}
+
+void EmbeddedPythonImpl::run_code(QString py_code, PythonLocalSocket *s) {
+	pybind11::object pls = pybind11::cast(s);
+	(*locals)["pls"] = pls;
+
+}
+
+
+EmbeddedPython::EmbeddedPython(ToolkitApp* toolkit) {
+	impl = new EmbeddedPythonImpl(toolkit);
+}
+
+EmbeddedPython::~EmbeddedPython() {
+	delete impl;
+}
+
+void EmbeddedPython::run_code(QString py_code, PythonLocalSocket* callback_socket) {
+	impl->run_code(py_code, callback_socket);
 }
