@@ -18,6 +18,8 @@ class EmbeddedPython : public QObject {
 
 		void run_code(QString py_code, PythonLocalSocket* callback_socket);
 		void run_source(QString python_file);
+
+		void init_shell(PythonLocalSocket* callback_socket);
 	private:
 		EmbeddedPythonImpl* impl;
 };

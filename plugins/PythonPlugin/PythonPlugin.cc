@@ -82,7 +82,7 @@ void PythonPlugin::init(ToolkitApp* app) {
 	python_server = new PythonSocketServer(embedded_python);
 	python_server->startServer("toolkitpy.socket");
 
-	console = new ToolkitSocketTerminal(python_server->fullServerName());
+	console = new QTermWidget(false);
 	QFont font = QApplication::font();
 #ifdef Q_OS_MACOS
     font.setFamily(QStringLiteral("Monaco"));
@@ -94,11 +94,11 @@ void PythonPlugin::init(ToolkitApp* app) {
 	font.setPointSize(11);
 
     console->setTerminalFont(font);
-	//console->setShellProgram(QString("nc"));
-	//QStringList args;
-	//args << QString("-U") << python_server->fullServerName();
-	//console->setArgs(args);
-	//console->startShellProgram();
+	console->setShellProgram(QString("nc"));
+	QStringList args;
+	args << QString("-U") << python_server->fullServerName();
+	console->setArgs(args);
+	console->startShellProgram();
 
 	parentApp->addView("ToolkitTerminal", qobject_cast<QWidget*>(console), Qt::BottomDockWidgetArea);
 }

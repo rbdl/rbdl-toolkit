@@ -21,7 +21,7 @@ class PythonSocketServer : public QLocalServer {
 		std::vector<PythonLocalSocket*> py_sockets;
 
 	public Q_SLOTS:
-		void run_code(std::string line, PythonLocalSocket* callback_socket);
+		void run_code(QString line, PythonLocalSocket* callback_socket);
 };
 
 class PythonLocalSocket : public QLocalSocket  {
@@ -35,9 +35,10 @@ class PythonLocalSocket : public QLocalSocket  {
 		std::string py_readline();
 		void py_flush();
 		bool is_closed();
+		int py_id();
 
 	Q_SIGNALS:
-		void received_line(std::string, PythonLocalSocket*);
+		void received_line(QString, PythonLocalSocket*);
 
 	public Q_SLOTS:
 		void recv_data();

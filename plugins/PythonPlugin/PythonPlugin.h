@@ -41,7 +41,7 @@ class PythonPlugin : public QObject, public OptionalInterface {
 
 		EmbeddedPython* embedded_python;
 		PythonSocketServer* python_server;
-		ToolkitSocketTerminal* console;
+		QTermWidget* console;
 
 };
 

@@ -9,7 +9,7 @@ PythonSocketServer::PythonSocketServer(EmbeddedPython* ep, QObject* parent)
 
 PythonSocketServer::~PythonSocketServer() {
 	for (auto socket : py_sockets) {
-		socket->disconnect();
+		delete socket;
 	}
 }
 
@@ -29,14 +29,30 @@ void PythonSocketServer::incomingConnection(quintptr socket_descriptor) {
 	if (!socket->setSocketDescriptor(socket_descriptor)) {
 		return;
 	}
+	connect(socket, &PythonLocalSocket::received_line, this, &PythonSocketServer::run_code);
+
+	embedded_python->init_shell(socket);
 	py_sockets.push_back(socket);
 }
 
-PythonLocalSocket::PythonLocalSocket(QObject *parent) : QLocalSocket(parent) {}
+void PythonSocketServer::run_code(QString line, PythonLocalSocket* s) {
+	embedded_python->run_code(line, s);
+}
+
+PythonLocalSocket::PythonLocalSocket(QObject *parent) : QLocalSocket(parent) {
+	connect(this, &QLocalSocket::readyRead, this, &PythonLocalSocket::recv_data);
+}
 
 PythonLocalSocket::~PythonLocalSocket() {
 	disconnect();
 	deleteLater();
+}
+
+void PythonLocalSocket::recv_data() {
+	if (this->canReadLine()) {
+		auto line = this->readLine(1024);
+		emit received_line(QString(line), this);
+	}
 }
 
 void PythonLocalSocket::py_write(std::string str) {
@@ -50,7 +66,7 @@ std::string PythonLocalSocket::py_read(int len) {
 }
 
 std::string PythonLocalSocket::py_readline() {
-	while(!this->waitForReadyRead() && !this->canReadLine()){}
+	while(!this->waitForReadyRead() {}
 	auto line = this->readLine(1024);
 	std::cout << line.toStdString();
 	return QString(line).toStdString();
@@ -58,6 +74,10 @@ std::string PythonLocalSocket::py_readline() {
 
 void PythonLocalSocket::py_flush() {
 	this->flush();
+}
+
+int PythonLocalSocket::py_id() {
+	return this->socketDescriptor();
 }
 
 bool PythonLocalSocket::is_closed() {

@@ -7,15 +7,24 @@
 
 const char *INIT_SCRIPT =
     "from codeop import CommandCompiler, compile_command\n"
-    "class ToolkitPythonInteractive():\n"
-    "  def __init__(self, locals=None, filename='console'):\n"
+    "class ToolkitPythonSocketExecutor():\n"
+    "  def __init__(self, sock, locals=None, filename='console'):\n"
     "    if locals is None:\n"
     "      locals = {\"__name__\": \"__console__\", \"__doc__\": None}\n"
     "    self.locals = locals\n"
     "    self.compile = CommandCompiler()\n"
-
     "    self.filename = filename\n"
     "    self.resetbuffer()\n"
+    "    self.sock = sock\n"
+    "    try:\n"
+    "        sys.ps1\n"
+    "    except AttributeError:\n"
+    "        sys.ps1 = \">>> \"\n"
+    "    try:\n"
+    "        sys.ps2\n"
+    "    except AttributeError:\n"
+    "        sys.ps2 = \"... \"\n"
+    "    self.more = 0\n"
 
     "  def runsource(self, source, filename=\"<input>\", symbol=\"single\"):\n"
     "    try:\n"
@@ -80,41 +89,27 @@ const char *INIT_SCRIPT =
     "  def showbanner(self, banner=None):\n"
     "    cprt = 'Type \"help\", \"copyright\", \"credits\" or \"license\" for more information.'\n"
     "    if banner is None:\n"
-    "        self.write('Python %s on %s\\n%s\\n(%s)\\n' % (sys.version, sys.platform, cprt, self.__class__.__name__))\n"
+    "        self.write('Python %s on %s\\n%s\\n(%s)\\n' % (sys.version, sys.platform, cprt, \"ToolkitPythonEnvironment\"))\n"
     "    elif banner:\n"
     "        self.write(\"%s\\n\" % str(banner))\n"
+    "    self.show_prompt()\n"
 
-    "  def interact(self, banner=None, exitmsg=None):\n"
+    "  def show_prompt(self):\n"
+    "    if self.more:\n"
+    "       prompt = sys.ps2\n"
+    "    else:\n"
+    "       prompt = sys.ps1\n"
+    "    self.write(prompt)\n"
+
+    "  def interact_line(self, line):\n"
+    "    sys.stdout = self.sock\n"
     "    try:\n"
-    "        sys.ps1\n"
-    "    except AttributeError:\n"
-    "        sys.ps1 = \">>> \"\n"
-    "    try:\n"
-    "        sys.ps2\n"
-    "    except AttributeError:\n"
-    "        sys.ps2 = \"... \"\n"
-    "    more = 0\n"
-    "    while 1:\n"
-    "        try:\n"
-    "            if more:\n"
-    "                prompt = sys.ps2\n"
-    "            else:\n"
-    "                prompt = sys.ps1\n"
-    "            try:\n"
-    "                line = self.raw_input(prompt)\n"
-    "            except EOFError:\n"
-    "                self.write(\"\\n\")\n"
-    "                break\n"
-    "            else:\n"
-    "                more = self.push(line)\n"
-    "        except KeyboardInterrupt:\n"
-    "            self.write(\"\\nKeyboardInterrupt\\n\")\n"
-    "            self.resetbuffer()\n"
-    "            more = 0\n"
-    "    if exitmsg is None:\n"
-    "        self.write('now exiting %s...\\n' % self.__class__.__name__)\n"
-    "    elif exitmsg != '':\n"
-    "        self.write('%s\\n' % exitmsg)\n"
+    "      self.push(line)\n"
+    "    except KeyboardInterrupt:\n"
+    "      self.write(\"\\nKeyboardInterrupt\\n\")\n"
+    "      self.resetbuffer()\n"
+    "      more = 0\n"
+    "    self.show_prompt()\n"
 
     "  def push(self, line):\n"
     "    self.buffer.append(line)\n"
@@ -122,7 +117,7 @@ const char *INIT_SCRIPT =
     "    more = self.runsource(source, self.filename)\n"
     "    if not more:\n"
     "        self.resetbuffer()\n"
-    "    return more\n"
+    "    self.more = more\n"
 
     "  def resetbuffer(self):\n"
     "    self.buffer = []\n"
@@ -140,7 +135,15 @@ const char *INIT_SCRIPT =
     "    r = self.sock.readline()\n"
     "    return r\n"
 
-    "toolkit_pyi = ToolkitPythonInteractive(dict(**locals()))\n";
+    "python_shells = {}";
+
+const char* INIT_SHELL =
+    "tpse = ToolkitPythonSocketExecutor(pls)\n"
+    "tpse.showbanner()\n"
+    "python_shells[pls.id()] = tpse \n";
+
+const char* RUN_CMD =
+    "python_shells[pls.id()].interact_line(code_torun)\n";
 
 PYBIND11_EMBEDDED_MODULE(pythonlocalsocket, m) {
 	pybind11::class_<PythonLocalSocket>(m, "PythonLocalSocket")
@@ -149,7 +152,8 @@ PYBIND11_EMBEDDED_MODULE(pythonlocalsocket, m) {
 		.def("read", &PythonLocalSocket::py_read)
 		.def("readline", &PythonLocalSocket::py_readline)
 		.def("is_closed", &PythonLocalSocket::is_closed)
-		.def("flush", &PythonLocalSocket::py_flush);
+		.def("flush", &PythonLocalSocket::py_flush)
+        .def("id", &PythonLocalSocket::py_id);
 }
 
 #endif
