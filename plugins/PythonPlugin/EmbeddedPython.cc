@@ -33,13 +33,13 @@ EmbeddedPythonImpl::EmbeddedPythonImpl(ToolkitApp* toolkit) : toolkit(toolkit) {
 	locals = new pybind11::dict(
 		"sys"_a = sys,
 		"traceback"_a = traceback,
-		"toolkit"_a = py_toolkit
+		"rbdltk"_a = py_toolkit
 	);
 	pybind11::eval<pybind11::eval_statements>(INIT_SCRIPT, *locals);
 }
 
 EmbeddedPythonImpl::~EmbeddedPythonImpl() {
-	delete python_guard;
+	//delete python_guard;
 }
 
 void EmbeddedPythonImpl::init_shell(PythonLocalSocket *s) {

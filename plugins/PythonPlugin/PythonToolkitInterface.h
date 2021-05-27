@@ -2,6 +2,10 @@
 #define PYTHON_TOOLKIT_INTERFACE_INCLUDED
 
 #include <pybind11/embed.h>
+#include <pybind11/stl.h>
+#include <pybind11/complex.h>
+#include <pybind11/functional.h>
+#include <pybind11/chrono.h>
 #include <pybind11/numpy.h>
 #include <PythonSocket.h>
 
@@ -135,7 +139,8 @@ const char *INIT_SCRIPT =
     "    r = self.sock.readline()\n"
     "    return r\n"
 
-    "python_shells = {}";
+    "python_shells = {}\n"
+    "exit = rbdltk.quit\n";
 
 const char* INIT_SHELL =
     "tpse = ToolkitPythonSocketExecutor(pls, locals())\n"
@@ -159,9 +164,14 @@ PYBIND11_EMBEDDED_MODULE(pythonlocalsocket, m) {
 PYBIND11_EMBEDDED_MODULE(toolkit_util, m) {
     pybind11::class_<ToolkitApp>(m, "ToolkitApp")
         .def(pybind11::init<QWidget*>())
-        .def("selectModel", &ToolkitApp::selectModel);
+        .def("loadModel", &ToolkitApp::loadModel)
+        .def("selectModel", &ToolkitApp::selectModel)
+        .def("getLoadedModels", &ToolkitApp::getLoadedModels)
+        .def("quit", [] {
+            QCoreApplication::quit();
+        });
 
-    pybind11::class_<RBDLModelWrapper>(m, "RBDLModel");
+    pybind11::class_<RBDLModelWrapper>(m, "ToolkitModel");
 }
 
 #endif

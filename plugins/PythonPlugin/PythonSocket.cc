@@ -68,7 +68,7 @@ std::string PythonLocalSocket::py_read(int len) {
 std::string PythonLocalSocket::py_readline() {
 	while(!this->waitForReadyRead()) {}
 	auto line = this->readLine(1024);
-	std::cout << line.toStdString();
+	//std::cout << line.toStdString();
 	return QString(line).toStdString();
 }
 
