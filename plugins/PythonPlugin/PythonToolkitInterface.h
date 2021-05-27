@@ -138,7 +138,7 @@ const char *INIT_SCRIPT =
     "python_shells = {}";
 
 const char* INIT_SHELL =
-    "tpse = ToolkitPythonSocketExecutor(pls)\n"
+    "tpse = ToolkitPythonSocketExecutor(pls, locals())\n"
     "tpse.showbanner()\n"
     "python_shells[pls.id()] = tpse \n";
 
@@ -154,6 +154,14 @@ PYBIND11_EMBEDDED_MODULE(pythonlocalsocket, m) {
 		.def("is_closed", &PythonLocalSocket::is_closed)
 		.def("flush", &PythonLocalSocket::py_flush)
         .def("id", &PythonLocalSocket::py_id);
+}
+
+PYBIND11_EMBEDDED_MODULE(toolkit_util, m) {
+    pybind11::class_<ToolkitApp>(m, "ToolkitApp")
+        .def(pybind11::init<QWidget*>())
+        .def("selectModel", &ToolkitApp::selectModel);
+
+    pybind11::class_<RBDLModelWrapper>(m, "RBDLModel");
 }
 
 #endif

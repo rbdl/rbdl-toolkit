@@ -24,13 +24,16 @@ class EmbeddedPythonImpl {
 EmbeddedPythonImpl::EmbeddedPythonImpl(ToolkitApp* toolkit) : toolkit(toolkit) {
 	python_guard = new pybind11::scoped_interpreter();
 	pybind11::module::import("pythonlocalsocket");
+	pybind11::module::import("toolkit_util");
 	using namespace pybind11::literals;
 
 	pybind11::module_ sys = pybind11::module_::import("sys");
 	pybind11::module_ traceback = pybind11::module_::import("traceback");
+	pybind11::object py_toolkit = pybind11::cast(toolkit);
 	locals = new pybind11::dict(
 		"sys"_a = sys,
-		"traceback"_a = traceback
+		"traceback"_a = traceback,
+		"toolkit"_a = py_toolkit
 	);
 	pybind11::eval<pybind11::eval_statements>(INIT_SCRIPT, *locals);
 }
