@@ -66,7 +66,7 @@ class SceneWidget : public QWidget {
 
 		int width, height;
 		float fov;
-		float near, far;
+		float near_v, far_v;
 
 		QColor default_clear_color;
 

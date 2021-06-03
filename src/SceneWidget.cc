@@ -26,8 +26,8 @@ using namespace Qt3DLogic;
 SceneWidget::SceneWidget(QWidget *parent): 
 	QWidget(parent),
 	fov(45.f),
-	near(0.1f),
-	far(100.f),
+	near_v(0.1f),
+	far_v(100.f),
 	render_capture(nullptr),
 	//use almost black, because just black is transparent at application start up 🙈
 	default_clear_color(QColor::fromRgbF(0.01, 0.01, 0.01, 1.)) 
@@ -59,7 +59,7 @@ SceneWidget::SceneWidget(QWidget *parent):
 	world_lighting->setWorldDirection(QVector3D(1., 1., 1.));
 
     camera = qt3d_view->camera();
-	camera->lens()->setPerspectiveProjection(fov, 16.0f/9.0f, near, far);
+	camera->lens()->setPerspectiveProjection(fov, 16.0f/9.0f, near_v, far_v);
 	camera->setPosition(QVector3D(6., 3., 6.0f));
 	camera->setUpVector(QVector3D(0, 1, 0));
 	camera->setViewCenter(QVector3D(0, 0, 0));
@@ -93,7 +93,7 @@ void SceneWidget::setCameraLens(QCameraLens::ProjectionType projection) {
 	if (projection == QCameraLens::PerspectiveProjection) {
 		camera->lens()->setPerspectiveProjection( fov,
 		                                          float(width)/float(height), 
-		                                          near, far);
+		                                          near_v, far_v);
 	} else if (projection == QCameraLens::OrthographicProjection) {
 		QVector3D eye = camera->viewVector();
 		QVector3D poi = camera->viewCenter();
@@ -108,7 +108,7 @@ void SceneWidget::setCameraLens(QCameraLens::ProjectionType projection) {
 		                                            0.5 * w,
 		                                           -0.5 * h,
 		                                            0.5 * h,
-		                                            near, far);
+		                                            near_v, far_v);
 	}
 }
 
