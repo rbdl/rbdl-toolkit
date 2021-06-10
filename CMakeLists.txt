@@ -255,11 +255,12 @@ IF(NOT BUILD_OSX_BUNDLE)
 INSTALL ( TARGETS rbdl-toolkit RUNTIME DESTINATION bin )
 IF(WIN32)
 INSTALL ( TARGETS toolkitlib ARCHIVE DESTINATION lib )
-INSTALL ( TARGETS toolkitlib LIBRARY DESTINATION bin )
+INSTALL ( TARGETS toolkitlib RUNTIME DESTINATION bin )
 ELSE()
 INSTALL ( TARGETS toolkitlib LIBRARY DESTINATION lib )
 ENDIF()
 IF(WIN32)
+CONFIGURE_FILE(extra/mk_win_installer.bat mk_win_installer.bat)
 # the windeployqt executable
 GET_TARGET_PROPERTY(QMAKE_EXE Qt5::qmake IMPORTED_LOCATION)
 GET_FILENAME_COMPONENT(QT_BIN_DIR "${QMAKE_EXE}" DIRECTORY)
@@ -268,9 +269,10 @@ FIND_PROGRAM(WINDEPLOYQT_ENV_SETUP qtenv2.bat HINTS "${QT_BIN_DIR}")
 FIND_PROGRAM(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
 
 # Run windeployqt immediately after build
-ADD_CUSTOM_TARGET(win_bundle
-    COMMAND "${WINDEPLOYQT_ENV_SETUP}" && "${WINDEPLOYQT_EXECUTABLE}" -3dcore -3drenderer -3dinput -3danimation -3dextras -3dquick $<TARGET_FILE:rbdl-toolkit>\"
-)
+ADD_CUSTOM_TARGET(package
+	BYPRODUCTS RBDLToolkit_Deploy
+    COMMAND ${CMAKE_CURRENT_BINARY_DIR}/mk_win_installer.bat)
+
 ENDIF()
 ENDIF()
 

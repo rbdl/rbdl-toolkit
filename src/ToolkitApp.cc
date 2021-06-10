@@ -104,6 +104,7 @@ ToolkitApp::ToolkitApp(QWidget *parent) {
 		paths << env.value(PATH_VAR);
 	}
 	for (int i=0; i<paths.size(); i++) {
+		std::cout << paths.at(i).toStdString() << std::endl;
 		QFileInfo check_file(paths.at(i));
 		if (check_file.isDir()) {
 			QDir dir(paths.at(i));
