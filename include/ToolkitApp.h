@@ -20,8 +20,11 @@
 #include "ToolkitSettings.h"
 #include "ModelSelectorDialog.h"
 
+#include "toolkit_config.h"
+
 class SceneWidget;
 
+TOOLKIT_DLLAPI
 class ToolkitApp : public QMainWindow
 {
 	Q_OBJECT
@@ -46,38 +49,38 @@ class ToolkitApp : public QMainWindow
 		void setPluginLoadSetting(QString plugin_name, bool load);
 
 	public:
-		ToolkitSettings toolkit_settings;
+		TOOLKIT_DLLAPI ToolkitSettings toolkit_settings;
 
-		ToolkitApp(QWidget *parent = 0);
-		std::vector<RBDLModelWrapper*>* getLoadedModels();
+		TOOLKIT_DLLAPI ToolkitApp(QWidget *parent = 0);
+		TOOLKIT_DLLAPI std::vector<RBDLModelWrapper*>* getLoadedModels();
 
-		RBDLModelWrapper* selectModel(ModelFilter filter);
+		TOOLKIT_DLLAPI RBDLModelWrapper* selectModel(ModelFilter filter);
 
-		void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
-		void deleteView(QString name);
+		TOOLKIT_DLLAPI void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
+		TOOLKIT_DLLAPI void deleteView(QString name);
 
-		void addFileAction(QAction* file_action);
+		TOOLKIT_DLLAPI void addFileAction(QAction* file_action);
 
-		QMenu* getMenu(std::string menu_name);
-		void deleteMenu(QMenu* menu);
+		TOOLKIT_DLLAPI QMenu* getMenu(std::string menu_name);
+		TOOLKIT_DLLAPI void deleteMenu(QMenu* menu);
 
-		void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
+		TOOLKIT_DLLAPI void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
 		void parseCmd(QApplication& app);
 
-		void showWarningDialog(QString warning_msg);
+		TOOLKIT_DLLAPI void showWarningDialog(QString warning_msg);
 
-		static void showExceptionDialog(std::exception& e);
+		TOOLKIT_DLLAPI static void showExceptionDialog(std::exception& e);
 
-		ToolkitTimeline* getToolkitTimeline() { return timeline; }
-		SceneWidget* getSceneObj() { return main_display; }
+		TOOLKIT_DLLAPI ToolkitTimeline* getToolkitTimeline() { return timeline; }
+		TOOLKIT_DLLAPI SceneWidget* getSceneObj() { return main_display; }
 
 	public slots:
-		void action_reload_files();
-		void action_load_model();
+		TOOLKIT_DLLAPI void action_reload_files();
+		TOOLKIT_DLLAPI void action_load_model();
 
-		void model_visual_update(Qt3DCore::QEntity* visual);
+		TOOLKIT_DLLAPI void model_visual_update(Qt3DCore::QEntity* visual);
 
-		void loadModel(const QString &model_file); 
+		TOOLKIT_DLLAPI void loadModel(const QString &model_file);
 
 	signals:
 		void reload();
