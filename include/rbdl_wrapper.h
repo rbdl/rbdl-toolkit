@@ -14,12 +14,12 @@
 
 #include "toolkit_config.h"
 
-class RBDLModelWrapper;
+class TOOLKIT_DLLAPI RBDLModelWrapper;
 
 
 /* This class provides an abstact base for adding data to a loaded model, such as (Animations, Forces, etc.).
  */
-class WrapperExtension {
+class TOOLKIT_DLLAPI WrapperExtension {
 	protected:
 		RBDLModelWrapper* model_parent;
 
