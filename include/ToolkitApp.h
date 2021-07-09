@@ -49,7 +49,7 @@ class ToolkitApp : public QMainWindow
 		void setPluginLoadSetting(QString plugin_name, bool load);
 
 	public:
-		TOOLKIT_DLLAPI ToolkitSettings toolkit_settings;
+		ToolkitSettings toolkit_settings;
 
 		TOOLKIT_DLLAPI ToolkitApp(QWidget *parent = 0);
 		TOOLKIT_DLLAPI std::vector<RBDLModelWrapper*>* getLoadedModels();
@@ -80,7 +80,7 @@ class ToolkitApp : public QMainWindow
 
 		TOOLKIT_DLLAPI void model_visual_update(Qt3DCore::QEntity* visual);
 
-		TOOLKIT_DLLAPI void loadModel(const QString &model_file);
+		TOOLKIT_DLLAPI void loadModel(const QString &model_file); 
 
 	signals:
 		void reload();
