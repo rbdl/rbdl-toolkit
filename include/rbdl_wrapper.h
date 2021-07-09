@@ -76,32 +76,32 @@ class TOOLKIT_DLLAPI RBDLModelWrapper : public QObject {
 		void clear();
 		virtual void load(QString model_file) = 0;
 	public:
-		TOOLKIT_DLLAPI static RBDLModelWrapper* loadFromFile(QString model_file);
+		static RBDLModelWrapper* loadFromFile(QString model_file);
 
 
 		RigidBodyDynamics::Model* rbdl_model;
 
 		RBDLModelWrapper();
-		TOOLKIT_DLLAPI void build3DEntity(ModelInfo&, std::vector<SegmentVisualInfo>&);
+		void build3DEntity(ModelInfo&, std::vector<SegmentVisualInfo>&);
 
-		TOOLKIT_DLLAPI QString getFileName() { return QFileInfo(model_file).baseName(); }
-		TOOLKIT_DLLAPI std::string getModelType() { return model_type; }
-		TOOLKIT_DLLAPI QString getModelFile();
-		TOOLKIT_DLLAPI int getModelDof();
-		TOOLKIT_DLLAPI Qt3DCore::QEntity* getRenderObj() { return model_root; }
-		TOOLKIT_DLLAPI Qt3DCore::QEntity* getSegmentEntity(std::string segment_name, bool create=false);
+		QString getFileName() { return QFileInfo(model_file).baseName(); }
+		std::string getModelType() { return model_type; }
+		QString getModelFile();
+		int getModelDof();
+		Qt3DCore::QEntity* getRenderObj() { return model_root; }
+		Qt3DCore::QEntity* getSegmentEntity(std::string segment_name, bool create=false);
 
-		TOOLKIT_DLLAPI void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
-		TOOLKIT_DLLAPI void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
+		void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
+		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 
-		TOOLKIT_DLLAPI void reload();
+		void reload();
 
 		//takes ownership of extension -> only delete via model not where it was created
-		TOOLKIT_DLLAPI void addExtension(WrapperExtension* extension);
+		void addExtension(WrapperExtension* extension);
 		//void deleteExtension(std::string name);
-		TOOLKIT_DLLAPI bool hasExtension(std::string name);
-		TOOLKIT_DLLAPI const std::vector<std::string>& loadedExtensions() { return extension_names; }
-		TOOLKIT_DLLAPI WrapperExtension* getExtension(std::string name);
+		bool hasExtension(std::string name);
+		const std::vector<std::string>& loadedExtensions() { return extension_names; }
+		WrapperExtension* getExtension(std::string name);
 
 	public slots:
 		void model_update(float current_time);

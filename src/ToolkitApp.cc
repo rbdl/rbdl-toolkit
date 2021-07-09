@@ -17,7 +17,7 @@
 
 #define PATH_VAR "TOOLKIT_SEARCHDIR_PATH"
 
-TOOLKIT_DLLAPI ToolkitApp::ToolkitApp(QWidget *parent) {
+ToolkitApp::ToolkitApp(QWidget *parent) {
 	//setup standard menu
 	main_menu_bar = new QMenuBar(NULL);
 	toolkit_menu_list["Toolkit"] = main_menu_bar->addMenu("Toolkit");
@@ -131,7 +131,7 @@ TOOLKIT_DLLAPI ToolkitApp::ToolkitApp(QWidget *parent) {
 	initPlugins();
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::action_reload_files() {
+void ToolkitApp::action_reload_files() {
 	emit reload();
 	for (auto model : loaded_models) {
 		Qt3DCore::QEntity*  model_render_obj = model->getRenderObj();
@@ -147,7 +147,7 @@ TOOLKIT_DLLAPI void ToolkitApp::action_reload_files() {
 	}
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::action_load_model() {
+void ToolkitApp::action_load_model() {
 	QFileDialog file_dialog (this, "Select Model File");
 
 	file_dialog.setNameFilter(tr("MeshupModels (*lua *urdf)"));
@@ -158,12 +158,12 @@ TOOLKIT_DLLAPI void ToolkitApp::action_load_model() {
 	}	
 }
 
-TOOLKIT_DLLAPI std::vector<RBDLModelWrapper*>* ToolkitApp::getLoadedModels() {
+std::vector<RBDLModelWrapper*>* ToolkitApp::getLoadedModels() {
 	return &loaded_models;
 }
 
 
-TOOLKIT_DLLAPI void ToolkitApp::loadModel(const QString &model_file) {
+void ToolkitApp::loadModel(const QString &model_file) {
 	bool errors_happend = false;
 
 	Qt3DCore::QEntity* model_scene_obj;
@@ -213,7 +213,7 @@ TOOLKIT_DLLAPI void ToolkitApp::loadModel(const QString &model_file) {
 
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::model_visual_update(Qt3DCore::QEntity* visual) {
+void ToolkitApp::model_visual_update(Qt3DCore::QEntity* visual) {
 	QVariant obj_grouping = visual->property("Scene.ObjGroup");
 	if (obj_grouping.isValid()) {
 		QString group_name = obj_grouping.toString();
@@ -221,7 +221,7 @@ TOOLKIT_DLLAPI void ToolkitApp::model_visual_update(Qt3DCore::QEntity* visual) {
 	}
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::showExceptionDialog(std::exception& e) {
+void ToolkitApp::showExceptionDialog(std::exception& e) {
 	QMessageBox errorBox;
 	errorBox.setText(e.what());
 	errorBox.setStandardButtons(QMessageBox::Cancel);
@@ -231,7 +231,7 @@ TOOLKIT_DLLAPI void ToolkitApp::showExceptionDialog(std::exception& e) {
 
 
 
-TOOLKIT_DLLAPI void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_tilte) {
+void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area, bool show_tilte) {
 	QDockWidget* dock = new QDockWidget(name, this);
 	dock->setWidget(view_widget);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
@@ -245,7 +245,7 @@ TOOLKIT_DLLAPI void ToolkitApp::addView(QString name, QWidget *view_widget, Qt::
 	toolkit_menu_list["View"]->addAction(dock->toggleViewAction());
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::deleteView(QString name) {
+void ToolkitApp::deleteView(QString name) {
 	for(auto it = view_widgets.begin(); it != view_widgets.end(); it++) {
 		if ((*it)->windowTitle() == name) {
 			delete (*it);
@@ -351,11 +351,11 @@ void ToolkitApp::setPluginUsage(QString plugin_name, bool state) {
 	}
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::addFileAction(QAction* action) {
+void ToolkitApp::addFileAction(QAction* action) {
 	toolkit_menu_list["File"]->addAction(action);
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::parseCmd(QApplication& app) {
+void ToolkitApp::parseCmd(QApplication& app) {
 	cmd_parser.parse(app.arguments());
 
 	//load additional plugins here
@@ -378,7 +378,7 @@ TOOLKIT_DLLAPI void ToolkitApp::parseCmd(QApplication& app) {
 	}
 }
 
-TOOLKIT_DLLAPI RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
+RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
 	ModelSelectorDialog select_dialog(&loaded_models, filter, this);
 
 	if(select_dialog.exec()) {
@@ -389,13 +389,13 @@ TOOLKIT_DLLAPI RBDLModelWrapper* ToolkitApp::selectModel(ModelFilter filter) {
 	return nullptr;
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)> option_logic) {
+void ToolkitApp::addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)> option_logic) {
 	cmd_parser.addOption(option);
 
 	cmd_hooks.push_back(option_logic);
 }
 
-TOOLKIT_DLLAPI QMenu* ToolkitApp::getMenu(std::string menu_name) {
+QMenu* ToolkitApp::getMenu(std::string menu_name) {
 	QMenu* m;
 
 	if ( toolkit_menu_list.find(menu_name) == toolkit_menu_list.end() ) {
@@ -407,7 +407,7 @@ TOOLKIT_DLLAPI QMenu* ToolkitApp::getMenu(std::string menu_name) {
 	return m;
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::deleteMenu(QMenu* menu) {
+void ToolkitApp::deleteMenu(QMenu* menu) {
 	for (auto it=toolkit_menu_list.begin(); it!=toolkit_menu_list.end(); it++) {
 		if (it->second == menu) {
 			toolkit_menu_list.erase(it);
@@ -417,7 +417,7 @@ TOOLKIT_DLLAPI void ToolkitApp::deleteMenu(QMenu* menu) {
 	}
 }
 
-TOOLKIT_DLLAPI void ToolkitApp::showWarningDialog(QString warning_msg) {
+void ToolkitApp::showWarningDialog(QString warning_msg) {
 	if (toolkit_settings.value("toolkit.showWarnings").isNull()) {
 		//if the value is not set make default true 
 		toolkit_settings.setValue("toolkit.showWarnings", true);

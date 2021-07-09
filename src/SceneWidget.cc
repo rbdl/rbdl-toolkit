@@ -87,7 +87,7 @@ void SceneWidget::resizeEvent(QResizeEvent *event) {
 	setCameraLens(camera->lens()->projectionType());
 }
 
-TOOLKIT_DLLAPI void SceneWidget::setCameraLens(QCameraLens::ProjectionType projection) {
+void SceneWidget::setCameraLens(QCameraLens::ProjectionType projection) {
 	//std::cout << width << " " << height << std::endl;
 	camera->lens()->setProjectionType(projection);
 	if (projection == QCameraLens::PerspectiveProjection) {
@@ -112,7 +112,7 @@ TOOLKIT_DLLAPI void SceneWidget::setCameraLens(QCameraLens::ProjectionType proje
 	}
 }
 
-TOOLKIT_DLLAPI void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {
+void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {
 	//qDebug() << scene_obj->dynamicPropertyNames();
 	scene_obj->setParent(scene_root);
 
@@ -133,7 +133,7 @@ TOOLKIT_DLLAPI void SceneWidget::addSceneObject(Qt3DCore::QEntity *scene_obj) {
 	}
 }
 
-TOOLKIT_DLLAPI void SceneWidget::addSceneObjectToGroup(QEntity* scene_obj, QString group_name) {
+void SceneWidget::addSceneObjectToGroup(QEntity* scene_obj, QString group_name) {
 	bool found = false;
 	for(auto it=scene_obj_grouping[group_name].begin(); it<scene_obj_grouping[group_name].end(); it++) {
 		if (*it == scene_obj) {
@@ -162,7 +162,7 @@ TOOLKIT_DLLAPI void SceneWidget::addSceneObjectToGroup(QEntity* scene_obj, QStri
 	}
 }
 
-TOOLKIT_DLLAPI void SceneWidget::removeSceneObjectFromGroup(QEntity* scene_obj, QString group_name) {
+void SceneWidget::removeSceneObjectFromGroup(QEntity* scene_obj, QString group_name) {
 	for(auto it=scene_obj_grouping[group_name].begin(); it<scene_obj_grouping[group_name].end(); it++) {
 		if (*it == scene_obj) {
 			scene_obj_grouping[group_name].erase(it);
@@ -171,7 +171,7 @@ TOOLKIT_DLLAPI void SceneWidget::removeSceneObjectFromGroup(QEntity* scene_obj, 
 	}
 }
 
-TOOLKIT_DLLAPI void SceneWidget::removeSceneObject(Qt3DCore::QEntity *scene_obj) {
+void SceneWidget::removeSceneObject(Qt3DCore::QEntity *scene_obj) {
 	scene_obj->setParent((Qt3DCore::QEntity*) nullptr);
 
 	QVariant obj_grouping = scene_obj->property("Scene.ObjGroup");
@@ -204,7 +204,7 @@ void SceneWidget::frame_action_repeater(float dt) {
 	emit frame_sync_signal(dt);
 }
 
-TOOLKIT_DLLAPI QCamera* SceneWidget::getCameraObj() {
+QCamera* SceneWidget::getCameraObj() {
 	return camera;
 }
 
@@ -212,7 +212,7 @@ void SceneWidget::update_orthographic_scale() {
 	setCameraLens(camera->lens()->projectionType());
 }
 
-TOOLKIT_DLLAPI void SceneWidget::setClearColor(QColor color){
+void SceneWidget::setClearColor(QColor color){
 	qt3d_view->defaultFrameGraph()->setClearColor(color);
 }
 
@@ -237,7 +237,7 @@ void SceneWidget::setOffscreenRender(QObject* surface) {
 	}
 }
 
-TOOLKIT_DLLAPI Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture() {
+Qt3DRender::QRenderCaptureReply* SceneWidget::requestFrameCapture() {
 	if (render_capture == nullptr) {
 		render_capture = new QRenderCapture();
 		qt3d_view->activeFrameGraph()->setParent(render_capture);

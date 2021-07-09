@@ -8,25 +8,25 @@
 #include <variantdelegate.h>
 #include "VectorEditor.h"
 
-TOOLKIT_DLLAPI ToolkitSettings::ToolkitSettings() {
+ToolkitSettings::ToolkitSettings() {
 }
 
-TOOLKIT_DLLAPI QVariant ToolkitSettings::value(const QString &key) {
+QVariant ToolkitSettings::value(const QString &key) {
 	return settings.value(key);
 }
 
-TOOLKIT_DLLAPI QMetaType::Type ToolkitSettings::type(const QString &key) {
+QMetaType::Type ToolkitSettings::type(const QString &key) {
 	if (settings.group() == "") 
 		return value_type_map[key];
 	return value_type_map[QString("%1:%2").arg(settings.group(), key)];
 }
 
-TOOLKIT_DLLAPI void ToolkitSettings::setValue(const QString &key, const QVariant &value) {
+void ToolkitSettings::setValue(const QString &key, const QVariant &value) {
 	setType(key, value);
 	settings.setValue(key, value);
 }
 
-TOOLKIT_DLLAPI void ToolkitSettings::setType(const QString &key, const QVariant infer_from_value) {
+void ToolkitSettings::setType(const QString &key, const QVariant infer_from_value) {
 	if (settings.group() == "") {
 		value_type_map[key] = (QMetaType::Type)(infer_from_value.type());
 	} else {
@@ -34,15 +34,15 @@ TOOLKIT_DLLAPI void ToolkitSettings::setType(const QString &key, const QVariant 
 	}
 }
 
-TOOLKIT_DLLAPI void ToolkitSettings::beginGroup(QString group) {
+void ToolkitSettings::beginGroup(QString group) {
 	settings.beginGroup(group);
 }
 
-TOOLKIT_DLLAPI void ToolkitSettings::endGroup() {
+void ToolkitSettings::endGroup() {
 	settings.endGroup();
 }
 
-TOOLKIT_DLLAPI void ToolkitSettings::editSettings() {
+void ToolkitSettings::editSettings() {
 	SettingsEditor *edit = new SettingsEditor(this);
 	edit->setWindowFlags(Qt::Dialog);
 	connect(edit, &SettingsEditor::settings_changed, this, [=]() { emit settings_changed(); });

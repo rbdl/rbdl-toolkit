@@ -18,23 +18,23 @@ class TOOLKIT_DLLAPI ToolkitTimeline : public QWidget, public Ui::Timeline {
 	public:
 		ToolkitTimeline(QWidget* parent);
 
-		TOOLKIT_DLLAPI void setMaxTime(float max_time);
-		TOOLKIT_DLLAPI float getMaxTime() { return max_time; }
-		TOOLKIT_DLLAPI float getCurrentTime() { return current_time; }
-		TOOLKIT_DLLAPI void setCurrentTime(float current_time, bool stop_playing=false);
-		TOOLKIT_DLLAPI void reset();
+		void setMaxTime(float max_time);
+		float getMaxTime() { return max_time; }
+		float getCurrentTime() { return current_time; }
+		void setCurrentTime(float current_time, bool stop_playing=false);
+		void reset();
 
 	public slots:
-		TOOLKIT_DLLAPI void speedChanged(double speed);
-		TOOLKIT_DLLAPI void togglePlaying();
+		void speedChanged(double speed);
+		void togglePlaying();
 
-		TOOLKIT_DLLAPI void sliderMoved(int pos);
-		TOOLKIT_DLLAPI void sliderPressed();
-		TOOLKIT_DLLAPI void sliderReleased();
+		void sliderMoved(int pos);
+		void sliderPressed();
+		void sliderReleased();
 
-		TOOLKIT_DLLAPI void tick(float dt);
+		void tick(float dt);
 
-		TOOLKIT_DLLAPI void reset_timeline();
+		void reset_timeline();
 
 	signals:
 		//signal always sends absolute time so that all listeners can update accordingly

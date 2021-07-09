@@ -50,36 +50,36 @@ class TOOLKIT_DLLAPI ToolkitApp : public QMainWindow
 	public:
 		ToolkitSettings toolkit_settings;
 
-		TOOLKIT_DLLAPI ToolkitApp(QWidget *parent = 0);
-		TOOLKIT_DLLAPI std::vector<RBDLModelWrapper*>* getLoadedModels();
+		 ToolkitApp(QWidget *parent = 0);
+		 std::vector<RBDLModelWrapper*>* getLoadedModels();
 
-		TOOLKIT_DLLAPI RBDLModelWrapper* selectModel(ModelFilter filter);
+		 RBDLModelWrapper* selectModel(ModelFilter filter);
 
-		TOOLKIT_DLLAPI void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
-		TOOLKIT_DLLAPI void deleteView(QString name);
+		 void addView(QString name, QWidget *view_widget, Qt::DockWidgetArea area=Qt::RightDockWidgetArea, bool show_tilte = true);
+		 void deleteView(QString name);
 
-		TOOLKIT_DLLAPI void addFileAction(QAction* file_action);
+		 void addFileAction(QAction* file_action);
 
-		TOOLKIT_DLLAPI QMenu* getMenu(std::string menu_name);
-		TOOLKIT_DLLAPI void deleteMenu(QMenu* menu);
+		 QMenu* getMenu(std::string menu_name);
+		 void deleteMenu(QMenu* menu);
 
-		TOOLKIT_DLLAPI void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
-		TOOLKIT_DLLAPI void parseCmd(QApplication& app);
+		 void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
+		 void parseCmd(QApplication& app);
 
-		TOOLKIT_DLLAPI void showWarningDialog(QString warning_msg);
+		 void showWarningDialog(QString warning_msg);
 
-		TOOLKIT_DLLAPI static void showExceptionDialog(std::exception& e);
+		 static void showExceptionDialog(std::exception& e);
 
-		TOOLKIT_DLLAPI ToolkitTimeline* getToolkitTimeline() { return timeline; }
-		TOOLKIT_DLLAPI SceneWidget* getSceneObj() { return main_display; }
+		 ToolkitTimeline* getToolkitTimeline() { return timeline; }
+		 SceneWidget* getSceneObj() { return main_display; }
 
 	public slots:
-		TOOLKIT_DLLAPI void action_reload_files();
-		TOOLKIT_DLLAPI void action_load_model();
+		 void action_reload_files();
+		 void action_load_model();
 
-		TOOLKIT_DLLAPI void model_visual_update(Qt3DCore::QEntity* visual);
+		 void model_visual_update(Qt3DCore::QEntity* visual);
 
-		TOOLKIT_DLLAPI void loadModel(const QString &model_file); 
+		 void loadModel(const QString &model_file);
 
 	signals:
 		void reload();

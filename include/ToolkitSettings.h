@@ -45,18 +45,18 @@ class TOOLKIT_DLLAPI ToolkitSettings : public QObject{
 	public:
 		ToolkitSettings();
 
-		TOOLKIT_DLLAPI QVariant value(const QString &key);
-		TOOLKIT_DLLAPI QMetaType::Type type(const QString &key);
-		TOOLKIT_DLLAPI void setValue(const QString &key, const QVariant &value);
-		TOOLKIT_DLLAPI void setType(const QString &key, const QVariant infer_from_value);
+		 QVariant value(const QString &key);
+		 QMetaType::Type type(const QString &key);
+		 void setValue(const QString &key, const QVariant &value);
+		 void setType(const QString &key, const QVariant infer_from_value);
 
-		TOOLKIT_DLLAPI QString group() { return settings.group(); }
+		 QString group() { return settings.group(); }
 
-		TOOLKIT_DLLAPI void beginGroup(QString group);
-		TOOLKIT_DLLAPI void endGroup();
+		 void beginGroup(QString group);
+		 void endGroup();
 
-		TOOLKIT_DLLAPI QStringList childKeys() { return settings.childKeys(); }
-		TOOLKIT_DLLAPI QStringList childGroups() { return settings.childGroups(); }
+		 QStringList childKeys() { return settings.childKeys(); }
+		 QStringList childGroups() { return settings.childGroups(); }
 
 	private:
 		QSettings settings;
@@ -67,7 +67,7 @@ class TOOLKIT_DLLAPI ToolkitSettings : public QObject{
 		void settings_changed();
 
 	public slots:
-		TOOLKIT_DLLAPI void editSettings();
+		void editSettings();
 };
 
 #endif 
