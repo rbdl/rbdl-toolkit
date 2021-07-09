@@ -24,8 +24,7 @@
 
 class SceneWidget;
 
-TOOLKIT_DLLAPI
-class ToolkitApp : public QMainWindow
+class TOOLKIT_DLLAPI ToolkitApp : public QMainWindow
 {
 	Q_OBJECT
 	private:
@@ -65,7 +64,7 @@ class ToolkitApp : public QMainWindow
 		TOOLKIT_DLLAPI void deleteMenu(QMenu* menu);
 
 		TOOLKIT_DLLAPI void addCmdOption(QCommandLineOption &option, std::function<void(QCommandLineParser&)>);
-		void parseCmd(QApplication& app);
+		TOOLKIT_DLLAPI void parseCmd(QApplication& app);
 
 		TOOLKIT_DLLAPI void showWarningDialog(QString warning_msg);
 

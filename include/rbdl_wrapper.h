@@ -12,6 +12,8 @@
 #include <Qt3DCore/QEntity>
 #include <Qt3DCore/QTransform>
 
+#include "toolkit_config.h"
+
 class RBDLModelWrapper;
 
 
@@ -54,7 +56,7 @@ struct SegmentVisualInfo {
 
 /* This class provides a wrapper around rbdl models, in order to visualize them with Qt3D
  */
-class RBDLModelWrapper : public QObject {
+class TOOLKIT_DLLAPI RBDLModelWrapper : public QObject {
 	Q_OBJECT
 	protected:
 		QString model_file;
@@ -74,32 +76,32 @@ class RBDLModelWrapper : public QObject {
 		void clear();
 		virtual void load(QString model_file) = 0;
 	public:
-		static RBDLModelWrapper* loadFromFile(QString model_file);
+		TOOLKIT_DLLAPI static RBDLModelWrapper* loadFromFile(QString model_file);
 
 
 		RigidBodyDynamics::Model* rbdl_model;
 
 		RBDLModelWrapper();
-		void build3DEntity(ModelInfo&, std::vector<SegmentVisualInfo>&);
+		TOOLKIT_DLLAPI void build3DEntity(ModelInfo&, std::vector<SegmentVisualInfo>&);
 
-		QString getFileName() { return QFileInfo(model_file).baseName(); }
-		std::string getModelType() { return model_type; }
-		QString getModelFile();
-		int getModelDof();
-		Qt3DCore::QEntity* getRenderObj() { return model_root; }
-		Qt3DCore::QEntity* getSegmentEntity(std::string segment_name, bool create=false);
+		TOOLKIT_DLLAPI QString getFileName() { return QFileInfo(model_file).baseName(); }
+		TOOLKIT_DLLAPI std::string getModelType() { return model_type; }
+		TOOLKIT_DLLAPI QString getModelFile();
+		TOOLKIT_DLLAPI int getModelDof();
+		TOOLKIT_DLLAPI Qt3DCore::QEntity* getRenderObj() { return model_root; }
+		TOOLKIT_DLLAPI Qt3DCore::QEntity* getSegmentEntity(std::string segment_name, bool create=false);
 
-		void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
-		void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
+		TOOLKIT_DLLAPI void addStaticVisual(std::string segment_name, Qt3DCore::QEntity *visual);
+		TOOLKIT_DLLAPI void updateKinematics(RigidBodyDynamics::Math::VectorNd Q);
 
-		void reload();
+		TOOLKIT_DLLAPI void reload();
 
 		//takes ownership of extension -> only delete via model not where it was created
-		void addExtension(WrapperExtension* extension);
+		TOOLKIT_DLLAPI void addExtension(WrapperExtension* extension);
 		//void deleteExtension(std::string name);
-		bool hasExtension(std::string name);
-		const std::vector<std::string>& loadedExtensions() { return extension_names; }
-		WrapperExtension* getExtension(std::string name);
+		TOOLKIT_DLLAPI bool hasExtension(std::string name);
+		TOOLKIT_DLLAPI const std::vector<std::string>& loadedExtensions() { return extension_names; }
+		TOOLKIT_DLLAPI WrapperExtension* getExtension(std::string name);
 
 	public slots:
 		void model_update(float current_time);

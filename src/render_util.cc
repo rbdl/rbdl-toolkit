@@ -34,7 +34,7 @@ using namespace Qt3DCore;
 using namespace Qt3DRender;
 using namespace Qt3DExtras;
 
-QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_color) {
+TOOLKIT_DLLAPI QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_color) {
 	QGeometry* floor_geometry = new QGeometry();
 	float step = fabs (rborder - lborder) / (float) count;
 	QByteArray vertexBytes;
@@ -123,7 +123,7 @@ QEntity* createGridFloor(float lborder, float rborder, int count, QColor line_co
 	return floor;
 }
 
-Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_color, float line_width, Qt3DCore::QEntity* parent) {
+TOOLKIT_DLLAPI Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_color, float line_width, Qt3DCore::QEntity* parent) {
 	auto rot = QQuaternion::rotationTo(QVector3D(0.0, 1.0, 0.0), direction);
 	auto trans = QVector3D(0.0, 1*direction.length()/2, 0.0);
 	Qt3DCore::QTransform* transform = new Qt3DCore::QTransform;
@@ -152,7 +152,7 @@ Qt3DCore::QEntity* createWire(const QVector3D& direction, const QColor& line_col
 	return wire;
 }
 
-Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
+TOOLKIT_DLLAPI Qt3DCore::QEntity* createMeshEntity(const QString& mesh_file,
                                     const QColor& mesh_color, 
                                     const QVector3D& mesh_translation, 
                                     const QQuaternion& mesh_rotation,

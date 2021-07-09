@@ -9,14 +9,15 @@
 #include <string>
 
 #include <rbdl/rbdl_math.h>
+#include "toolkit_config.h"
 
 // returs an empty file on failure
-QString findFile(QString file, bool absolute=false);
-QString findFile(std::string file, bool absolute=false); 
+TOOLKIT_DLLAPI QString findFile(QString file, bool absolute=false);
+TOOLKIT_DLLAPI QString findFile(std::string file, bool absolute=false);
 
-QString findPlugin(QString plugin);
-QStringList findAllPlugins();
+TOOLKIT_DLLAPI QString findPlugin(QString plugin);
+TOOLKIT_DLLAPI QStringList findAllPlugins();
 
-QVector3D to_qt_vector(RigidBodyDynamics::Math::Vector3d&);
+TOOLKIT_DLLAPI QVector3D to_qt_vector(RigidBodyDynamics::Math::Vector3d&);
 
 #endif 

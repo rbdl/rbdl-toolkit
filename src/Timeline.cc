@@ -28,14 +28,14 @@ ToolkitTimeline::ToolkitTimeline(QWidget *parent) : speed_factor(1.0),
 	connect(TimelineVertSlider, SIGNAL(sliderReleased()), this, SLOT(sliderReleased()));
 }
 
-void ToolkitTimeline::reset() {
+TOOLKIT_DLLAPI void ToolkitTimeline::reset() {
 	max_time = 0.;
 	current_time = 0.;
 	playing = false;
 	speed_factor = 1.0;
 }
 
-void ToolkitTimeline::setMaxTime(float max) {
+TOOLKIT_DLLAPI void ToolkitTimeline::setMaxTime(float max) {
 	float old_max = max_time;
 	max_time = std::max(max, max_time);
 
@@ -43,27 +43,27 @@ void ToolkitTimeline::setMaxTime(float max) {
 		emit maxTimeChanged(max_time);
 }
 
-void ToolkitTimeline::togglePlaying() {
+TOOLKIT_DLLAPI void ToolkitTimeline::togglePlaying() {
 	if (max_time > 0.) {
 		playing = !playing;
 		was_playing = playing;
 	}
 }
 
-void ToolkitTimeline::sliderPressed() {
+TOOLKIT_DLLAPI void ToolkitTimeline::sliderPressed() {
 	playing = false;
 }
 
-void ToolkitTimeline::sliderReleased() {
+TOOLKIT_DLLAPI void ToolkitTimeline::sliderReleased() {
 	playing = was_playing;
 }
 
-void ToolkitTimeline::sliderMoved(int pos) {
+TOOLKIT_DLLAPI void ToolkitTimeline::sliderMoved(int pos) {
 	float p = (float)pos / (float)slider_granularity;
 	setCurrentTime( max_time * p);
 }
 
-void ToolkitTimeline::setCurrentTime(float current, bool stop_playing) {
+TOOLKIT_DLLAPI void ToolkitTimeline::setCurrentTime(float current, bool stop_playing) {
 	if (stop_playing) {
 		playing = false;
 	}
@@ -81,7 +81,7 @@ void ToolkitTimeline::setCurrentTime(float current, bool stop_playing) {
 	emit timeChanged(current_time);
 }
 
-void ToolkitTimeline::tick(float dt) {
+TOOLKIT_DLLAPI void ToolkitTimeline::tick(float dt) {
 	if (max_time <= 0. || !playing ) {
 		//do not do anything if max time is smaller or equal to zero
 		//or if animation is halted
@@ -92,11 +92,11 @@ void ToolkitTimeline::tick(float dt) {
 	setCurrentTime(current_time);
 }
 
-void ToolkitTimeline::speedChanged(double speed) {
+TOOLKIT_DLLAPI void ToolkitTimeline::speedChanged(double speed) {
 	speed_factor = speed;
 }
 
-void ToolkitTimeline::reset_timeline() {
+TOOLKIT_DLLAPI void ToolkitTimeline::reset_timeline() {
 	max_time = 0.;
 	setCurrentTime(0.);
 	playing = false;

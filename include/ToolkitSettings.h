@@ -10,6 +10,7 @@
 #include <QIcon>
 
 #include "ui_SettingsEditor.h"
+#include "toolkit_config.h"
 
 class ToolkitSettings;
 
@@ -39,23 +40,23 @@ class SettingsEditor : public QWidget, public Ui::SettingsEditor {
 };
 
 
-class ToolkitSettings : public QObject{
+class TOOLKIT_DLLAPI ToolkitSettings : public QObject{
 	Q_OBJECT
 	public:
 		ToolkitSettings();
 
-		QVariant value(const QString &key);
-		QMetaType::Type type(const QString &key);
-		void setValue(const QString &key, const QVariant &value);
-		void setType(const QString &key, const QVariant infer_from_value);
+		TOOLKIT_DLLAPI QVariant value(const QString &key);
+		TOOLKIT_DLLAPI QMetaType::Type type(const QString &key);
+		TOOLKIT_DLLAPI void setValue(const QString &key, const QVariant &value);
+		TOOLKIT_DLLAPI void setType(const QString &key, const QVariant infer_from_value);
 
-		QString group() { return settings.group(); }
+		TOOLKIT_DLLAPI QString group() { return settings.group(); }
 
-		void beginGroup(QString group);
-		void endGroup();
+		TOOLKIT_DLLAPI void beginGroup(QString group);
+		TOOLKIT_DLLAPI void endGroup();
 
-		QStringList childKeys() { return settings.childKeys(); }
-		QStringList childGroups() { return settings.childGroups(); }
+		TOOLKIT_DLLAPI QStringList childKeys() { return settings.childKeys(); }
+		TOOLKIT_DLLAPI QStringList childGroups() { return settings.childGroups(); }
 
 	private:
 		QSettings settings;
@@ -66,7 +67,7 @@ class ToolkitSettings : public QObject{
 		void settings_changed();
 
 	public slots:
-		void editSettings();
+		TOOLKIT_DLLAPI void editSettings();
 };
 
 #endif 

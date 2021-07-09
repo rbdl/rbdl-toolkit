@@ -355,7 +355,7 @@ TOOLKIT_DLLAPI void ToolkitApp::addFileAction(QAction* action) {
 	toolkit_menu_list["File"]->addAction(action);
 }
 
-void ToolkitApp::parseCmd(QApplication& app) {
+TOOLKIT_DLLAPI void ToolkitApp::parseCmd(QApplication& app) {
 	cmd_parser.parse(app.arguments());
 
 	//load additional plugins here

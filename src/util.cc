@@ -10,7 +10,7 @@
 #include <QFileInfo>
 #include <QLibrary>
 
-QString findFile(QString file, bool absolute) {
+TOOLKIT_DLLAPI QString findFile(QString file, bool absolute) {
 	//if empty no file to be found
 	if (file == "") {
 		throw RigidBodyDynamics::Errors::RBDLInvalidFileError("Cannot find file with no name!");
@@ -40,11 +40,11 @@ QString findFile(QString file, bool absolute) {
 	throw RigidBodyDynamics::Errors::RBDLInvalidFileError(errormsg.str());
 }
 
-QString findFile(std::string file, bool absolute) { 
+TOOLKIT_DLLAPI QString findFile(std::string file, bool absolute) {
 	return findFile(QString::fromStdString(file), absolute); 
 }
 
-QString findPlugin(QString plugin) {
+TOOLKIT_DLLAPI QString findPlugin(QString plugin) {
 	QFileInfo check_file(plugin);
 	if (check_file.exists()) {
 		return check_file.absoluteFilePath();
@@ -79,7 +79,7 @@ QString findPlugin(QString plugin) {
 	throw RBDLFileNotFoundError(errormsg.str());
 }
 
-QStringList findAllPlugins() {
+TOOLKIT_DLLAPI QStringList findAllPlugins() {
 	QStringList plugin_list;
 
 	auto paths = QDir::searchPaths("plugins");
@@ -98,6 +98,6 @@ QStringList findAllPlugins() {
 	return plugin_list;
 }
 
-QVector3D to_qt_vector(RigidBodyDynamics::Math::Vector3d& vec) {
+TOOLKIT_DLLAPI QVector3D to_qt_vector(RigidBodyDynamics::Math::Vector3d& vec) {
 	return QVector3D(vec[0], vec[1], vec[2]);
 }

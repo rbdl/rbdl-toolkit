@@ -22,6 +22,8 @@
 #include "ToolkitApp.h"
 #include "SceneGroupsWidget.h"
 
+#include "toolkit_config.h"
+
 class ToolkitApp;
 /*
  * A small wrapper class to render with the Qt3D Engine to be used as a QWidget
@@ -46,7 +48,7 @@ class RenderGroupCheckBox : public QCheckBox {
 };
 
 
-class SceneWidget : public QWidget {
+class TOOLKIT_DLLAPI SceneWidget : public QWidget {
 	Q_OBJECT
 	private:
 		ToolkitApp* main_app;
@@ -77,22 +79,21 @@ class SceneWidget : public QWidget {
 
 		// adding an object will expect that all controll of memory is handed to this class meaning
 		// that you don't have to care about freeing the memory again
-		void addSceneObject(Qt3DCore::QEntity *scene_obj);
-		void removeSceneObject(Qt3DCore::QEntity *scene_obj);
-		void addSceneObjectToGroup(Qt3DCore::QEntity* scene_obj, QString group_name);
-		void removeSceneObjectFromGroup(Qt3DCore::QEntity* scene_obj, QString group_name);
+		TOOLKIT_DLLAPI void addSceneObject(Qt3DCore::QEntity *scene_obj);
+		TOOLKIT_DLLAPI void removeSceneObject(Qt3DCore::QEntity *scene_obj);
+		TOOLKIT_DLLAPI void addSceneObjectToGroup(Qt3DCore::QEntity* scene_obj, QString group_name);
+		TOOLKIT_DLLAPI void removeSceneObjectFromGroup(Qt3DCore::QEntity* scene_obj, QString group_name);
 
-		Qt3DRender::QCamera* getCameraObj();
-		void setCameraLens(Qt3DRender::QCameraLens::ProjectionType projection);
+		TOOLKIT_DLLAPI Qt3DRender::QCamera* getCameraObj();
+		TOOLKIT_DLLAPI void setCameraLens(Qt3DRender::QCameraLens::ProjectionType projection);
 
-		Qt3DCore::QEntity* getSceneRoot() { return scene_root; }
-		QColor getDefaultClearColor() { return default_clear_color; }
+		TOOLKIT_DLLAPI Qt3DCore::QEntity* getSceneRoot() { return scene_root; }
+		TOOLKIT_DLLAPI QColor getDefaultClearColor() { return default_clear_color; }
 
-		int getWidth() { return width; }
-		int getHeight() { return height; }
+		TOOLKIT_DLLAPI int getWidth() { return width; }
+		TOOLKIT_DLLAPI int getHeight() { return height; }
 
-		Qt3DRender::QRenderCaptureReply* requestFrameCapture();
-
+		TOOLKIT_DLLAPI Qt3DRender::QRenderCaptureReply* requestFrameCapture();
 
 	protected:
 		void resizeEvent(QResizeEvent *event);
