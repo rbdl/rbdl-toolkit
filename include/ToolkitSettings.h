@@ -12,9 +12,9 @@
 #include "ui_SettingsEditor.h"
 #include "toolkit_config.h"
 
-class ToolkitSettings;
+class TOOLKIT_DLLAPI ToolkitSettings;
 
-class SettingsEditor : public QWidget, public Ui::SettingsEditor {
+class TOOLKIT_DLLAPI SettingsEditor : public QWidget, public Ui::SettingsEditor {
 	Q_OBJECT
 	private:
 		ToolkitSettings* settings;

@@ -10,7 +10,7 @@
 
 #define MODELTYPE_LUA "lua_model"
 
-class LuaModelWrapper : public RBDLModelWrapper {
+class TOOLKIT_DLLAPI LuaModelWrapper : public RBDLModelWrapper {
 	public:
 		LuaModelWrapper();
 		LuaTable model_luatable;

@@ -3,10 +3,11 @@
 
 #include <QDialog>
 #include <QVector3D>
+#include "toolkit_config.h"
 
 #include "ui_VectorEditor.h"
 
-class VectorEditDialog : public QDialog, public Ui::VectorEditor {
+class TOOLKIT_DLLAPI VectorEditDialog : public QDialog, public Ui::VectorEditor {
 	Q_OBJECT
 	public:
 		VectorEditDialog(QWidget* parent,  QVector3D& val) {

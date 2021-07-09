@@ -22,7 +22,7 @@
 
 #include "toolkit_config.h"
 
-class SceneWidget;
+class TOOLKIT_DLLAPI SceneWidget;
 
 class TOOLKIT_DLLAPI ToolkitApp : public QMainWindow
 {

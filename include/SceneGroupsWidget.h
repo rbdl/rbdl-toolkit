@@ -3,9 +3,10 @@
 
 #include <QWidget>
 #include <QCheckBox>
+#include "toolkit_config.h"
 #include "ui_SceneGroupList.h"
 
-class SceneGroupsWidget : public QWidget, public Ui::SceneGroupList {
+class TOOLKIT_DLLAPI SceneGroupsWidget : public QWidget, public Ui::SceneGroupList {
 	Q_OBJECT
 	private:
 		int label_pos;

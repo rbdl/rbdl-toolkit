@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QListWidgetItem>
 #include <QPushButton>
+#include "toolkit_config.h"
 #include "ui_ModelSelector.h"
 
 #include <rbdl_wrapper.h>
@@ -11,14 +12,14 @@
 typedef bool (*ModelFilter)(RBDLModelWrapper* model);
 typedef std::vector<RBDLModelWrapper*>* ModelListRef;
 
-class ModelListItem : public QListWidgetItem {
+class TOOLKIT_DLLAPI ModelListItem : public QListWidgetItem {
 	public:
 		ModelListItem(RBDLModelWrapper* model, QListWidget* parent=0);
 
 		RBDLModelWrapper* model_ref;
 };
 
-class ModelSelectorDialog : public QDialog, public Ui::ModelSelector {
+class TOOLKIT_DLLAPI ModelSelectorDialog : public QDialog, public Ui::ModelSelector {
 	Q_OBJECT
 	private:
 		bool filter_models;

@@ -2,7 +2,7 @@
 
 #include "rbdl/rbdl_errors.h"
 
-VectorNd interpolate_values_linear(const VectorNd& data0, const VectorNd& data1, float time_fraction) {
+TOOLKIT_DLLAPI VectorNd interpolate_values_linear(const VectorNd& data0, const VectorNd& data1, float time_fraction) {
 	if ( data0.size() != data1.size() ) {
 		throw RigidBodyDynamics::Errors::RBDLSizeMismatchError("The vectors you wish to interpolate are of different sizes!");
 	}

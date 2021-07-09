@@ -9,7 +9,7 @@
 
 #define MODELTYPE_URDF "urdf_model"
 
-class UrdfModelWrapper : public RBDLModelWrapper {
+class TOOLKIT_DLLAPI UrdfModelWrapper : public RBDLModelWrapper {
 	public:
 		UrdfModelWrapper();
 

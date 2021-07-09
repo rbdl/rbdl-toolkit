@@ -31,7 +31,7 @@ class ToolkitApp;
 
 typedef std::map<QString, std::vector<Qt3DCore::QEntity*>> GroupingMap;
 
-class RenderGroupCheckBox : public QCheckBox {
+class TOOLKIT_DLLAPI RenderGroupCheckBox : public QCheckBox {
 	Q_OBJECT
 	public:
 		RenderGroupCheckBox(QString obj_group_name):QCheckBox(obj_group_name) {
