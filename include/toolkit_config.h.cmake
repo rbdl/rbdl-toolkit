@@ -21,13 +21,11 @@
 // is handled by the compiler, see: http://gcc.gnu.org/wiki/Visibility
 # if defined WINDOWS_BUILD || defined __CYGWIN__
 // On Microsoft Windows, use dllimport and dllexport to tag symbols.
-//#  pragma warning(disable:4251) /*no DLL interface for type of member of exported class*/
-//#  pragma warning(disable:4275) /*no DLL interface for base class of exported class*/
-//#  define TOOLKIT_DLLIMPORT __declspec(dllimport)
-//#  define TOOLKIT_DLLEXPORT __declspec(dllexport)
+#  define TOOLKIT_DLLIMPORT __declspec(dllimport)
+#  define TOOLKIT_DLLEXPORT __declspec(dllexport)
 #  include <QWidget>
-#  define TOOLKIT_DLLIMPORT Q_DECL_IMPORT
-#  define TOOLKIT_DLLEXPORT Q_DECL_EXPORT
+//#  define TOOLKIT_DLLIMPORT Q_DECL_IMPORT
+//#  define TOOLKIT_DLLEXPORT Q_DECL_EXPORT
 #  define TOOLKIT_DLLLOCAL
 # else
 // On Linux, for GCC >= 4, tag symbols using GCC extension.
