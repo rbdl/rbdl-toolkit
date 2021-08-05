@@ -21,11 +21,9 @@
 // is handled by the compiler, see: http://gcc.gnu.org/wiki/Visibility
 # if defined WINDOWS_BUILD || defined __CYGWIN__
 // On Microsoft Windows, use dllimport and dllexport to tag symbols.
-#  define TOOLKIT_DLLIMPORT __declspec(dllimport)
-#  define TOOLKIT_DLLEXPORT __declspec(dllexport)
-#  include <QWidget>
-//#  define TOOLKIT_DLLIMPORT Q_DECL_IMPORT
-//#  define TOOLKIT_DLLEXPORT Q_DECL_EXPORT
+#  include <QCore/QtGlobal>
+#  define TOOLKIT_DLLIMPORT Q_DECL_IMPORT
+#  define TOOLKIT_DLLEXPORT Q_DECL_EXPORT
 #  define TOOLKIT_DLLLOCAL
 # else
 // On Linux, for GCC >= 4, tag symbols using GCC extension.
@@ -45,6 +43,7 @@
 // If one is using the library statically, get rid of
 // extra information.
 #  define TOOLKIT_DLLAPI
+#  define TOOLKIT_PLUGIN_DLLAPI
 #  define TOOLKIT_LOCAL
 # else
 // Depending on whether one is building or using the
