@@ -21,7 +21,7 @@
 // is handled by the compiler, see: http://gcc.gnu.org/wiki/Visibility
 # if defined WINDOWS_BUILD || defined __CYGWIN__
 // On Microsoft Windows, use dllimport and dllexport to tag symbols.
-#  include <QCore/QtGlobal>
+#  include <QtCore/QtGlobal>
 #  define TOOLKIT_DLLIMPORT Q_DECL_IMPORT
 #  define TOOLKIT_DLLEXPORT Q_DECL_EXPORT
 #  define TOOLKIT_DLLLOCAL
