@@ -54,7 +54,9 @@
 #include <QStyledItemDelegate>
 #include <QRegularExpression>
 
-class VariantDelegate : public QStyledItemDelegate
+#include <toolkit_config.h>
+
+class TOOLKIT_DLLAPI VariantDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 

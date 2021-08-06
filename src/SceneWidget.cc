@@ -1,4 +1,5 @@
 #include "SceneWidget.h"
+#include "ToolkitApp.h"
 
 #include <Qt3DCore/QTransform>
 

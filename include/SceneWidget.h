@@ -19,12 +19,11 @@
 
 #include <Qt3DLogic/QFrameAction>
 
-#include "ToolkitApp.h"
 #include "SceneGroupsWidget.h"
 
 #include "toolkit_config.h"
 
-class ToolkitApp;
+class TOOLKIT_DLLAPI ToolkitApp;
 /*
  * A small wrapper class to render with the Qt3D Engine to be used as a QWidget
  */

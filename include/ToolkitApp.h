@@ -23,8 +23,6 @@
 
 #include "toolkit_config.h"
 
-class SceneWidget;
-
 class TOOLKIT_DLLAPI ToolkitApp : public QMainWindow
 {
 	Q_OBJECT
