@@ -8,9 +8,11 @@
 
 #include <Eigen/Dense>
 
+#include "toolkit_config.h"
+
 typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3fd;
 
-class ArrowFieldModelExtension : public WrapperExtension {
+class TOOLKIT_PLUGIN_DLLAPI ArrowFieldModelExtension : public WrapperExtension {
 	private:
 		float max_time; 
 		int arrow_count;

@@ -7,10 +7,11 @@
 #include <vector>
 
 #include <Eigen/Dense>
+#include "toolkit_config.h"
 
 typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3fd;
 
-class MotionMarkerExtension : public WrapperExtension {
+class TOOLKIT_PLUGIN_DLLAPI MotionMarkerExtension : public WrapperExtension {
 	private:
 		float max_time; 
 		unsigned int marker_count;

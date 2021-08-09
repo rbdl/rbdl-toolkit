@@ -23,8 +23,9 @@
 #include "QVideoWriter.h"
 
 #include "toolkit_interfaces.h"
+#include "toolkit_config.h"
 
-class RenderPlugin : public QObject, public OptionalInterface {
+class TOOLKIT_PLUGIN_DLLAPI RenderPlugin : public QObject, public OptionalInterface {
 	Q_OBJECT
 	Q_INTERFACES(OptionalInterface)
 	Q_PLUGIN_METADATA(IID OptionalInterface_iid FILE "metadata.json")

@@ -13,9 +13,10 @@
 class RenderVideoDialog;
 
 #include "ui_RenderVideoDialog.h"
+#include "toolkit_config.h"
 
 
-class RenderVideoDialog : public QDialog, public Ui::RenderVideoDialog {
+class TOOLKIT_PLUGIN_DLLAPI RenderVideoDialog : public QDialog, public Ui::RenderVideoDialog {
     Q_OBJECT
 
 	public:

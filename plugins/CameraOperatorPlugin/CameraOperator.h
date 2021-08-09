@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "toolkit_interfaces.h"
+#include "toolkit_config.h"
 
-class CameraOperatorPlugin : public QObject, public CoreInterface {
+class TOOLKIT_PLUGIN_DLLAPI CameraOperatorPlugin : public QObject, public CoreInterface {
 	Q_OBJECT
 	Q_INTERFACES(CoreInterface)
 	Q_PLUGIN_METADATA(IID CoreInterface_iid FILE "metadata.json")

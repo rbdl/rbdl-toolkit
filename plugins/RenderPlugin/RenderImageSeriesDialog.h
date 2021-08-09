@@ -4,8 +4,9 @@
 #include <QFileDialog>
 
 #include "ui_RenderImageSeriesDialog.h"
+#include "toolkit_config.h"
 
-class RenderImageSeriesDialog : public QDialog, public Ui::RenderImageSeriesDialog {
+class TOOLKIT_PLUGIN_DLLAPI RenderImageSeriesDialog : public QDialog, public Ui::RenderImageSeriesDialog {
     Q_OBJECT
  
 public:

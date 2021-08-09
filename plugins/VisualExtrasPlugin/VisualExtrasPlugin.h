@@ -6,12 +6,12 @@
 #include <QColor>
 
 #include "toolkit_interfaces.h"
+#include "toolkit_config.h"
 #include "toolkit_errors.h"
 #include "util.h"
 
 
-
-class VisualExtrasPlugin : public QObject, public CoreInterface {
+class TOOLKIT_PLUGIN_DLLAPI VisualExtrasPlugin : public QObject, public CoreInterface {
 	Q_OBJECT
 	Q_INTERFACES(CoreInterface)
 	Q_PLUGIN_METADATA(IID CoreInterface_iid FILE "metadata.json")
