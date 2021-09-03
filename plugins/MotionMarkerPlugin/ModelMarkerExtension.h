@@ -8,11 +8,13 @@
 
 #include <Eigen/Dense>
 
+#include "toolkit_config.h"
+
 using namespace RigidBodyDynamics::Math;
 
 typedef Eigen::Matrix<float, 3, Eigen::Dynamic> Matrix3fd;
 
-class ModelMarkerExtension : public WrapperExtension {
+class TOOLKIT_PLUGIN_DLLAPI ModelMarkerExtension : public WrapperExtension {
 	private:
 		float marker_size; 
 		QColor marker_color;

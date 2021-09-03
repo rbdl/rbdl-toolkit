@@ -7,13 +7,14 @@
 #include <vector>
 
 #include "toolkit_interfaces.h"
+#include "toolkit_config.h"
 #include "util.h"
 
 #include "MotionMarkerExtension.h"
 #include "ModelMarkerExtension.h"
 #include "AnimationModelExtension.h"
 
-class InverseKinematicsPlugin : public QObject, public OptionalInterface{
+class TOOLKIT_PLUGIN_DLLAPI InverseKinematicsPlugin : public QObject, public OptionalInterface{
 	Q_OBJECT
 	Q_INTERFACES(OptionalInterface)
 	Q_PLUGIN_METADATA(IID OptionalInterface_iid FILE "metadata.json")

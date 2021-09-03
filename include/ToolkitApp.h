@@ -6,6 +6,7 @@
  */
 
 #include <functional>
+#include <QObject>
 
 #include <QMainWindow>
 #include <QMenuBar>
@@ -21,8 +22,6 @@
 #include "ModelSelectorDialog.h"
 
 #include "toolkit_config.h"
-
-class TOOLKIT_DLLAPI SceneWidget;
 
 class TOOLKIT_DLLAPI ToolkitApp : public QMainWindow
 {

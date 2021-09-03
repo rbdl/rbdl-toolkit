@@ -11,11 +11,12 @@
 #include <Qt3DRender/QMesh>
 
 #include "toolkit_interfaces.h"
+#include "toolkit_config.h"
 #include "util.h"
 
 #include "ArrowFieldModelExtension.h"
 
-class ForceTorquePlugin : public QObject, public CoreInterface{
+class TOOLKIT_PLUGIN_DLLAPI ForceTorquePlugin : public QObject, public CoreInterface{
 	Q_OBJECT
 	Q_INTERFACES(CoreInterface)
 	Q_PLUGIN_METADATA(IID CoreInterface_iid FILE "metadata.json")

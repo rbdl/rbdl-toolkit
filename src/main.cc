@@ -5,6 +5,8 @@
 #include <iostream>
 #include <stdlib.h>
 
+#include <toolkit_config.h>
+
 using namespace std;
 
 int main(int argc, char *argv[])

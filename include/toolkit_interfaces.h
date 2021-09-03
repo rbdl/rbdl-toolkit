@@ -6,8 +6,9 @@
 #include <QtPlugin>
 
 #include "ToolkitApp.h"
+#include <toolkit_config.h>
 
-class CoreInterface {
+class TOOLKIT_DLLAPI CoreInterface {
 	public:
 		virtual ~CoreInterface() {}
 
@@ -18,7 +19,7 @@ class CoreInterface {
 Q_DECLARE_INTERFACE(CoreInterface, CoreInterface_iid)
 
 
-class OptionalInterface{
+class TOOLKIT_DLLAPI OptionalInterface{
 	public:
 		virtual ~OptionalInterface() {}
 

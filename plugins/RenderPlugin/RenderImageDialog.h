@@ -11,9 +11,10 @@
 #define RENDERIMAGEDIALOG_H
  
 #include "ui_RenderImageDialog.h"
+#include "toolkit_config.h"
 #include <QFileDialog>
 
-class RenderImageDialog : public QDialog, public Ui::RenderImageDialog {
+class TOOLKIT_PLUGIN_DLLAPI RenderImageDialog : public QDialog, public Ui::RenderImageDialog {
     Q_OBJECT
  
 	public:

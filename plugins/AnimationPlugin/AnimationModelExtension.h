@@ -2,10 +2,11 @@
 #define ANIMATIONMODELEXTENTION_H_INCLUDED
 
 #include <rbdl_wrapper.h>
+#include <toolkit_config.h>
 
 #include <vector>
 
-class AnimationModelExtension : public WrapperExtension {
+class TOOLKIT_PLUGIN_DLLAPI AnimationModelExtension : public WrapperExtension {
 	private:
 		int dof;
 		float max_time; 
