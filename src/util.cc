@@ -89,7 +89,8 @@ TOOLKIT_DLLAPI QStringList findAllPlugins() {
 		auto file_list = dir.entryList(QDir::Files);
 		foreach (const QString &f, file_list) {
 			auto f_info = QFileInfo(dir.path(), f);
-			if (QLibrary::isLibrary(f_info.absoluteFilePath())) {
+			if (QLibrary::isLibrary(f_info.absoluteFilePath())
+				&& f_info.baseName().contains("plugin")) {
 				plugin_list << f_info.absoluteFilePath();
 			}
 		}
