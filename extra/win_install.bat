@@ -1,0 +1,1 @@
+xcopy %1 ${CMAKE_INSTALL_PREFIX} /E
