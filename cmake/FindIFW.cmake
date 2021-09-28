@@ -12,8 +12,18 @@ IF(IFW_INSTALL_PATH)
 
   IF( IFW_PATH )
     SET(IFW_FOUND TRUE)
+    FIND_PROGRAM( IFW_BINARYCREATOR bin/binarycreator.exe
+      PATHS
+      IFW_PATH
+      NO_DEFAULT_PATH
+    )
+    FIND_PROGRAM( IFW_BINARYCREATOR bin/archivegen.exe
+      PATHS
+      IFW_PATH
+      NO_DEFAULT_PATH
+    )
   ELSE( IFW_PATH )
-
+    MESSAGE(WARNING "IFW_PATH is set, but could not find required files. Please provide the correct path to the Qt Installer Framework!")
   ENDIF( IFW_PATH )
 
 ELSE(IFW_INSTALL_PATH)
