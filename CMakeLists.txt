@@ -268,11 +268,12 @@ GET_FILENAME_COMPONENT(QT_BIN_DIR "${QMAKE_EXE}" DIRECTORY)
 FIND_PROGRAM(WINDEPLOYQT_ENV_SETUP qtenv2.bat HINTS "${QT_BIN_DIR}")
 FIND_PROGRAM(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
 #create script to deploy qt plugin dependencies
-CONFIGURE_FILE(extra/mk_win_installer.bat ${CMAKE_BINARY_DIR}/mk_win_installer.bat)
+CONFIGURE_FILE(extra/windeploy.bat ${CMAKE_BINARY_DIR}/windeploy.bat)
 CONFIGURE_FILE(extra/win_install.bat ${CMAKE_BINARY_DIR}/win_install.bat)
+CONFIGURE_FILE(extra/win_pack.bat.cmake ${CMAKE_BINARY_DIR}/win_pack.bat)
 ## Run windeployqt immediately after build
 ADD_CUSTOM_COMMAND(TARGET rbdl-toolkit POST_BUILD
-  COMMAND ${CMAKE_BINARY_DIR}/mk_win_installer.bat $<CONFIG>/rbdl-toolkit.exe
+  COMMAND ${CMAKE_BINARY_DIR}/windeploy.bat $<CONFIG>/rbdl-toolkit.exe
  )
 INSTALL(CODE "EXECUTE_PROCESS(COMMAND ${CMAKE_BINARY_DIR}/win_install.bat ${CMAKE_INSTALL_PREFIX})")
 SET(CPACK_GENERATOR NSIS)
