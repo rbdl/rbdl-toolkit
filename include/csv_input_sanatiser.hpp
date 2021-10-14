@@ -151,7 +151,8 @@ class CSV_IOstream_Sanatiser{
 			bool done = false;
 			while (!done) {
 				while ( traits_type::is_good(c = io::get(src)) && c != traits_type::newline() ) {
-					if (c != traits_type::to_char_type('\r') && c != traits_type::to_char_type('\t'))
+					if (c != traits_type::to_char_type('\r') && c != traits_type::to_char_type('\t')
+					    && c != traits_type::to_char_type(' '))
 						cur_line_ += traits_type::to_int_type(c);
 				}
 				while (columns_section && !data_section && valid_csv_line(cur_line_)) {
