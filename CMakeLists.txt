@@ -293,6 +293,7 @@ FILE(COPY_FILE LICENSE ${INSTALLER_PACKAGE_META_DIR}/license.txt)
 CONFIGURE_FILE(extra/installer_config.xml.cmake ${INSTALLER_CONFIG_DIR}/config.xml)
 CONFIGURE_FILE(extra/installer_package.xml.cmake ${INSTALLER_PACKAGE_META_DIR}/package.xml)
 CONFIGURE_FILE(extra/win_pack.bat.cmake ${CMAKE_BINARY_DIR}/win_pack.bat)
+CONFIGURE_FILE(extra/win_create_installer.bat.cmake ${INSTALLER_DIR}/win_create_installer.bat)
 ADD_CUSTOM_TARGET(installer
 	COMMAND ${CMAKE_BINARY_DIR}/win_pack.bat
 )
