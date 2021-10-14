@@ -7,7 +7,7 @@ RBDL-Toolkit now supports loading and displaying of Lua and URDF models!
 
 # How to get this software
 
-This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/download/v1.1.1/rbdl-toolkit-x86_64.AppImage) for Linux and as an [DMG](https://github.com/ORB-HD/rbdl-toolkit/releases/download/v1.1.1/rbdl-toolkit.dmg) for MACOS. It may even be possible to get this running on Windows by using the Linux Subsystem, and the AppImage, but it has not be tested yet.
+This software is provided as an [AppImage](https://github.com/ORB-HD/rbdl-toolkit/releases/latest/download/rbdl-toolkit-x86_64.AppImage) for Linux and as an [DMG](https://github.com/ORB-HD/rbdl-toolkit/releases/latest/download/rbdl-toolkit.dmg) for MACOS. There is also an installer for [Windows](https://github.com/ORB-HD/rbdl-toolkit/releases/latest/download/RBDLToolkitInstaller.exe).
 
 ```
 wget https://github.com/ORB-HD/rbdl-toolkit/releases/latest/download/rbdl-toolkit-x86_64.AppImage
